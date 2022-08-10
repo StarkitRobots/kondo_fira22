@@ -1,0 +1,1 @@
+{"USB_as_connection": false, "COM_port": "COM4", "host_IP": "010.000.000.029", "remote_IP": "010.000.000.038", "demo": {"th": [0, 100, -13, 81, 12, 80], "pixel": 10, "area": 200}, "defaultFile": "/home/pi/MIPI_Camera_old/RPI/python/Camera_calibration/QTtest/Real_Thresholds.json"}
