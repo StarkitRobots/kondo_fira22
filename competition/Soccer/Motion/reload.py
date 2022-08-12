@@ -2,7 +2,8 @@ import cv2
 import math
 import time
 import numpy as np
-
+import v4l2
+import arducam_mipicamera as arducam
 class Blob:
     def __init__ (self, x_, y_, w_, h_):
         self.x_ = x_
@@ -211,16 +212,47 @@ class Sensor:
 
     def snapshot (self):
         return Image (self.img.copy ())
+class CameraSensor:
+    camera = None
+    resolution = {"height": 1300, "width": 1600}
+    @staticmethod
+    def _cameraInit():
+        CameraSensor.camera = arducam.mipi_camera()
+        CameraSensor.camera.init_camera()
+        CameraSensor.camera.set_mode(6)
+        
+        CameraSensor.camera.set_resolution(CameraSensor.resolution["width"],
+                CameraSensor.resolution["height"])
 
+    def align_down(self, size, align):
+            return (size & ~((align)-1))
+
+    def align_up(self, size, align):
+            return self.align_down(size + align - 1, align)
+    
+    def __init__(self):
+        if (CameraSensor.camera == None):
+            self._cameraInit()
+    def snapshot(self):
+        frame = CameraSensor.camera.capture(encoding='raw')
+        height = int(self.align_up(CameraSensor.resolution["height"], 16))                                                         
+        width = int(self.align_up(CameraSensor.resolution["width"], 32))                                                          
+        image = frame.as_array.reshape(int(height), width) # * 1.5                               
+        image = cv2.cvtColor(image, cv2.COLOR_BayerRG2BGR) # BG
+        (h, w, d) = image.shape
+        center = (w // 2, h // 2)
+        M = cv2.getRotationMatrix2D(center, 180, 1.0)
+        image = cv2.warpAffine(image, M, (w, h))
+        return Image(image)
 def main ():
-    sensor = Sensor ("rgb_basket.jpg")
-
+#    sensor = Sensor ("rgb_basket.jpg")
+    sensor = CameraSensor()
     while (True):
         #print ("a")
         img = sensor.snapshot ()
 
         #blobs = img.find_blobs ((40, 80, -28, 72, -28, 72), 200, 20, True, 10)
-        blobs = img.find_blobs ((35, 50, 15, 75, 50, 135), 200, 20, True, 10)
+        blobs = img.find_blobs ([(35, 50, 15, 75, 50, 135)], 200, 20, True, 10)
 
         for blob in blobs:
             #print ("a")
