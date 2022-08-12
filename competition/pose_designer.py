@@ -61,7 +61,7 @@ class Pose_Designer(wx.Frame):
         limAlpha9 = [-4000, 2960]
         limAlpha10 =[-2815,   600]
         self.LIMALPHA = [limAlpha5, limAlpha6, limAlpha7, limAlpha8, limAlpha9, limAlpha10]
-        self.FACTOR =  [ 1,1,1,-1,1,1, 1,1,1,1,1,1,1, 1,-1,1,1, 1,1,1,1, 1, 1, 1, 1]  # Surrogat 1
+        self.FACTOR =  [ 1,1,-1,-1,1,1, 1,1,1,1,1,1,-1, 1,-1,1,1, 1,1,1,1, 1, 1, 1, 1, -1, 1]  # Surrogat 1
         
         self.slot_file_is_loaded = False
         self.TIK2RAD = 0.00058909
@@ -100,8 +100,8 @@ class Pose_Designer(wx.Frame):
         #self.config = {'defaultFile':''}
         self.defaultFile = self.config['defaultFile']
         self.jointControls = []
-        self.jointLimits = [(-3500,700),(-3800, 3500),(-4600, 1800),(-3400,3400),(-2700,860),(-2400,2800),(-700,3800),(-3000,4000),(-5800,900), (-6500, 2800),(-2500,2500),
-                            (-700,3500),(-3500, 3800),(-1800, 4600),(-3400,3400),(-860,2700),(-2800,2400),(-3800,700),(-4000,3000),(-900,5800), (-2800, 6500), (-8000, 8000), (-8000, 8000), (-8000, 8000), (-8000, 8000), (-3000, 3000), (-3000, 3000)]
+        self.jointLimits = [(-3500,700),(-3800, 3500),(-4600, 1800),(-3400,3400),(-2700,860),(-2400,2800),(-700,3800),(-3000,4000),(-5500,1000), (-6500, 2800),(-2500,2500),
+                            (-700,3500),(-3500, 3800),(-1800, 4600),(-3400,3400),(-860,2700),(-2800,2400),(-3800,700),(-4000,3000),(-1000,5500), (-2800, 6500), (-8000, 8000), (-8000, 8000), (-8000, 8000), (-8000, 8000), (-3000, 3000), (-3000, 3000)]
         self.controlBoxPosition = [(10,0), (9,1), (8,1), (7,1),(6,0), (5,1),(4,0),(3,0),(2,0), (2,1), (4,2), (10,4), (9,3),(8,3), (7,3), (6,4), (5,3), (4,4), (3,4), (2,4), (2,3), (1,2),(0,2)]
         self.controlBoxPosition1 = [(55, 500), (120, 450), (80, 400), (140, 350), (140, 300), (140, 250), (5, 245), (5, 195), (5, 145), (140, 145), (210, 200),
                                    (365, 500), (300, 450), (340, 400), (280, 350), (280, 300), (280, 250), (415, 245), (415, 195), (415, 145), (280, 145), (210, 95), (210,45), (5, 295), (415, 295), (5, 345), (415,345)]
@@ -149,7 +149,7 @@ class Pose_Designer(wx.Frame):
             objectType = sim.sim_object_joint_type
             returnCode, joint_handles, intdata, floatdata, stringdata = sim.simxGetObjectGroupData(self.clientID, objectType, dataType, sim.simx_opmode_blocking)
             for jointname in stringdata:
-                if jointname == 'hand_right_11': self.dof = 25
+                if jointname == 'hand_right_11': self.dof = 27
             print(self.dof)
             for i in range(self.dof):
                 returnCode, handle= sim.simxGetObjectHandle(self.clientID, self.ACTIVEJOINTS[i], sim.simx_opmode_blocking)

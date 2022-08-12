@@ -38,20 +38,20 @@ class Motion1:
         self.servo_Trims = [0 for i in range(len(self.ACTIVESERVOS))]
 
         #FACTOR =  [ 1,-1,-1,1,-1,-1, 1,1,1,-1,1,-1,-1, 1,1,-1,-1, 1,1,1,-1,-1, 1]  # v2.3
-        self.FACTOR =  [ 1,1,1,-1,1,1, 1,1,1,1,1,1,1, 1,-1,1,1, 1,1,1,1, 1, 1, 1, 1]  # Surrogat 1
-        a5 = 21.5  # мм расстояние от оси симметрии до оси сервы 5
-        b5 = 18.5  # мм расстояние от оси сервы 5 до оси сервы 6 по горизонтали
+        self.FACTOR =  [ 1,1,-1,-1,1,1, 1,1,1,1,1,1,-1, 1,-1,1,1, 1,1,1,1, 1, 1, 1, 1, -1, 1]  # Surrogat 1
+        a5 = 40  # мм расстояние от оси симметрии до оси сервы 5
+        b5 = 0  # мм расстояние от оси сервы 5 до оси сервы 6 по горизонтали
         c5 = 0     # мм расстояние от оси сервы 6 до нуля Z по вертикали
-        a6 = 42    # мм расстояние от оси сервы 6 до оси сервы 7
-        a7 = 65.5  # мм расстояние от оси сервы 7 до оси сервы 8
-        a8 = 63.8  # мм расстояние от оси сервы 8 до оси сервы 9
-        a9 = 35.5  # мм расстояние от оси сервы 9 до оси сервы 10
-        a10= 25.4  # мм расстояние от оси сервы 10 до центра стопы по горизонтали
-        b10= 26.4  # мм расстояние от оси сервы 10 до низа стопы   26.4
-        c10 = 12   # мм расстояние от оси сервы 6 до оси сервы 10 по горизонтали
+        a6 = 0    # мм расстояние от оси сервы 6 до оси сервы 7
+        a7 = 80  # мм расстояние от оси сервы 7 до оси сервы 8
+        a8 = 100  # мм расстояние от оси сервы 8 до оси сервы 9
+        a9 = 0  # мм расстояние от оси сервы 9 до оси сервы 10
+        a10= 15.4  # мм расстояние от оси сервы 10 до центра стопы по горизонтали
+        b10= 51.4  # мм расстояние от оси сервы 10 до низа стопы   26.4
+        c10 = 0   # мм расстояние от оси сервы 6 до оси сервы 10 по горизонтали
         self.e10 = 55 # мм половина длины стопы
         self.SIZES = [ a5, b5, c5, a6, a7, a8, a9, a10, b10, c10 ]
-        self.d10 = 63.4 #53.4 # расстояние по Y от центра стопы до оси робота
+        self.d10 = 70.4 #53.4 # расстояние по Y от центра стопы до оси робота
         limAlpha5 = [-2667, 2667]
         limAlpha6 = [-3000,  740]
         limAlpha7 = [-3555, 3260]
@@ -78,12 +78,12 @@ class Motion1:
         self.rotation = 0           # -45 - +45 degrees Centigrade per step + CW, - CCW.
         self.first_Leg_Is_Right_Leg = True
         # Following paramenetrs Not recommended for change
-        self.amplitude = 32          # mm side amplitude (maximum distance between most right and most left position of Center of Mass) 53.4*2
-        self.fr1 =8                  # frame number for 1-st phase of gait ( two legs on floor)
-        self.fr2 = 12                # frame number for 2-nd phase of gait ( one leg in air)
-        self.gaitHeight= 180         # Distance between Center of mass and floor in walk pose
-        self.stepHeight = 32.0       # elevation of sole over floor
-        self.initPoses = 400//self.simThreadCycleInMs
+        self.amplitude = 13         # mm side amplitude (maximum distance between most right and most left position of Center of Mass) 53.4*2
+        self.fr1 = 8                 # frame number for 1-st phase of gait ( two legs on floor)
+        self.fr2 = 8                # frame number for 2-nd phase of gait ( one leg in air)
+        self.gaitHeight= 100        # Distance between Center of mass and floor in walk pose
+        self.stepHeight = 20.0       # elevation of sole over floor
+        self.initPoses = 200//self.simThreadCycleInMs
         self.limAlpha1 =LIMALPHA
         self.limAlpha1[3][1]=0
         #  end of  paramenetrs Not recommended for change
@@ -605,7 +605,7 @@ class Motion1:
                     dy = self.sideLength/self.fr2*framestep
                     dy0 = dy0_typical
                 else:
-                    dx = self.stepLength/(self.fr2- 2 * framestep)*framestep #* 0.75
+                    dx = self.stepLength/(self.fr2- 2 * framestep)*framestep * 0.75
                     dx0 = dx0_typical
                     dy = self.sideLength/self.fr2*framestep
                     dy0 = dy0_typical
