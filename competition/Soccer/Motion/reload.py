@@ -69,10 +69,13 @@ class Image:
     def find_blobs (self, ths, pixels_threshold, area_threshold, merge=False, margin=0, invert = False):
         masks = []
         for th in ths:
-            low_th = (int(th[0] * 2.55), th[2] + 128, th[4] + 128)
-            high_th = (math.ceil(th[1] * 2.55), th[3] + 128, th[5] + 128)
+            #low_th = (int(th[0] * 2.55), th[2] + 128, th[4] + 128)
+            #high_th = (math.ceil(th[1] * 2.55), th[3] + 128, th[5] + 128)
 
-            labimg = cv2.cvtColor (self.img, cv2.COLOR_BGR2LAB)
+            low_th = (th[0], th[2], th[4])
+            high_th = (th[1], th[3], th[5])
+
+            labimg = cv2.cvtColor (self.img, cv2.COLOR_BGR2HSV)     #color prostranstvo
 
             mask = cv2.inRange (labimg, low_th, high_th)
 
@@ -113,11 +116,14 @@ class Image:
         return blobs
 
     def binary (self, th):
-        #low  = (th [0], th [2], th [4])
-        #high = (th [1], th [3], th [5])
-        low = (int(th[0] * 2.55), th[2] + 128, th[4] + 128)
-        high = (math.ceil(th[1] * 2.55), th[3] + 128, th[5] + 128)
-        labimg = cv2.cvtColor (self.img, cv2.COLOR_RGB2LAB)
+        low  = (th [0], th [2], th [4])
+        high = (th [1], th [3], th [5])
+        
+        #low = (int(th[0] * 2.55), th[2] + 128, th[4] + 128)
+        #high = (math.ceil(th[1] * 2.55), th[3] + 128, th[5] + 128)
+        
+        labimg = cv2.cvtColor (self.img, cv2.COLOR_RGB2HSV)
+        
         mask = cv2.inRange(labimg, low, high)
 
         sh = mask.shape
