@@ -5,7 +5,7 @@ import os
 import math
 import json
 import time
-
+#from basketball.basketball_node import Basketball
 
 current_work_directory = os.getcwd()
 current_work_directory = current_work_directory.replace('\\', '/')
@@ -100,7 +100,102 @@ class Player():
 
     def basketball_main_cycle(self):
         #self.motion.play_Soft_Motion_Slot(name = 'Ball_tennis_throw_v7_2')
-        self.motion.kondo.motionPlay(78)
+        #self.motion.kondo.motionPlay(78) 
+        
+        #rospy.init_node("basketball")   initializing the node
+        basketball = Basketball()
+        # ball_sub = rospy.Subscriber('ball', Point, basketball.update_ball)    subscribing to the topic ball
+        # basketcase_sub = rospy.Subscriber('basketcase', Point, basketball.update_basketcase)   subscribing to the topic basketcase
+
+        # Finding ball and putting it to self.ball_coordinates for future approach.
+        '''
+        while not (basketball.flag_ball):
+            basketball.finding_ball()
+        print(basketball.flag_ball)
+        '''
+        #Approaching to the ball on 0.8 of distance
+        '''
+        basketball.flag_ball = False
+        basketball.turn_to_ball()
+        basketball.go_to_ball(0.8)
+        '''
+
+        # Correct the ball position
+        '''
+        while not (basketball.flag_ball): 
+            basketball.finding_ball()
+        print(basketball.flag_ball)
+        '''
+
+        # Finally approach a ball
+        '''
+        basketball.flag_ball = False
+        basketball.turn_to_ball()
+        basketball.go_to_ball(1)
+        '''
+
+        # Searching for ball
+        '''
+        while not (basketball.flag_ball): 
+            basketball.finding_ball()
+        print(basketball.flag_ball)
+        '''
+
+        # Searching for basket
+        '''
+        while not (basketball.flag_basketcase):
+            basketball.finding_basketcase()
+        print(basketball.flag_basketcase)
+        '''
+
+        # # Take ball and do several steps from ball holder
+        '''
+        basketball.flag_basketcase = False
+        res = basketball.thinking_take()
+        if res == 0:
+            self.motion.play_Soft_Motion_Slot(name = 'basketball_taking_ball')
+        elif res == 1:
+            self.motion.play_Soft_Motion_Slot(name = 'basketball_taking_ball')
+            # 3 steps right
+        elif res == -1:
+            self.motion.play_Soft_Motion_Slot(name = 'basketball_taking_ball')
+            # 3 steps left
+        '''
+
+        # # Searching for basket again
+        '''
+        while not (basketball.flag_basketcase):
+            basketball.finding_basketcase()
+        print(basketball.flag_basketcase)
+        '''
+
+        # Approach basket first time
+        '''
+        basketball.flag_basketcase = False
+        basketball.turn_to_basketcase()
+        basketball.go_to_basketcase(0.8)
+        '''
+
+        # Searching for basket again
+        '''
+        while not (basketball.flag_basketcase):
+            basketball.finding_basketcase()
+        print(basketball.flag_basketcase)
+        '''
+        # Finally approach basket
+        '''
+        basketball.flag_basketcase  = False
+        basketball.go_to_basketcase(1)
+        '''
+
+        # put the ball into basketcase
+        self.motion.play_Soft_Motion_Slot(name = 'basketball_throwing_ball')
+        '''
+        print("HE HIT THE BALL OR NO. I don't NO")
+        while True:
+            n = int(input())
+            basketball.go_to_ball(1, n)
+        '''
 
     def triple_jump_main_cycle(self):
         self.motion.kondo.motionPlay(77)
