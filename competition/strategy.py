@@ -118,14 +118,14 @@ class Player():
             stepLength = 50 #88
         if pressed_button == 2  :   
             number_Of_Cycles = 30 #30
-            self.motion.simThreadCycleInMs = 20
-            self.motion.amplitude = 32 #32
+            self.motion.simThreadCycleInMs = 10
+            self.motion.amplitude = 0 #32
             self.motion.fr1 = 8 # 4
             self.motion.fr2 = 12
             ##self.motion.initPoses = self.motion.fr2 
-            self.motion.gaitHeight = 200
+            self.motion.gaitHeight = 160
             self.motion.stepHeight = 40  # 20
-            stepLength = 120
+            stepLength = 40
         sideLength = 0
         #self.motion.first_Leg_Is_Right_Leg = False
         if self.motion.first_Leg_Is_Right_Leg: invert = -1
@@ -144,7 +144,7 @@ class Player():
                 #if rotation < 0: rotation *= 5
                 rotation = self.motion.normalize_rotation(rotation)
                 #rotation = 0
-                self.motion.walk_Cycle(stepLength1,sideLength, rotation,cycle, number_Of_Cycles)
+                self.motion.walk_Cycle(stepLength1,sideLength, 0,cycle, number_Of_Cycles)
                 if self.motion.i_see_ball:
                     stepLength1 = stepLength/3 * 2
                     self.motion.refresh_Orientation()

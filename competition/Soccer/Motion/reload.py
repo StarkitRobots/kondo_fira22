@@ -1,9 +1,13 @@
+from abc import ABCMeta, abstractmethod, abstractproperty
 import cv2
 import math
 import time
 import numpy as np
-import v4l2
-import arducam_mipicamera as arducam
+try:
+    import arducam_mipicamera as arducam
+    import v4l2
+except:
+    print ("Cannot find arducam_mipicamera library or v4l2")
 class Blob:
     def __init__ (self, x_, y_, w_, h_):
         self.x_ = x_
@@ -206,23 +210,41 @@ class Image:
         cv2.rectangle (self.img, (x, y), (x+w, y+h), color, 2)
 
 class Sensor:
+    
     def __init__ (self, filename_):
         self.filename = filename_
         self.img = cv2.imread (self.filename)
-
+   
     def snapshot (self):
         return Image (self.img.copy ())
-class CameraSensor:
+
+class WebCameraSensor(Sensor):
+    camera = None
+    @staticmethod
+    def _cameraInit():
+        WebCameraSensor.camera = cv2.VideoCapture(0)
+    def __init__(self):
+        if (WebCameraSensor.camera == None):
+            self._cameraInit()
+        self.img = None
+    def snapshot(self):
+        if (WebCameraSensor.camera.isOpened()):
+            ret, self.img = WebCameraSensor.camera.read()
+        else:
+            print("Camera Closed")
+        return Image(self.img.copy())
+
+class KondoCameraSensor(Sensor):
     camera = None
     resolution = {"height": 1300, "width": 1600}
     @staticmethod
     def _cameraInit():
-        CameraSensor.camera = arducam.mipi_camera()
-        CameraSensor.camera.init_camera()
-        CameraSensor.camera.set_mode(6)
+        KondoCameraSensor.camera = arducam.mipi_camera()
+        KondoCameraSensor.camera.init_camera()
+        KondoCameraSensor.camera.set_mode(6)
         
-        CameraSensor.camera.set_resolution(CameraSensor.resolution["width"],
-                CameraSensor.resolution["height"])
+        KondoCameraSensor.camera.set_resolution(KondoCameraSensor.resolution["width"],
+                KondoCameraSensor.resolution["height"])
 
     def align_down(self, size, align):
             return (size & ~((align)-1))
@@ -234,9 +256,9 @@ class CameraSensor:
         if (CameraSensor.camera == None):
             self._cameraInit()
     def snapshot(self):
-        frame = CameraSensor.camera.capture(encoding='raw')
-        height = int(self.align_up(CameraSensor.resolution["height"], 16))                                                         
-        width = int(self.align_up(CameraSensor.resolution["width"], 32))                                                          
+        frame = KondoCameraSensor.camera.capture(encoding='raw')
+        height = int(self.align_up(KondoCameraSensor.resolution["height"], 16))                                                         
+        width = int(self.align_up(KondoCameraSensor.resolution["width"], 32))                                                          
         image = frame.as_array.reshape(int(height), width) # * 1.5                               
         image = cv2.cvtColor(image, cv2.COLOR_BayerRG2BGR) # BG
         (h, w, d) = image.shape
@@ -246,7 +268,7 @@ class CameraSensor:
         return Image(image)
 def main ():
 #    sensor = Sensor ("rgb_basket.jpg")
-    sensor = CameraSensor()
+    sensor = WebCameraSensor()
     while (True):
         #print ("a")
         img = sensor.snapshot ()
