@@ -1,1 +1,1 @@
-C:\Program Files\CoppeliaRobotics\CoppeliaSimEdu\programming\legacyRemoteApi\remoteApiBindings\python\python
+/home/hua/kondo_fira22/VREP/programming/legacyRemoteApi/remoteApiBindings/python/python

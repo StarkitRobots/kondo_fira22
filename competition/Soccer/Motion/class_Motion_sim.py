@@ -6,14 +6,19 @@ import math, time, json
 
 current_work_directory = os.getcwd()
 current_work_directory = current_work_directory.replace('\\', '/')
-if sys.version != '3.4.0':
+if True:
     current_work_directory += '/'
     with open("simulator_lib_directory.txt", "r") as f:
         simulator_lib_directory = f.read()
     simulator_lib_directory = simulator_lib_directory.replace('\\', '/')
+    if simulator_lib_directory[-1] == "\n":
+        simulator_lib_directory = simulator_lib_directory[:-1] 
     sys.path.append(simulator_lib_directory)
     import random
-    import sim, threading
+    try:
+        import sim, threading
+    except:
+        print(sys.path)
 else:
     import starkit
     sys.path.append('/')
@@ -129,7 +134,7 @@ class Motion_sim(Motion1):
 
     def sim_Start(self):
         #print ('Simulation started')
-        self.sim.simxFinish(-1) # just in case, close all opened connections
+        # self.sim.simxFinish(-1) # just in case, close all opened connections
         simThreadCycleInMs = 5
         if self.glob.SIMULATION == 3 or self.glob.SIMULATION  == 0:
             self.clientID=self.sim.simxStart('127.0.0.1', -19997, True, True, 5000, simThreadCycleInMs) # Connect to V-REP
