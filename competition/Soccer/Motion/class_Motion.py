@@ -197,8 +197,9 @@ class Motion1:
                 #    print('blob.code:', blob.code())
             else:
                 img_ = self.vision_Sensor_Get_Image()
-                img_ = self.cv2.resize(img_, (80,60))
                 img = self.re.Image(img_)
+                self.cv2.imshow('image', img_)
+                self.cv2.waitKey(10)
             if img.find_blobs([self.glob.TH['orange ball']['th']], pixels_threshold=self.glob.TH['orange ball']['pixel'],
                              area_threshold=self.glob.TH['orange ball']['area'], merge=True):
                 print('I see ball')
