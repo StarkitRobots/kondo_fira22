@@ -43,6 +43,17 @@ class Player():
     def simulation(self):
         self.motion = Motion(self.glob)
         self.motion.sim_Start()
+        #if self.role == 'run_test':
+        #    self.motion.neck_tilt = -2000
+        #    if self.glob.SIMULATION == 2:
+        #        self.motion.kondo.setUserParameter(20,self.motion.neck_tilt)
+        #        #pyb.delay(400)
+        #    else:
+        #        returnCode = self.motion.sim.simxSetJointTargetPosition(self.motion.clientID,
+        #                    self.motion.jointHandle[22] , self.motion.neck_tilt * self.motion.TIK2RAD * self.motion.FACTOR[22],
+        #                   self.motion.sim.simx_opmode_oneshot)  # Шея Наклон
+        #        for j in range(20):
+        #            self.motion.sim.simxSynchronousTrigger(self.motion.clientID)
         self.common_init()
         #eval('self.' + self.role + '_main_cycle()')
         if self.role == 'run_test': self.run_test_main_cycle(1)
@@ -61,6 +72,17 @@ class Player():
 
     def real(self, button):
         self.motion = Motion(self.glob)
+        #if self.role == 'run_test':
+        #    self.motion.neck_tilt = -2000
+        #    if self.glob.SIMULATION == 2:
+        #        self.motion.kondo.setUserParameter(20,self.motion.neck_tilt)
+        #        #pyb.delay(400)
+        #    else:
+        #        returnCode = self.motion.sim.simxSetJointTargetPosition(self.motion.clientID,
+        #                    self.motion.jointHandle[22] , self.motion.neck_tilt * self.motion.TIK2RAD * self.motion.FACTOR[22],
+        #                   self.motion.sim.simx_opmode_oneshot)  # Шея Наклон
+        #        for j in range(20):
+        #            self.motion.sim.simxSynchronousTrigger(self.motion.clientID)
         pressed_button = self.motion.push_Button(button)
         self.common_init()
         if self.role == 'run_test': self.run_test_main_cycle(pressed_button)
@@ -84,36 +106,74 @@ class Player():
         self.motion.kondo.motionPlay(77)
 
     def run_test_main_cycle(self, pressed_button):
-        if pressed_button == 2 or pressed_button ==3 :
-            self.sidestep_test_main_cycle(pressed_button)
-            return
-        number_Of_Cycles = 30 #30
-        self.motion.simThreadCycleInMs = 10
-        self.motion.amplitude = 32 #32
-        self.motion.fr1 = 4 # 4
-        self.motion.fr2 = 9 # 10
-        ##self.motion.initPoses = self.motion.fr2 
-        self.motion.gaitHeight = 175 # 190
-        self.motion.stepHeight = 20  # 20
-        stepLength = 60 #88
+        if pressed_button == 1:             # fast step
+            number_Of_Cycles = 30 #30
+            self.motion.simThreadCycleInMs = 20
+            self.motion.amplitude = 32 #32
+            self.motion.fr1 = 4 # 4
+            self.motion.fr2 = 10 # 10
+            ##self.motion.initPoses = self.motion.fr2 
+            self.motion.gaitHeight = 140 # 190
+            self.motion.stepHeight = 25  # 20
+            stepLength = 120 #88
+        if pressed_button == 2  :   
+            number_Of_Cycles = 10 #30
+            self.motion.simThreadCycleInMs = 20
+            self.motion.amplitude = 32 #32
+            self.motion.fr1 = 8 # 4
+            self.motion.fr2 = 12
+            ##self.motion.initPoses = self.motion.fr2 
+            self.motion.gaitHeight = 170 #200
+            self.motion.stepHeight = 3 #40  # 20
+            stepLength = 100 #150 #100
         sideLength = 0
         #self.motion.first_Leg_Is_Right_Leg = False
-        if self.motion.first_Leg_Is_Right_Leg: invert = -1
+        if self.motion.first_Leg_Is_Right_Leg: invert = -1.5
         else: invert = 1
         while True:
             self.motion.walk_Initial_Pose()
             number_Of_Cycles += 1
             for cycle in range(number_Of_Cycles):
+                #if cycle > 1: self.glob.camera_ON = True
                 if not self.motion.falling_Flag == 0: break
                 stepLength1 = stepLength
-                if cycle ==0 : stepLength1 = stepLength/3
-                if cycle ==1 : stepLength1 = stepLength/3 * 2
+                if cycle ==0 : stepLength1 = stepLength/4
+                if cycle ==1 : stepLength1 = stepLength/2
+                if cycle ==2 : stepLength1 = stepLength/4 * 3
                 self.motion.refresh_Orientation()
                 rotation = 0 + invert * self.motion.body_euler_angle['yaw'] * 1.0
                 #if rotation < 0: rotation *= 5
                 rotation = self.motion.normalize_rotation(rotation)
-                #rotation = 0
+                #rotation = -0.5
                 self.motion.walk_Cycle(stepLength1,sideLength, rotation,cycle, number_Of_Cycles)
+                if self.motion.i_see_ball:
+                    stepLength1 = stepLength/3 * 2
+                    self.motion.refresh_Orientation()
+                    rotation = 0 + invert * self.motion.body_euler_angle['yaw'] * 1.0
+                    rotation = self.motion.normalize_rotation(rotation)
+                    self.motion.walk_Cycle(stepLength1,sideLength, rotation, 1, 3)
+                    stepLength1 = stepLength/3
+                    self.motion.refresh_Orientation()
+                    rotation = 0 + invert * self.motion.body_euler_angle['yaw'] * 1.0
+                    rotation = self.motion.normalize_rotation(rotation)
+                    self.motion.walk_Cycle(stepLength1,sideLength, rotation, 1, 3)
+                    stepLength1 = -stepLength/3
+                    self.motion.refresh_Orientation()
+                    rotation = 0 + invert * self.motion.body_euler_angle['yaw'] * 1.0
+                    rotation = self.motion.normalize_rotation(rotation)
+                    self.motion.walk_Cycle(stepLength1,sideLength, rotation, 1, 3)
+                    stepLength1 = -stepLength/3 * 2
+                    self.motion.refresh_Orientation()
+                    rotation = 0 + invert * self.motion.body_euler_angle['yaw'] * 1.0
+                    rotation = self.motion.normalize_rotation(rotation)
+                    self.motion.walk_Cycle(stepLength1,sideLength, rotation, 1, 3)
+                    for back_cycle in range(5):
+                        stepLength1 = -stepLength
+                        self.motion.refresh_Orientation()
+                        rotation = 0 + invert * self.motion.body_euler_angle['yaw'] * 1.0
+                        rotation = self.motion.normalize_rotation(rotation)
+                        self.motion.walk_Cycle(stepLength1,sideLength, rotation, back_cycle, 5)
+                    break
             if not self.motion.falling_Flag == 0:
                 if self.motion.falling_Flag == 3: 
                     print('STOP!')

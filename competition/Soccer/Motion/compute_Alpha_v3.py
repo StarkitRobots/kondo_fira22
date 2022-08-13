@@ -107,6 +107,7 @@ class Alpha():
             temp1 = K1*K1*m*m-(K1*K1+K2*K2)*(m*m-K2*K2)
             if temp1>=0 :
                 temp2 = (-K1*m + math.sqrt(temp1))/(K1*K1+K2*K2)
+                print('math.sqrt(temp1):', math.sqrt(temp1))
                 temp3 = (-K1*m - math.sqrt(temp1))/(K1*K1+K2*K2)
                 if math.fabs(temp2) <= 1 and math.fabs(temp3) <= 1:
                     alpha91 = math.asin(temp2)
@@ -160,22 +161,25 @@ if __name__ == "__main__":
     a8 = 63.8  # мм расстояние от оси сервы 8 до оси сервы 9
     a9 = 35.5  # мм расстояние от оси сервы 9 до оси сервы 10
     a10= 25.4  # мм расстояние от оси сервы 10 до центра стопы по горизонтали
-    b10= 16.4  # мм расстояние от оси сервы 10 до низа стопы
+    b10= 26.4  # мм расстояние от оси сервы 10 до низа стопы
     c10 = 12   # мм расстояние от оси сервы 6 до оси сервы 10 по горизонтали
     sizes = [ a5, b5, c5, a6, a7, a8, a9, a10, b10, c10 ]
 
     limAlpha5 = [-2667, 2667]
     limAlpha6 = [-3000,  740]
     limAlpha7 = [-3555, 3260]
-    limAlpha8 = [-4150, 1777]
+    limAlpha8 = [-4600, 1777]
     limAlpha9 = [-4000, 2960]
-    limAlpha10 =[-2815,   600]
+    limAlpha10 =[-3600,   800]
     limAlpha = [limAlpha5, limAlpha6, limAlpha7, limAlpha8, limAlpha9, limAlpha10]
 
-    clock1 = time.clock()
-    clock1.tick()
-    compute_Alpha_v3(0,-54.3,-200,0,0,-1,0, sizes, limAlpha)
-    print('time elapsed in compute_Alpha:', clock1.avg())
+    #clock1 = time.clock()
+    #clock1.tick()
+    alpha = Alpha()
+    angles1 = alpha.compute_Alpha_v3(-51,-80,-165,0,0,-1,0, sizes, limAlpha)
+    print(angles1)
+
+    #print('time elapsed in compute_Alpha:', clock1.avg())
 
 
 
