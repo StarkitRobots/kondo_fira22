@@ -1,1 +1,1 @@
-C:\Program Files\CoppeliaRobotics\CoppeliaSimEdu\programming\legacyRemoteApi\remoteApiBindings\python\python
+/home/ss21mipt/Documents/starkit/Azers_project/VREP/programming/legacyRemoteApi/remoteApiBindings/python/python
