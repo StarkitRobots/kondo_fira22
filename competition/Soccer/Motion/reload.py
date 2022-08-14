@@ -84,12 +84,18 @@ class Image:
 
             masks.append (mask)
 
-        #cv2.imshow ("a", mask)
-
+        cv2.imshow ("maska", mask)
+        
+        cv2.waitKey(10)
+        
         final_mask = masks [0].copy ()
         if (len (masks) > 1):
             for m in masks [1:]:
                 final_mask = cv2.bitwise_and (final_mask, m)
+
+        cv2.imshow ("final_maska", final_mask)
+        
+        cv2.waitKey(10)
 
         output = cv2.connectedComponentsWithStats (final_mask, 8, cv2.CV_32S)
 
@@ -109,7 +115,13 @@ class Image:
                                  stats [label_num, cv2.CC_STAT_TOP],
                                  stats [label_num, cv2.CC_STAT_WIDTH],
                                  stats [label_num, cv2.CC_STAT_HEIGHT])
-
+                up_left_corner = (stats[label_num][0], stats[label_num][1])
+                down_right_corner_x = stats[label_num][0] + stats[label_num][2]
+                down_right_corner_y = stats[label_num][1] + stats[label_num][3]
+                down_right_corner = (down_right_corner_x, down_right_corner_y)
+                color_of_rect = (255, 0, 0)
+                img_with_labels = cv2.rectangle(final_mask, up_left_corner, down_right_corner, color_of_rect)
+                cv2.imshow('labels', img_with_labels)
                 #print ("append", area)
                 blobs.append (new_blob)
 

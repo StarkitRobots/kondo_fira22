@@ -200,10 +200,19 @@ class Motion1:
                 img = self.re.Image(img_)
                 self.cv2.imshow('image', img_)
                 self.cv2.waitKey(10)
+
+            coords = img.find_blobs([self.glob.TH['orange ball']['th']], pixels_threshold=self.glob.TH['orange ball']['pixel'],
+                             area_threshold=self.glob.TH['orange ball']['area'], merge=True)
+            print(f"number of found objects: {len(coords)}")
+            for c in coords:
+                res = c.rect() #pixel's coordinates of object with type (x, y, width, height)
+                print(f"object's coordinates: {res}")
+            '''
             if img.find_blobs([self.glob.TH['orange ball']['th']], pixels_threshold=self.glob.TH['orange ball']['pixel'],
                              area_threshold=self.glob.TH['orange ball']['area'], merge=True):
                 print('I see ball')
                 self.i_see_ball = True
+            '''
 
     def imu_body_yaw(self):
         yaw = self.neck_pan*self.TIK2RAD + self.euler_angle['yaw']
