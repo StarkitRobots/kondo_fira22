@@ -35,7 +35,7 @@ from math import sin
 #             return bytes(bytearray(msg))
 #         else:
 #             #print("read ",msg)
-wq#             return self.uart.read(rxLen)
+#             return self.uart.read(rxLen)
 
 #     def write(self, buf):
 #         if openmv:

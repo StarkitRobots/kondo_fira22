@@ -160,7 +160,7 @@ class Motion1:
             import starkit
             import pyb
             from kondo_controller import Rcb4BaseLib
-            from pyb import Pin, UART, LED
+            from pyb import UART
             from machine import I2C
             from bno055 import BNO055, AXIS_P7
             import sensor, image
