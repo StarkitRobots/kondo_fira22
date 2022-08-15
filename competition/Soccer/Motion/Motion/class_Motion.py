@@ -154,16 +154,14 @@ class Motion1:
             from bno055 import BNO055, AXIS_P7
             #self.wait_for_button_pressing = wait_for_button_pressing
             self.starkit = starkit
-            i2c = I2C(2)
-            self.imu = BNO055(i2c, mode = 0x08)
-            self.green_led = LED(2)
-            self.pin2 = Pin('P2', Pin.IN, Pin.PULL_UP)
-            uart = UART(self.glob.params['UART_PORT'], self.glob.params['UART_SPEED'], timeout=1000, parity=0)
+            
+            self.imu = BNO055(I2C(2), mode = 0x08)
+            # uart = UART(self.glob.params['UART_PORT'], self.glob.params['UART_SPEED'], timeout=1000, parity=0)
             #uart = pyb.UART(1, 1250000, parity=0)
             #k = kondo.Kondo()
             ##k.init(uart)
             self.kondo = Rcb4BaseLib()
-            self.kondo.open(uart)
+            self.kondo.open(port=self.glob.params['UART_PORT'], baudrate=self.glob.params['UART_SPEED'],timeout=1.3)
             self.clock = time.clock()
             self.kondo.motionPlay(25)
             self.pyb = pyb

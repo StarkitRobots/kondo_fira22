@@ -1572,7 +1572,7 @@ class Motion1:
 
     def refresh_Orientation(self):
         if self.glob.SIMULATION == 2:
-            head_quaternuon_raw = self.imu.quaternion()
+            head_quaternuon_raw = [0,0,0,0]#self.imu.quaternion()
             head_quaternion = self.quat_multi(head_quaternuon_raw, [0.7071, 0, 0.7071, 0])
             self.euler_angle = self.quaternion_to_euler_angle(head_quaternion)
             self.euler_angle['yaw'] += math.pi/2
