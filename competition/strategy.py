@@ -101,12 +101,23 @@ class Player():
     def basketball_main_cycle(self):
         #self.motion.play_Soft_Motion_Slot(name = 'Ball_tennis_throw_v7_2')
         #self.motion.kondo.motionPlay(78) 
-        
+        #self.motion.activation()
+        #self.motion.falling_Flag = 0
         #rospy.init_node("basketball")   initializing the node
-        basketball = Basketball()
+        #basketball = Basketball()
+        x = []
+        y = []
+        #while len(x) != 1 and len(y) != 1:
+        #while True:
+        self.glob.camera_ON = True
+        x, y = self.motion.check_camera()
+        pixel_x = x[0]
+        pixel_y = y[0]
+        coords = self.motion.self_coords_from_pixels(pixel_x, pixel_y)
+        print(f"coordinates of object: {coords}")
         # ball_sub = rospy.Subscriber('ball', Point, basketball.update_ball)    subscribing to the topic ball
         # basketcase_sub = rospy.Subscriber('basketcase', Point, basketball.update_basketcase)   subscribing to the topic basketcase
-
+        
         # Finding ball and putting it to self.ball_coordinates for future approach.
         '''
         while not (basketball.flag_ball):
@@ -189,7 +200,7 @@ class Player():
         '''
 
         # put the ball into basketcase
-        self.motion.play_Soft_Motion_Slot(name = 'basketball_throwing_ball')
+        #self.motion.play_Soft_Motion_Slot(name = 'basketball_throwing_ball')
         '''
         print("HE HIT THE BALL OR NO. I don't NO")
         while True:
@@ -373,7 +384,7 @@ class Player():
 
 
 if __name__=="__main__":
-    player = Player('run_test')  # 'run_test', 'balancing_test', 'basketball', 'weight_lifting', 'kondo_walk'
+    player = Player('basketball')  # 'run_test', 'balancing_test', 'basketball', 'weight_lifting', 'kondo_walk'
     #player.deep_learning()
     #for i in range(1):
     #    player.test_walk()

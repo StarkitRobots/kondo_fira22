@@ -5,6 +5,11 @@ import sys, os
 import math, time, json
 from compute_Alpha_v3 import Alpha
 import starkit
+#os.chdir('../..')
+path_to_model = os.getcwd() + "/Soccer/Model/"
+
+sys.path.append(path_to_model)
+from kondo3_model import RobotModel
 
 class Glob:
     def __init__(self, simulation, current_work_directory):
@@ -204,15 +209,28 @@ class Motion1:
             coords = img.find_blobs([self.glob.TH['orange ball']['th']], pixels_threshold=self.glob.TH['orange ball']['pixel'],
                              area_threshold=self.glob.TH['orange ball']['area'], merge=True)
             print(f"number of found objects: {len(coords)}")
-            for c in coords:
-                res = c.rect() #pixel's coordinates of object with type (x, y, width, height)
-                print(f"object's coordinates: {res}")
+            center_x = []
+            center_y = []
+            for c, coord in enumerate(coords, start=0):
+                center_x.append(coord.cx()) #pixel's x coordinate of object's center
+                center_y.append(coord.cy()) #pixel's y coordinate of object's center
+
+                print(f"object's center's coordinates: ({center_x[c]}, {center_y[c]})")
+            
+            return center_x, center_y
+
             '''
             if img.find_blobs([self.glob.TH['orange ball']['th']], pixels_threshold=self.glob.TH['orange ball']['pixel'],
                              area_threshold=self.glob.TH['orange ball']['area'], merge=True):
                 print('I see ball')
                 self.i_see_ball = True
             '''
+
+    def self_coords_from_pixels(self, pixel_x, pixel_y):
+        robot_model = RobotModel(self.glob)
+        robot_model.update_camera_pan_tilt(self.neck_pan, self.neck_tilt)
+        print((self.params["HEIGHT_OF_CAMERA"] + self.params["HEIGHT_OF_NECK"])/1000)
+        return robot_model.image2self(pixel_x, pixel_y, 0)
 
     def imu_body_yaw(self):
         yaw = self.neck_pan*self.TIK2RAD + self.euler_angle['yaw']
