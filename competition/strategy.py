@@ -286,7 +286,7 @@ if __name__=="__main__":
     #if SIMULATION != 0:
     #    player.motion.print_Diagnostics()
     #player.test_walk_2()
-    player.simulation()
+    player.real(9)
 
 
 
