@@ -21,7 +21,11 @@ class Glob:
                 self.params = json.loads(f.read())
             with open(current_work_directory + "Soccer/Init_params/Real/Real_Thresholds.json", "r") as f:
                 self.TH = json.loads(f.read())
-
+class Imu:
+    def __init__(self):
+        return
+    def quaternion(self):
+        return [0,0,0,0]
 class Motion1:
     def __init__(self, glob):
         self.i_see_ball = False
@@ -169,7 +173,7 @@ class Motion1:
             # self.i2c = I2C(2)
             self.bno055 = BNO055
             self.imu = None
-            self.imu = None# BNO055(self.i2c, mode = 0x08)
+            self.imu = Imu()# BNO055(self.i2c, mode = 0x08)
             #self.green_led = LED(2)
             # self.pin2 = Pin('P2', Pin.IN, Pin.PULL_UP)
             #uart = UART(self.glob.params['UART_PORT'], self.glob.params['UART_SPEED'], timeout=1000, parity=0)
@@ -177,7 +181,7 @@ class Motion1:
             #k = kondo.Kondo()
             ##k.init(uart)
             self.kondo = Rcb4BaseLib()
-            self.kondo.open(self.glob.params['UART_PORT'], self.glob.params['UART_SPEED'], 1000)
+            self.kondo.open('/dev/ttyAMA2', 1250000, 1.3)
             self.clock = time.clock()
             # self.kondo.motionPlay(25)
             self.pyb = pyb
