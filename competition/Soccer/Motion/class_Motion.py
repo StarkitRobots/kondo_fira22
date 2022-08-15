@@ -161,37 +161,29 @@ class Motion1:
             import pyb
             from kondo_controller import Rcb4BaseLib
             from pyb import UART
-            from machine import I2C
+            # from machine import I2C
             from bno055 import BNO055, AXIS_P7
-            import sensor, image
+            #import sensor, image
             #self.wait_for_button_pressing = wait_for_button_pressing
             self.starkit = starkit
-            self.i2c = I2C(2)
+            # self.i2c = I2C(2)
             self.bno055 = BNO055
             self.imu = None
-            self.imu = BNO055(self.i2c, mode = 0x08)
-            self.green_led = LED(2)
-            self.pin2 = Pin('P2', Pin.IN, Pin.PULL_UP)
-            uart = UART(self.glob.params['UART_PORT'], self.glob.params['UART_SPEED'], timeout=1000, parity=0)
+            self.imu = None# BNO055(self.i2c, mode = 0x08)
+            #self.green_led = LED(2)
+            # self.pin2 = Pin('P2', Pin.IN, Pin.PULL_UP)
+            #uart = UART(self.glob.params['UART_PORT'], self.glob.params['UART_SPEED'], timeout=1000, parity=0)
             #uart = pyb.UART(1, 1250000, parity=0)
             #k = kondo.Kondo()
             ##k.init(uart)
             self.kondo = Rcb4BaseLib()
-            self.kondo.open(uart)
+            self.kondo.open(self.glob.params['UART_PORT'], self.glob.params['UART_SPEED'], 1000)
             self.clock = time.clock()
-            self.kondo.motionPlay(25)
+            # self.kondo.motionPlay(25)
             self.pyb = pyb
-            self.sensor = sensor
-            self.image = image
-            self.sensor.reset()
-            self.sensor.set_pixformat(sensor.RGB565)
-            self.sensor.set_framesize(sensor.QQQVGA)
-            self.sensor.skip_frames(time = 2000)
-            self.sensor.set_auto_gain(False, 128) # must be turned off for color tracking
-            self.sensor.set_auto_whitebal(False) # must be turned off for color tracking
-            self.sensor.set_auto_exposure(False, 1500)
-
-    #-------------------------------------------------------------------------------------------------------------------------------
+            self.sensor = None
+            self.image = None
+               #-------------------------------------------------------------------------------------------------------------------------------
     def check_camera(self):
         if self.glob.camera_ON:
             thresholds = [(30, 100, 15, 127, 15, 127), # generic_red_thresholds

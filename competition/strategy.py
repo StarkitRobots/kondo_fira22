@@ -83,7 +83,7 @@ class Player():
         #                   self.motion.sim.simx_opmode_oneshot)  # Шея Наклон
         #        for j in range(20):
         #            self.motion.sim.simxSynchronousTrigger(self.motion.clientID)
-        pressed_button = self.motion.push_Button(button)
+        # pressed_button = self.motion.push_Button(button)
         self.common_init()
         if self.role == 'run_test': self.run_test_main_cycle(pressed_button)
         if self.role == 'kondo_walk': self.kondo_walk_main_cycle(pressed_button)
