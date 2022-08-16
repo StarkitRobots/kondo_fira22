@@ -1652,22 +1652,6 @@ class Motion1:
             for j in range(20):
                 self.sim.simxSynchronousTrigger(self.clientID)
 
-    def move_head_basketball(self, pan, tilt):
-        self.neck_pan = pan
-        self.neck_tilt = tilt
-        if self.glob.SIMULATION == 2:
-                self.kondo.setUserParameter(19,self.neck_pan)
-                self.pyb.delay(200)
-                self.kondo.setUserParameter(20,self.neck_tilt)
-                self.pyb.delay(400)
-        else:
-            returnCode = self.sim.simxSetJointPosition(self.clientID,
-                        self.jointHandle[21] , self.neck_pan * self.TIK2RAD * self.FACTOR[21], self.sim.simx_opmode_oneshot)   # Шея поворот
-            returnCode = self.sim.simxSetJointPosition(self.clientID,
-                        self.jointHandle[22] , self.neck_tilt * self.TIK2RAD * self.FACTOR[22], self.sim.simx_opmode_oneshot)  # Шея Наклон
-            for j in range(20):
-                self.sim.simxSynchronousTrigger(self.clientID)
-
 if __name__=="__main__":
     print('This is not main module!')
 
