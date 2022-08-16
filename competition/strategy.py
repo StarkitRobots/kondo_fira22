@@ -110,8 +110,8 @@ class Player():
             pixels = center[0]
             return pixels
 
-        def get_distance(pixels):
-            coords = self.motion.self_coords_from_pixels(pixels[0], pixels[1])
+        def get_distance(pixels, name):
+            coords = self.motion.self_coords_from_pixels(pixels[0], pixels[1], name)
             print(f"coordinates of object: {coords}")
             return coords
 
@@ -128,11 +128,11 @@ class Player():
             l = []
             while len(l) < 2:
                 for elem in radians:
-#                    self.move_head(elem[0], elem[1]) # NEED TO MOVE HEAD!!!
+                    self.motion.move_head()#elem[1], elem[0]) # NEED TO MOVE HEAD!!!
                     time.sleep(3)
                     pixels = get_pixels(name)
                     if pixels != (None, None):
-                        coords = get_distance(pixels)
+                        coords = get_distance(pixels, name)
                         print(coords)
                         l.append(coords)
                 # choose the mediana of all balls in coordinates of robor and look at dispersy, check massive of all finded balls

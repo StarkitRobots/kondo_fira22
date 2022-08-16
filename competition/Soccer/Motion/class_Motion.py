@@ -228,11 +228,17 @@ class Motion1:
                 self.i_see_ball = True
             '''
 
-    def self_coords_from_pixels(self, pixel_x, pixel_y):
+    def self_coords_from_pixels(self, pixel_x, pixel_y, name):
         robot_model = RobotModel(self.glob)
         robot_model.update_camera_pan_tilt(self.neck_pan, self.neck_tilt)
         print((self.params["HEIGHT_OF_CAMERA"] + self.params["HEIGHT_OF_NECK"])/1000)
-        return robot_model.image2self(pixel_x, pixel_y, 0.439)
+        if name == 'ball':
+            height = 0.439
+        elif name == 'basket':
+            height = 0.45 # MB???
+        elif name == 'stripe':
+            height = 0
+        return robot_model.image2self(pixel_x, pixel_y, height)
 
     def imu_body_yaw(self):
         yaw = self.neck_pan*self.TIK2RAD + self.euler_angle['yaw']
@@ -571,7 +577,7 @@ class Motion1:
         self.robot_In_0_Pose = False
         if not self.falling_Test() == 0:
             #self.local.quality =0
-            if self.falling_Flag == 3: uprint('STOP!')
+            if self.falling_Flag == 3: print('STOP!')
             else: print('FALLING!!!', self.falling_Flag)
             return[]
         self.stepLength = stepLength #+ self.motion_shift_correction_x
