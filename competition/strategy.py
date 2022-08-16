@@ -5,6 +5,8 @@ import os
 import math
 import json
 import time
+import numpy as np
+
 #from basketball.basketball_node import Basketball
 
 current_work_directory = os.getcwd()
@@ -99,109 +101,204 @@ class Player():
         self.motion.falling_Flag = 0
 
     def basketball_main_cycle(self):
+
+        def get_pixels(name):
+            center = []
+            self.glob.camera_ON = True
+            while len(center) != 1:
+                center = self.motion.check_camera(name)
+            pixels = center[0]
+            return pixels
+
+        def get_distance(pixels):
+            coords = self.motion.self_coords_from_pixels(pixels[0], pixels[1])
+            print(f"coordinates of object: {coords}")
+            return coords
+
+        def radians_search(frequency):
+            res = list(zip(np.zeros(frequency), np.linspace(-np.pi/2, np.pi/2, frequency))) + list(zip(np.zeros(frequency) + np.pi/4, np.linspace(np.pi/2, -np.pi/2, frequency)))
+            return res + [[0, 0]]
+
+        def finding(name):
+            flag = False
+            mediana_of_coords = (None, None)
+            distance = 0
+            print("Start finding ball")
+            radians = radians_search(5)
+            l = []
+            while len(l) < 2:
+                for elem in radians:
+#                    self.move_head(elem[0], elem[1]) # NEED TO MOVE HEAD!!!
+                    time.sleep(3)
+                    pixels = get_pixels(name)
+                    if pixels != (None, None):
+                        coords = get_distance(pixels)
+                        print(coords)
+                        l.append(coords)
+                # choose the mediana of all balls in coordinates of robor and look at dispersy, check massive of all finded balls
+                    else:
+                        print("GOVNO")
+            mediana_of_coords = tuple(np.median(np.array(l), axis = 0))
+            print(f"MEDIANA: {mediana_of_coords}")
+            if mediana_of_coords != (None, None):
+                flag = True
+                distance = np.sqrt(mediana_of_coords[0] ** 2 + mediana_of_coords[1] ** 2)
+            return flag, mediana_of_coords, distance
+
+        '''
+        def rotate(to_rotate_deg):    #XYETAAAAAAA
+
+            imu_start = self.imu_client().x
+            imu_end = imu_start - to_rotate_deg
+            imu_end %= 360
+            rotation = 0.2
+            print(to_rotate_deg)
+
+            while True:
+                imu = self.imu_client()
+                print("imu: ", imu.x)
+                print("imu end: ", imu_end)
+                if np.abs(imu.x - imu_end) < 3:
+                    break
+                
+                if imu.x - imu_end > 0:
+                    if math.fabs(imu.x - imu_end) <= 180:
+                        self.walk_client(True, 0, 0, rotation)
+                    else:
+                        self.walk_client(True, 0, 0, -rotation)
+                if  imu.x - imu_end <= 0:
+                    print("Negative")
+                    if math.fabs(imu.x - imu_end) <= 180:
+                        self.walk_client(True, 0, 0, -rotation)
+                    else:
+                        self.walk_client(True, 0, 0, rotation)
+                
+            self.walk_client(False, 0, 0, 0)
+        '''
+
+        def turn_to(coords):
+            print("Start turning to ball/basketcase")
+            degree = np.arctan(coords[1] / coords[0]) * 180 / np.pi
+            print(str(degree))
+            # rotate(degree)      #THIS FUNCTION NEEDS ANOTHER VIEW
+            time.sleep(1)
+
+        def go_to(percent_distance, coords, distance):
+            print("Start going")
+            ## NEED TO GO TO THE BALL!!!
+
+        def thinking_take(ball_coordinates, basketcase_coordinates):
+            print("Start thinking and taking ball")
+            basketcase_linia = ((basketcase_coordinates[0]) / (basketcase_coordinates[1]))
+            angle_thinking = np.pi/2 - np.arctanh(basketcase_linia)
+            if ball_coordinates != (None, None):
+                distance = (math.cos(angle_thinking)) * np.sqrt(ball_coordinates[0] ** 2 + ball_coordinates[1] ** 2)
+            if math.fabs(distance) > 0.16:
+                # TAKE THE BALL
+                self.motion.play_Soft_Motion_Slot(name = 'basketball_taking_ball')
+                time.sleep(1)
+                # pox, it won't bring down the holder
+                return True
+            elif distance < 0:
+                # TAKE THE BALL
+                self.motion.play_Soft_Motion_Slot(name = 'basketball_taking_ball')
+                time.sleep(1)
+                # 3 steps right NEED TO DO!!!
+                return True
+            elif distance >= 0:
+                # TAKE THE BALL
+                self.motion.play_Soft_Motion_Slot(name = 'basketball_taking_ball')
+                time.sleep(1)
+                # 3 steps left NEED TO DO!!!
+                return True
+            else:
+                return False 
+
         #self.motion.play_Soft_Motion_Slot(name = 'Ball_tennis_throw_v7_2')
         #self.motion.kondo.motionPlay(78) 
         #self.motion.activation()
         #self.motion.falling_Flag = 0
-        #rospy.init_node("basketball")   initializing the node
-        #basketball = Basketball()
-        x = []
-        y = []
-        #while len(x) != 1 and len(y) != 1:
-        #while True:
-        self.glob.camera_ON = True
-        x, y = self.motion.check_camera()
-        pixel_x = x[0]
-        pixel_y = y[0]
-        coords = self.motion.self_coords_from_pixels(pixel_x, pixel_y)
-        print(f"coordinates of object: {coords}")
-        # ball_sub = rospy.Subscriber('ball', Point, basketball.update_ball)    subscribing to the topic ball
-        # basketcase_sub = rospy.Subscriber('basketcase', Point, basketball.update_basketcase)   subscribing to the topic basketcase
-        
+
+        # THE BEGINING
+        self.glob.camera_ON = False
+        flag_ball = False
+        flag_basket = False
+        flag_evade = False
         # Finding ball and putting it to self.ball_coordinates for future approach.
-        '''
-        while not (basketball.flag_ball):
-            basketball.finding_ball()
-        print(basketball.flag_ball)
+
+        while not flag_ball:
+            flag_ball, ball_coords, ball_distance = finding('ball')      # (True/False), (x,y), distance
+        print(f"result of finding ball: {ball_coords} and {ball_distance}")
         '''
         #Approaching to the ball on 0.8 of distance
-        '''
-        basketball.flag_ball = False
-        basketball.turn_to_ball()
-        basketball.go_to_ball(0.8)
-        '''
+        
+        flag_ball = False
+        turn_to(ball_coords)    #DOESN'T WORK NOW
+        # maybe do finding one more time
+        go_to(0.8, ball_coords, ball_distance)  #DOESN'T WORK NOW
+        
 
         # Correct the ball position
-        '''
-        while not (basketball.flag_ball): 
-            basketball.finding_ball()
-        print(basketball.flag_ball)
-        '''
+
+        while not flag_ball:
+            flag_ball, ball_coords, ball_distance = finding('ball')      # (True/False), (x,y), distance
+        print(f"result of finding ball: {ball_coords} and {ball_distance}")
 
         # Finally approach a ball
-        '''
-        basketball.flag_ball = False
-        basketball.turn_to_ball()
-        basketball.go_to_ball(1)
-        '''
+        
+        flag_ball = False
+        turn_to(ball_coords)    #DOESN'T WORK NOW
+        # maybe do finding one more time
+        go_to(1, ball_coords, ball_distance)  #DOESN'T WORK NOW
 
         # Searching for ball
-        '''
-        while not (basketball.flag_ball): 
-            basketball.finding_ball()
-        print(basketball.flag_ball)
-        '''
+        while not flag_ball:
+            flag_ball, ball_coords, ball_distance = finding('ball')      # (True/False), (x,y), distance
+        print(f"result of finding ball: {ball_coords} and {ball_distance}")
 
         # Searching for basket
-        '''
-        while not (basketball.flag_basketcase):
-            basketball.finding_basketcase()
-        print(basketball.flag_basketcase)
-        '''
+        while not flag_basket:          # DOESN'T WORKING, THERE SHOULD BE MASK AND THRESHOLDING
+            flag_basket, basket_coords, basket_distance = finding('basket')      # (True/False), (x,y), distance
+        print(f"result of finding ball: {basket_coords} and {basket_distance}")
 
-        # # Take ball and do several steps from ball holder
-        '''
-        basketball.flag_basketcase = False
-        res = basketball.thinking_take()
-        if res == 0:
-            self.motion.play_Soft_Motion_Slot(name = 'basketball_taking_ball')
-        elif res == 1:
-            self.motion.play_Soft_Motion_Slot(name = 'basketball_taking_ball')
-            # 3 steps right
-        elif res == -1:
-            self.motion.play_Soft_Motion_Slot(name = 'basketball_taking_ball')
-            # 3 steps left
-        '''
-
-        # # Searching for basket again
-        '''
-        while not (basketball.flag_basketcase):
-            basketball.finding_basketcase()
-        print(basketball.flag_basketcase)
-        '''
-
-        # Approach basket first time
-        '''
-        basketball.flag_basketcase = False
-        basketball.turn_to_basketcase()
-        basketball.go_to_basketcase(0.8)
-        '''
+        # Take ball and do several steps from ball holder
+        
+        flag_basket = False
+        while not flag_evade:
+            flag_evade = thinking_take(ball_coords, basket_coords)
+        print("Atom avoided collision with holder")
+        
 
         # Searching for basket again
-        '''
-        while not (basketball.flag_basketcase):
-            basketball.finding_basketcase()
-        print(basketball.flag_basketcase)
-        '''
+
+        while not flag_basket:          # DOESN'T WORKING, THERE SHOULD BE MASK AND THRESHOLDING
+            flag_basket, basket_coords, basket_distance = finding('basket')      # (True/False), (x,y), distance
+        print(f"result of finding ball: {basket_coords} and {basket_distance}")
+
+        # Approach basket first time
+
+        flag_basket = False
+        turn_to(basket_coords)    #DOESN'T WORK NOW
+        # maybe do finding one more time
+        go_to(1, basket_coords, basket_distance)  #DOESN'T WORK NOW
+
+        # Searching for basket again
+
+        while not flag_basket:          # DOESN'T WORKING, THERE SHOULD BE MASK AND THRESHOLDING
+            flag_basket, basket_coords, basket_distance = finding('basket')      # (True/False), (x,y), distance
+        print(f"result of finding ball: {basket_coords} and {basket_distance}")
+
         # Finally approach basket
-        '''
-        basketball.flag_basketcase  = False
-        basketball.go_to_basketcase(1)
-        '''
+
+        flag_basket = False
+        turn_to(basket_coords)    #DOESN'T WORK NOW
+        go_to(1, basket_coords, basket_distance)  #DOESN'T WORK NOW
 
         # put the ball into basketcase
-        #self.motion.play_Soft_Motion_Slot(name = 'basketball_throwing_ball')
-        '''
+        
+        self.motion.play_Soft_Motion_Slot(name = 'basketball_throwing_ball')
+        
+
         print("HE HIT THE BALL OR NO. I don't NO")
         while True:
             n = int(input())

@@ -191,7 +191,7 @@ class Motion1:
             self.sensor.set_auto_exposure(False, 1500)
 
     #-------------------------------------------------------------------------------------------------------------------------------
-    def check_camera(self):
+    def check_camera(self, name):
         if self.glob.camera_ON:
             thresholds = [(30, 100, 15, 127, 15, 127), # generic_red_thresholds
                             (30, 100, -64, -8, -32, 32), # generic_green_thresholds
@@ -205,19 +205,21 @@ class Motion1:
                 img = self.re.Image(img_)
                 self.cv2.imshow('image', img_)
                 self.cv2.waitKey(10)
-
-            coords = img.find_blobs([self.glob.TH['orange ball']['th']], pixels_threshold=self.glob.TH['orange ball']['pixel'],
-                             area_threshold=self.glob.TH['orange ball']['area'], merge=True)
-            print(f"number of found objects: {len(coords)}")
-            center_x = []
-            center_y = []
-            for c, coord in enumerate(coords, start=0):
-                center_x.append(coord.cx()) #pixel's x coordinate of object's center
-                center_y.append(coord.cy()) #pixel's y coordinate of object's center
-
-                print(f"object's center's coordinates: ({center_x[c]}, {center_y[c]})")
+            if name == 'ball':
+                coords = img.find_blobs([self.glob.TH['orange ball']['th']], pixels_threshold=self.glob.TH['orange ball']['pixel'], area_threshold=self.glob.TH['orange ball']['area'], merge=True)
+            if name == 'basket':
+                coords = img.find_blobs([self.glob.TH['red basket']['th']], pixels_threshold=self.glob.TH['red basket']['pixel'], area_threshold=self.glob.TH['red basket']['area'], merge=True)
+            if name == 'stripe':
+                coords = img.find_blobs([self.glob.TH['yellow stripe']['th']], pixels_threshold=self.glob.TH['yellow stripe']['pixel'], area_threshold=self.glob.TH['yellow stripe']['area'], merge=True)
             
-            return center_x, center_y
+            print(f"number of found objects: {len(coords)}")
+            center = []
+            for coord in coords:
+                center0 = (coord.cx(), coord.cy())  #pixel's (x, y) coordinates of object's center
+                center.append(center0)
+                print(f"object's center's coordinates: {center0}")
+            
+            return center
 
             '''
             if img.find_blobs([self.glob.TH['orange ball']['th']], pixels_threshold=self.glob.TH['orange ball']['pixel'],
@@ -230,7 +232,7 @@ class Motion1:
         robot_model = RobotModel(self.glob)
         robot_model.update_camera_pan_tilt(self.neck_pan, self.neck_tilt)
         print((self.params["HEIGHT_OF_CAMERA"] + self.params["HEIGHT_OF_NECK"])/1000)
-        return robot_model.image2self(pixel_x, pixel_y, 0)
+        return robot_model.image2self(pixel_x, pixel_y, 0.439)
 
     def imu_body_yaw(self):
         yaw = self.neck_pan*self.TIK2RAD + self.euler_angle['yaw']
