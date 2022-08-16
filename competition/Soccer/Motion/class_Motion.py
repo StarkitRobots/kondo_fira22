@@ -211,16 +211,20 @@ class Motion1:
                 coords = img.find_blobs([self.glob.TH['red basket']['th']], pixels_threshold=self.glob.TH['red basket']['pixel'], area_threshold=self.glob.TH['red basket']['area'], merge=True)
             if name == 'stripe':
                 coords = img.find_blobs([self.glob.TH['yellow stripe']['th']], pixels_threshold=self.glob.TH['yellow stripe']['pixel'], area_threshold=self.glob.TH['yellow stripe']['area'], merge=True)
-            
+            if name == 'lol':
+                img.find_blobs([self.glob.TH['orange ball']['th']], pixels_threshold=self.glob.TH['orange ball']['pixel'], area_threshold=self.glob.TH['orange ball']['area'], merge=True)
+
+
             print(f"number of found objects: {len(coords)}")
             center = []
             for coord in coords:
                 center0 = (coord.cx(), coord.cy())  #pixel's (x, y) coordinates of object's center
                 center.append(center0)
                 print(f"object's center's coordinates: {center0}")
-            
-            return center
-
+            if len(center) != 0:
+                return center
+            else:
+                return [(None, None)]
             '''
             if img.find_blobs([self.glob.TH['orange ball']['th']], pixels_threshold=self.glob.TH['orange ball']['pixel'],
                              area_threshold=self.glob.TH['orange ball']['area'], merge=True):
@@ -692,7 +696,7 @@ class Motion1:
             angles = self.computeAlphaForWalk(self.SIZES, self.limAlpha1 )
             self.xtr += 20
             self.xtl += 20
-            self.check_camera()
+            # self.check_camera('lol')
             #print('iii = ', iii, 'ytr =', self.ytr, 'ytl =', self.ytl)
             if not self.falling_Flag ==0: return
             if len(angles)==0:
@@ -1648,7 +1652,21 @@ class Motion1:
             for j in range(20):
                 self.sim.simxSynchronousTrigger(self.clientID)
 
-
+    def move_head_basketball(self, pan, tilt):
+        self.neck_pan = pan
+        self.neck_tilt = tilt
+        if self.glob.SIMULATION == 2:
+                self.kondo.setUserParameter(19,self.neck_pan)
+                self.pyb.delay(200)
+                self.kondo.setUserParameter(20,self.neck_tilt)
+                self.pyb.delay(400)
+        else:
+            returnCode = self.sim.simxSetJointPosition(self.clientID,
+                        self.jointHandle[21] , self.neck_pan * self.TIK2RAD * self.FACTOR[21], self.sim.simx_opmode_oneshot)   # Шея поворот
+            returnCode = self.sim.simxSetJointPosition(self.clientID,
+                        self.jointHandle[22] , self.neck_tilt * self.TIK2RAD * self.FACTOR[22], self.sim.simx_opmode_oneshot)  # Шея Наклон
+            for j in range(20):
+                self.sim.simxSynchronousTrigger(self.clientID)
 
 if __name__=="__main__":
     print('This is not main module!')

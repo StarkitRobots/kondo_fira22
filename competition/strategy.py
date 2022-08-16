@@ -105,8 +105,7 @@ class Player():
         def get_pixels(name):
             center = []
             self.glob.camera_ON = True
-            while len(center) != 1:
-                center = self.motion.check_camera(name)
+            center = self.motion.check_camera(name)
             pixels = center[0]
             return pixels
 
@@ -116,7 +115,7 @@ class Player():
             return coords
 
         def radians_search(frequency):
-            res = list(zip(np.zeros(frequency), np.linspace(-np.pi/2, np.pi/2, frequency))) + list(zip(np.zeros(frequency) + np.pi/4, np.linspace(np.pi/2, -np.pi/2, frequency)))
+            res = list(zip(np.zeros(frequency), np.linspace(-np.pi/2, np.pi/2, frequency))) + list(zip(np.zeros(frequency) - np.pi/4, np.linspace(np.pi/2, -np.pi/2, frequency)))
             return res + [[0, 0]]
 
         def finding(name):
@@ -128,7 +127,7 @@ class Player():
             l = []
             while len(l) < 2:
                 for elem in radians:
-                    self.motion.move_head()#elem[1], elem[0]) # NEED TO MOVE HEAD!!!
+                    self.motion.move_head(elem[1]*1000, elem[0]*1000) # NEED TO MOVE HEAD!!!
                     time.sleep(3)
                     pixels = get_pixels(name)
                     if pixels != (None, None):
@@ -224,6 +223,8 @@ class Player():
         flag_ball = False
         flag_basket = False
         flag_evade = False
+
+        # self.motion.move_head(1000, -2000)
         # Finding ball and putting it to self.ball_coordinates for future approach.
 
         while not flag_ball:

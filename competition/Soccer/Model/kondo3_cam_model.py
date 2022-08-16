@@ -5,7 +5,7 @@ class CameraModel:
     def __init__(self, glob):
         # super().__init__(params, "model")
         self.do_undistortions = False
-        self.focal_length = 670     #add it to PARAMS!!!
+        self.focal_length = 100     #add it to PARAMS!!!
         self.center_x = 320      #add it to PARAMS!!!
         self.center_y = 240      #add it to PARAMS!!!
         self.distortion = np.array([-0.090947, 0.011789, -0.001821, -0.004004, 0.000000], dtype=np.float32) #add it to PARAMS!!!
