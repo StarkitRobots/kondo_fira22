@@ -23,8 +23,11 @@ else:
 
 sys.path.append( current_work_directory + 'Soccer/')
 sys.path.append( current_work_directory + 'Soccer/Motion/')
-
+sys.path.append(current_work_directory + 'Soccer/Motion/Jump/')
 from class_Motion import Glob
+from approach import approach
+from center_point import center_point
+from localisation import localisation
 
 if SIMULATION == 2:
     from class_Motion import Motion1 as Motion
@@ -184,7 +187,63 @@ class Player():
 
         def go_to(percent_distance, coords, distance):
             print("Start going")
-            ## NEED TO GO TO THE BALL!!!
+            r_x, r_y, r_theta = 1, 2, 0 #robot's coordinates
+        #img = Image(cv2.imread("Soccer\\5837.png", cv2.COLOR_BGR2LAB))
+        #blob = img.find_blobs([[100, 110, 140, 210, 220, 230], [50, 70, 80, 230, 240, 250], [10, 20, 30, 251, 252, 253]], 30, 30)
+        
+            point = [100, 100, 100]
+            acc = 0.001
+            cycle = 2
+            number_of_cycles = 30 #30
+            self.motion.simThreadCycleInMs = 10
+            self.motion.amplitude = 0 #32
+            self.motion.fr1 = 8 # 4
+            self.motion.fr2 = 12
+            ##self.motion.initPoses = self.motion.fr2 
+            self.motion.gaitHeight = 160
+            self.motion.stepHeight = 40  # 20
+            stepLength = 40
+            sideLength = 0
+            #self.motion.first_Leg_Is_Right_Leg = False
+            self.motion.walk_Initial_Pose()
+            while math.fabs(r_x - point[0]) >= acc or math.fabs(r_y - point[1]) >= acc or math.fabs(r_theta - point[2]) >= acc:
+                point = center_point()
+                r_x = coords[0]
+                r_y = coords[1]
+                
+                steps = approach(r_x, r_y, r_theta, point[0], point[1], point[2])
+                try:
+                    r_x, r_y, r_theta = localisation(steps[1])
+                    print(r_x, r_y, r_theta)
+                    if self.motion.first_Leg_Is_Right_Leg: invert = -1
+                    else: invert = 1
+                    
+                    if not self.motion.falling_Flag == 0: break
+                    stepLength1 = stepLength
+                    if cycle == 0 : stepLength1 = stepLength/3
+                    if cycle == 1 : stepLength1 = stepLength/3 * 2
+                    if (r_x - point[0])**2 + (r_x - point[1])**2 <= stepLength: stepLength1 = math.sqrt((r_x - point[0])**2 + (r_x - point[1])**2)
+                    #rotation = steps[0][2]
+                    #rotation = self.motion.normalize_rotation(rotation) 
+                    rotation = 0
+                    number_of_cycles += 1
+                    self.motion.walk_Cycle(stepLength1, sideLength, rotation, cycle, number_of_cycles)
+                    if not self.motion.falling_Flag == 0:
+                        if self.motion.falling_Flag == 3: 
+                            print('STOP!')
+                            return
+                        else: 
+                            print('FALLING!!!', self.motion.falling_Flag)
+                            self.motion.falling_Flag = 0
+                            continue
+                    cycle += 1
+                    number_of_cycles += 1
+                    
+                except IndexError:
+                    r_x, r_y, r_theta = point[0], point[1], point[2]
+            self.motion.walk_Final_Pose()
+            #self.motion.simulateMotion(name = 'Kondo3_TripleJump')
+                ## NEED TO GO TO THE BALL!!!
 
         def thinking_take(ball_coordinates, basketcase_coordinates):
             print("Start thinking and taking ball")
@@ -230,14 +289,14 @@ class Player():
         while not flag_ball:
             flag_ball, ball_coords, ball_distance = finding('ball')      # (True/False), (x,y), distance
         print(f"result of finding ball: {ball_coords} and {ball_distance}")
-        '''
+
         #Approaching to the ball on 0.8 of distance
         
         flag_ball = False
         turn_to(ball_coords)    #DOESN'T WORK NOW
         # maybe do finding one more time
         go_to(0.8, ball_coords, ball_distance)  #DOESN'T WORK NOW
-        
+        '''
 
         # Correct the ball position
 

@@ -11,6 +11,7 @@ if sys.version != '3.4.0':
     with open("simulator_lib_directory.txt", "r") as f:
         simulator_lib_directory = f.read()
     simulator_lib_directory = simulator_lib_directory.replace('\\', '/')
+    simulator_lib_directory =simulator_lib_directory[:-1] + '/'
     sys.path.append(simulator_lib_directory)
     import random
     import sim, threading
