@@ -117,7 +117,7 @@ class Player():
             ##self.motion.initPoses = self.motion.fr2 
             self.motion.gaitHeight = 190 # 190
             self.motion.stepHeight = 20  # 20
-            stepLength = 40 #88
+            stepLength = 80 #88
         if pressed_button == 2  :   
             number_Of_Cycles = 10 #30
             self.motion.simThreadCycleInMs = 20
