@@ -28,6 +28,8 @@ class Imu:
         return [0,0,0,0]
 class Motion1:
     def __init__(self, glob):
+        self.test_max_angl = None
+        self.tets_min_angl = None
         self.i_see_ball = False
         self.glob = glob
         self.params = self.glob.params

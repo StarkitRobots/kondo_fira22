@@ -887,13 +887,13 @@ if __name__ == "__main__":
     kondo = Rcb4BaseLib()
     kondo.open('/dev/ttyAMA2',1250000, 1.3) #1250000
     
-    sd1 = [kondo.ServoData(i,1,7500) for i in range (6,11)]
+    sd1 = [kondo.ServoData(i,1,7000) for i in range (6,11)]
     sd2 =  [kondo.ServoData(i,2,7500) for i in range (6,11)]
 
     while True:
-        for i in sd:
-            i.data += 100
-        kondo.setServoPos(sd, 5)
+        sd1 = []
+        kondo.setServoPos(sd1, 5)
+        kondo.setServoPos(sd2, 5)
         time.sleep(0.5)
     
 

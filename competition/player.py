@@ -110,7 +110,7 @@ class Player():
     def run_test_main_cycle(self, pressed_button):
         if pressed_button == 1:             # fast step
             number_Of_Cycles = 30 #30
-            self.motion.simThreadCycleInMs = 30 # 20
+            self.motion.simThreadCycleInMs = 20 # 20
             self.motion.amplitude = 32 #32
             self.motion.fr1 = 4 # 4
             self.motion.fr2 = 10 # 10
