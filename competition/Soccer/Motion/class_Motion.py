@@ -5,9 +5,10 @@ import sys, os
 import math, time, json
 from compute_Alpha_v3 import Alpha
 import starkit
+import cv2
 #os.chdir('../..')
 path_to_model = os.getcwd() + "/Soccer/Model/"
-
+from reload import *
 sys.path.append(path_to_model)
 from kondo3_model import RobotModel
 
@@ -26,7 +27,11 @@ class Glob:
                 self.params = json.loads(f.read())
             with open(current_work_directory + "Soccer/Init_params/Real/Real_Thresholds.json", "r") as f:
                 self.TH = json.loads(f.read())
-
+class Imu:
+    def __init__(self):
+        return
+    def quaternion(self):
+        return [0,0,0,0]
 class Motion1:
     def __init__(self, glob):
         self.i_see_ball = False
@@ -161,36 +166,31 @@ class Motion1:
             import starkit
             import pyb
             from kondo_controller import Rcb4BaseLib
-            from pyb import Pin, UART, LED
-            from machine import I2C
+            from pyb import UART
+            # from machine import I2C
             from bno055 import BNO055, AXIS_P7
-            import sensor, image
+            #import sensor, image
             #self.wait_for_button_pressing = wait_for_button_pressing
             self.starkit = starkit
-            i2c = I2C(2)
-            self.imu = BNO055(i2c, mode = 0x08)
-            self.green_led = LED(2)
-            self.pin2 = Pin('P2', Pin.IN, Pin.PULL_UP)
-            uart = UART(self.glob.params['UART_PORT'], self.glob.params['UART_SPEED'], timeout=1000, parity=0)
+            # self.i2c = I2C(2)
+            self.bno055 = BNO055
+            self.imu = None
+            self.imu = Imu()# BNO055(self.i2c, mode = 0x08)
+            #self.green_led = LED(2)
+            # self.pin2 = Pin('P2', Pin.IN, Pin.PULL_UP)
+            #uart = UART(self.glob.params['UART_PORT'], self.glob.params['UART_SPEED'], timeout=1000, parity=0)
             #uart = pyb.UART(1, 1250000, parity=0)
             #k = kondo.Kondo()
             ##k.init(uart)
             self.kondo = Rcb4BaseLib()
-            self.kondo.open(uart)
+            self.kondo.open('/dev/ttyAMA2', 1250000, 1.3)
             self.clock = time.clock()
-            self.kondo.motionPlay(25)
+            # self.kondo.motionPlay(25)
             self.pyb = pyb
-            self.sensor = sensor
-            self.image = image
-            self.sensor.reset()
-            self.sensor.set_pixformat(sensor.RGB565)
-            self.sensor.set_framesize(sensor.QQQVGA)
-            self.sensor.skip_frames(time = 2000)
-            self.sensor.set_auto_gain(False, 128) # must be turned off for color tracking
-            self.sensor.set_auto_whitebal(False) # must be turned off for color tracking
-            self.sensor.set_auto_exposure(False, 1500)
-
-    #-------------------------------------------------------------------------------------------------------------------------------
+            self.sensor = KondoCameraSensor()
+            self.image = None
+            self.cv2 = cv2
+               #-------------------------------------------------------------------------------------------------------------------------------
     def check_camera(self, name):
         if self.glob.camera_ON:
             thresholds = [(30, 100, 15, 127, 15, 127), # generic_red_thresholds
@@ -198,6 +198,8 @@ class Motion1:
                             (0, 30, 0, 64, -128, 0)] # generic_blue_thresholds
             if self.glob.SIMULATION == 2 :
                 img = self.sensor.snapshot()
+                self.cv2.imshow('image', img.img)
+                self.cv2.waitKey(10)
                 #for blob in img.find_blobs(thresholds, pixels_threshold=20, area_threshold=20, merge=True):
                 #    print('blob.code:', blob.code())
             else:
@@ -235,11 +237,13 @@ class Motion1:
     def self_coords_from_pixels(self, pixel_x, pixel_y, name):
         robot_model = RobotModel(self.glob)
         robot_model.update_camera_pan_tilt(self.neck_pan, self.neck_tilt)
+        #robot_model.update_camera_pan_tilt(0, 0)
         print((self.params["HEIGHT_OF_CAMERA"] + self.params["HEIGHT_OF_NECK"])/1000)
         if name == 'ball':
-            height = 0.439
+            height = 0
+            #height = 0.289
         elif name == 'basket':
-            height = 0.45 # MB???
+            height = 0.285 # MB???
         elif name == 'stripe':
             height = 0
         return robot_model.image2self(pixel_x, pixel_y, height)

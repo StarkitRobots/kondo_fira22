@@ -271,7 +271,7 @@ class KondoCameraSensor(Sensor):
             return self.align_down(size + align - 1, align)
     
     def __init__(self):
-        if (CameraSensor.camera == None):
+        if (KondoCameraSensor.camera == None):
             self._cameraInit()
     def snapshot(self):
         frame = KondoCameraSensor.camera.capture(encoding='raw')
@@ -286,7 +286,7 @@ class KondoCameraSensor(Sensor):
         return Image(image)
 def main ():
 #    sensor = Sensor ("rgb_basket.jpg")
-    sensor = WebCameraSensor()
+    sensor = KondoCameraSensor()
     while (True):
         #print ("a")
         img = sensor.snapshot ()

@@ -11,10 +11,12 @@ import numpy as np
 
 current_work_directory = os.getcwd()
 current_work_directory = current_work_directory.replace('\\', '/')
-if sys.version == '3.4.0':
+if 1:
     # will be running on openMV
     import pyb
-    SIMULATION = 2                                         # 0 - Simulation without physics, 1 - Simulation synchronous with physics, 2 - live on openMV
+    SIMULATION = 2
+    current_work_directory += '/'
+# 0 - Simulation without physics, 1 - Simulation synchronous with physics, 2 - live on openMV
 else:
     # will be running on desktop computer
     current_work_directory += '/'
@@ -88,7 +90,7 @@ class Player():
                            self.motion.sim.simx_opmode_oneshot)  # Шея Наклон
                 for j in range(20):
                     self.motion.sim.simxSynchronousTrigger(self.motion.clientID)
-        pressed_button = self.motion.push_Button(button)
+        pressed_button = 1# self.motion.push_Button(button)
         self.common_init()
         if self.role == 'run_test': self.run_test_main_cycle(pressed_button)
         if self.role == 'kondo_walk': self.kondo_walk_main_cycle(pressed_button)
@@ -276,6 +278,22 @@ class Player():
         #self.motion.kondo.motionPlay(78) 
         #self.motion.activation()
         #self.motion.falling_Flag = 0
+        
+        #PROVERKA OF VISION
+            
+        while True:
+            pixels = get_pixels('basket')
+            if pixels != (None, None):
+                coords = get_distance(pixels, 'basket')
+                print(f"coordinates of basket: {coords}")
+            pixels = get_pixels('ball')
+            if pixels != (None, None):
+                coords = get_distance(pixels, 'ball')
+                print(f"coordinates of ball: {coords}")
+        
+        #END OF PROVERKA OF VISION
+        
+        '''
 
         # THE BEGINING
         self.glob.camera_ON = False
@@ -289,6 +307,7 @@ class Player():
         while not flag_ball:
             flag_ball, ball_coords, ball_distance = finding('ball')      # (True/False), (x,y), distance
         print(f"result of finding ball: {ball_coords} and {ball_distance}")
+        
 
         #Approaching to the ball on 0.8 of distance
         
@@ -296,8 +315,7 @@ class Player():
         turn_to(ball_coords)    #DOESN'T WORK NOW
         # maybe do finding one more time
         go_to(0.8, ball_coords, ball_distance)  #DOESN'T WORK NOW
-        '''
-
+        
         # Correct the ball position
 
         while not flag_ball:
@@ -548,7 +566,7 @@ if __name__=="__main__":
     #if SIMULATION != 0:
     #    player.motion.print_Diagnostics()
     #player.test_walk_2()
-    player.simulation()
+    player.real( 1)
 
 
 

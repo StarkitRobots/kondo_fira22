@@ -1,7 +1,14 @@
 import cv2
 import numpy as np
-import os
-
+import os, sys
+os.chdir('../../')
+directory_for_KondoCameraSensor = os.getcwd()
+sys.path.append(directory_for_KondoCameraSensor + '/competition/Soccer/Motion/')
+print(sys.path)
+from reload import KondoCameraSensor
+#import arducam_mipicamera
+#import v4l2
+#sudo pip install v4l2
 # cam = cv2.VideoCapture(0)
 
 low_th  = [0, 0, 0]
@@ -18,18 +25,17 @@ cv2.createTrackbar ("l2", "Colorbars",   0, 255, nothing)
 cv2.createTrackbar ("h2", "Colorbars", 255, 255, nothing)
 cv2.createTrackbar ("l3", "Colorbars",   0, 255, nothing)
 cv2.createTrackbar ("h3", "Colorbars", 255, 255, nothing)
+sensor =  KondoCameraSensor()
+# frm = cv2.imread('photo1.png')
 
-frm = cv2.imread('photo1.png')
-
-width = int(frm.shape[1] * 0.45)
-height = int(frm.shape[0] * 0.45)
-dim = (width, height)
-
-frame = cv2.resize(frm, dim, interpolation = cv2.INTER_AREA)
 
 while (True):    
     # _, frame = cam.read()
-
+    frm = sensor.snapshot().img
+    width = int(frm.shape[1] * 0.45)
+    height = int(frm.shape[0] * 0.45)
+    dim = (width, height)
+    frame = cv2.resize(frm, dim, interpolation = cv2.INTER_AREA)
     l1 = cv2.getTrackbarPos ("l1", "Colorbars")
     h1 = cv2.getTrackbarPos ("h1", "Colorbars")
     l2 = cv2.getTrackbarPos ("l2", "Colorbars")
