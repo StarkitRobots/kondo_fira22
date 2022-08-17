@@ -322,6 +322,7 @@ class Motion1:
             #if ad[0] == True:
             #ad3 = ad[1][3]
             #ad4 = ad[1][4]
+            return
             ad3 = self.kondo.getAdData(3)
             ad4 = self.kondo.getAdData(4)
             if ad3 < 200:
@@ -537,6 +538,7 @@ class Motion1:
                             if i in self.hand_joints : continue
                         pos = int(angles[i]*1698 + 7500)
                         servoDatas.append( self.kondo.ServoData(self.ACTIVESERVOS[i][0],self.ACTIVESERVOS[i][1],pos))
+                    print(servoDatas)
                     servoDatas = self.reOrderServoData(servoDatas)
                     #start2 = self.pyb.millis()
                     if j == 0:
@@ -586,7 +588,7 @@ class Motion1:
             if self.glob.SIMULATION == 2: 
                 start1 = self.pyb.millis()
                 print("timer : ", self.pyb.elapsed_millis(test1))
-            if 0<= iii <self.fr1 :                                              # FASA 1
+            if 0<= iii < self.fr1 :                                              # FASA 1
                 alpha = alpha01 * (iii/2+0.5*framestep)
                 #alpha = alpha01 * iii/2
                 S = (self.amplitude/2 + self.sideLength/2 )*math.cos(alpha)
@@ -613,7 +615,6 @@ class Motion1:
 
             if self.fr1<= iii <self.fr1+self.fr2:                               # FASA 2
                 self.ztr = -self.gaitHeight + self.stepHeight
-                if self.fr1 + 2*framestep <= iii  : self.xr += math.copysign(self.params['SWING_STEP_PITCH'], stepLength)
                 #if self.fr1 + 2*framestep <= iii <= self.fr1 + 4*framestep : self.ztr += 5
                 if cycle ==0:
                     dx = self.stepLength/(self.fr2- 2 * framestep)*framestep/2
@@ -642,7 +643,6 @@ class Motion1:
             if 2*self.fr1+self.fr2<= iii :                                         # FASA 4
                 self.ztl = -self.gaitHeight + self.stepHeight
                 #if 2*self.fr1+self.fr2< iii < 2*self.fr1 + 2*self.fr2 - framestep: self.xl += math.copysign(0.15, stepLength)
-                if 2*self.fr1+self.fr2 + 2*framestep <= iii : self.xl += math.copysign(self.params['SWING_STEP_PITCH'], stepLength)
                 #if 2*self.fr1+self.fr2 + 2*framestep <= iii <= 2*self.fr1+self.fr2 + 4*framestep: self.ztl += 5
                 if cycle == number_Of_Cycles - 1:
                     dx0 = dx0_typical * 4 / self.fr2           # 8.75/6
@@ -683,7 +683,6 @@ class Motion1:
                 self.exitFlag = self.exitFlag +1
                 if self.glob.SIMULATION == 2:
                     time1 = self.pyb.elapsed_millis(start1)
-                    self.pyb.delay(self.frame_delay - time1)
                 else:
                     print('No IK solution')
                     if self.glob.SIMULATION == 1:
@@ -763,6 +762,7 @@ class Motion1:
                     servoDatas = []
                     disp = []
                     for i in range(len(angles)):
+                        print(angles)
                         if self.keep_hands_up:
                             if i in self.hand_joints : continue
                         pos = int(angles[i]*1698 + 7500)
@@ -788,11 +788,7 @@ class Motion1:
 
     def walk_Cycle2(self, stepLength,sideLength, rotation,cycle, number_Of_Cycles):
         self.robot_In_0_Pose = False
-        if not self.falling_Test() == 0:
-            #self.local.quality =0
-            if self.falling_Flag == 3: uprint('STOP!')
-            else: print('FALLING!!!', self.falling_Flag)
-            return[]
+
         self.stepLength = stepLength #+ self.motion_shift_correction_x
         self.sideLength = sideLength #- self.motion_shift_correction_y
         self.rotation = math.degrees(rotation)
@@ -1039,10 +1035,7 @@ class Motion1:
 
     def walk_Cycle3(self, stepLength,sideLength, rotation,cycle, number_Of_Cycles, secondStepLength = 1000):
         self.robot_In_0_Pose = False
-        if not self.falling_Test() == 0:
-            if self.falling_Flag == 3: print('STOP!')
-            else: print('FALLING!!!', self.falling_Flag)
-            return[]
+
         self.stepLength = stepLength
         self.sideLength = sideLength
         self.rotation = math.degrees(rotation)
@@ -1509,6 +1502,7 @@ class Motion1:
             return True
 
     def walk_Final_Pose(self):
+        return 
         self.robot_In_0_Pose = False
         if not self.falling_Test() == 0:
             if self.falling_Flag == 3: print('STOP!')

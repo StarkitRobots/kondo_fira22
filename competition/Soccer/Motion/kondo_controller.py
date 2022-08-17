@@ -245,6 +245,7 @@ class Rcb4BaseLib:
             #self.com.write(sendbuf)
             #if not writeOnly:
             rxbuf = self.com.read(rxLen)
+            print(bytearray(rxbuf))
             self.com.flushInput()
             if rxbuf is not None and len(rxbuf) != 0:
                 if self.__checkCheckSum(rxbuf) == False:

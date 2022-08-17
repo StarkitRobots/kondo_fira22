@@ -110,14 +110,14 @@ class Player():
     def run_test_main_cycle(self, pressed_button):
         if pressed_button == 1:             # fast step
             number_Of_Cycles = 30 #30
-            self.motion.simThreadCycleInMs = 20
+            self.motion.simThreadCycleInMs = 30 # 20
             self.motion.amplitude = 32 #32
             self.motion.fr1 = 4 # 4
             self.motion.fr2 = 10 # 10
             ##self.motion.initPoses = self.motion.fr2 
-            self.motion.gaitHeight = 140 # 190
-            self.motion.stepHeight = 25  # 20
-            stepLength = 120 #88
+            self.motion.gaitHeight = 190 # 190
+            self.motion.stepHeight = 20  # 20
+            stepLength = 40 #88
         if pressed_button == 2  :   
             number_Of_Cycles = 10 #30
             self.motion.simThreadCycleInMs = 20
@@ -133,6 +133,7 @@ class Player():
         if self.motion.first_Leg_Is_Right_Leg: invert = -1.5
         else: invert = 1
         while True:
+            print (self.motion.glob.SIMULATION)
             self.motion.walk_Initial_Pose()
             number_Of_Cycles += 1
             for cycle in range(number_Of_Cycles):
@@ -147,8 +148,8 @@ class Player():
                 #if rotation < 0: rotation *= 5
                 rotation = self.motion.normalize_rotation(rotation)
                 #rotation = -0.5
-                self.motion.walk_Cycle(stepLength1,sideLength, rotation,cycle, number_Of_Cycles)
-                if self.motion.i_see_ball:
+                self.motion.walk_Cycle(stepLength1,0,0,cycle, number_Of_Cycles)
+                '''if self.motion.i_see_ball:
                     stepLength1 = stepLength/3 * 2
                     self.motion.refresh_Orientation()
                     rotation = 0 + invert * self.motion.body_euler_angle['yaw'] * 1.0
@@ -175,7 +176,7 @@ class Player():
                         rotation = 0 + invert * self.motion.body_euler_angle['yaw'] * 1.0
                         rotation = self.motion.normalize_rotation(rotation)
                         self.motion.walk_Cycle(stepLength1,sideLength, rotation, back_cycle, 5)
-                    break
+                    break'''
             if not self.motion.falling_Flag == 0:
                 if self.motion.falling_Flag == 3: 
                     print('STOP!')

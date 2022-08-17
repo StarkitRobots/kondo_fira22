@@ -29,7 +29,7 @@ if __name__=="__main__":
     #if SIMULATION != 0:
     #    player.motion.print_Diagnostics()
     #player.test_walk_2()
-    player.real(2)
+    player.real(1)
 
 
 
