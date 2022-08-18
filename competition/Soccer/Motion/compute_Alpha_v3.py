@@ -107,6 +107,7 @@ class Alpha():
             temp1 = K1*K1*m*m-(K1*K1+K2*K2)*(m*m-K2*K2)
             if temp1>=0 :
                 temp2 = (-K1*m + math.sqrt(temp1))/(K1*K1+K2*K2)
+                print('math.sqrt(temp1):', math.sqrt(temp1))
                 temp3 = (-K1*m - math.sqrt(temp1))/(K1*K1+K2*K2)
                 if math.fabs(temp2) <= 1 and math.fabs(temp3) <= 1:
                     alpha91 = math.asin(temp2)
