@@ -49,9 +49,11 @@ class Sprint(Competition):
     def aruco_position(self, img):
         (corners, ids, rejected) = cv2.aruco.detectMarkers(img, self.arucoDict,
                         parameters=self.arucoParams)
-        if corners is not None:
+        print(corners)
+        print(self.sensor.camera_matrix, self.sensor.dist_matrix)
+        if corners != []:
             tvec, rvec = cv2.aruco.estimatePoseSingleMarkers(corners[0], 0.05, self.sensor.camera_matrix, self.sensor.dist_matrix)
-        else : return [0,0,0],[0,0,0]
+        else : return [[[0,0,0]]],[[[0,0,0]]]
         print("rvec : ", rvec)
         print("tvec : ", tvec)    
         return tvec, rvec
@@ -64,9 +66,9 @@ class Sprint(Competition):
             if cycle ==0 : stepLength1 = self.stepLength/4
             if cycle ==1 : stepLength1 = self.stepLength/2
             if cycle ==2 : stepLength1 = self.stepLength/4 * 3
-            self.motion.walk_Cycle(stepLength1,0,max(rvec[1],0.3),cycle, self.number_of_cycles)
+            self.motion.walk_Cycle(stepLength1,0,max(rvec[0][0][1],0.1) if rvec[0][0][1] > 0 else max(rvec[0][0][1],0.1),cycle, self.number_of_cycles)
 
 if __name__ == "__main__":
-    sprint = Sprint()
-    sprint.run_forward("/home/pi/kondo/mipi_camera/calibration_matrix.yaml")    
+    sprint = Sprint("/home/pi/kondo_fira22/Camera_calibration/mtx.yaml")
+    sprint.run_forward_1()    
 

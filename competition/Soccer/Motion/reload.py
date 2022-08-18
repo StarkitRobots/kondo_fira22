@@ -260,10 +260,12 @@ class KondoCameraSensor(Sensor):
     def loadCoefficients(path):
         """ Loads camera matrix and distortion coefficients. """
         # FILE_STORAGE_READ
+        print(path)
         cv_file = cv2.FileStorage(path, cv2.FILE_STORAGE_READ)
         camera_matrix = cv_file.getNode("camera_matrix").mat()
         dist_matrix = cv_file.getNode("dist_coeff").mat()
         cv_file.release()
+        print(camera_matrix, dist_matrix)
         return [camera_matrix, dist_matrix]
     @staticmethod
     def _cameraInit(path):

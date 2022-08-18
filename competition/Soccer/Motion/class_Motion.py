@@ -764,7 +764,7 @@ class Motion1:
                     servoDatas = []
                     disp = []
                     for i in range(len(angles)):
-                        print(angles)
+#                        print(angles)
                         if self.keep_hands_up:
                             if i in self.hand_joints : continue
                         pos = int(angles[i]*1698 + 7500)
