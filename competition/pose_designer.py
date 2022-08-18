@@ -61,7 +61,8 @@ class Pose_Designer(wx.Frame):
         limAlpha9 = [-4000, 2960]
         limAlpha10 =[-2815,   600]
         self.LIMALPHA = [limAlpha5, limAlpha6, limAlpha7, limAlpha8, limAlpha9, limAlpha10]
-        self.FACTOR =  [ 1,1,-1,-1,1,1, 1,1,1,1,1,1,-1, 1,-1,1,1, 1,1,1,1, 1, 1, 1, 1, -1, 1]  # Surrogat 1
+        #self.FACTOR =  [ 1, 1,-1,-1,1,1,1,1,1,1,1, 1,-1, 1,-1, 1,1, 1,1,1,1, 1, 1, 1, 1, -1, 1]  # Surrogat 1
+        self.FACTOR =   [-1,-1, 1,-1,1,1,1,1,1,1,1,-1,-1, 1, 1,-1,1, 1,1,1,1, 1, 1, 1, 1, -1, 1] #kondo3
         
         self.slot_file_is_loaded = False
         self.TIK2RAD = 0.00058909
