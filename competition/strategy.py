@@ -216,15 +216,15 @@ class Player():
             point = [100, 100, 100]
             acc = 0.001
             cycle = 2
-            number_of_cycles = 30 #30
-            self.motion.simThreadCycleInMs = 10
-            self.motion.amplitude = 0 #32
-            self.motion.fr1 = 8 # 4
-            self.motion.fr2 = 12
+            number_of_cycles = 3000000 #30
+            self.motion.simThreadCycleInMs = 20 # 20
+            self.motion.amplitude = 32 #32
+            self.motion.fr1 = 4 # 4
+            self.motion.fr2 = 10 # 10
             ##self.motion.initPoses = self.motion.fr2 
-            self.motion.gaitHeight = 160
+            self.motion.gaitHeight = 220 # 190
             self.motion.stepHeight = 40  # 20
-            stepLength = 40
+            stepLength = 70
             sideLength = 0
             #self.motion.first_Leg_Is_Right_Leg = False
             self.motion.walk_Initial_Pose()
@@ -298,7 +298,7 @@ class Player():
         #self.motion.kondo.motionPlay(78) 
         #self.motion.activation()
         #self.motion.falling_Flag = 0
-        
+        '''
         #PROVERKA OF VISION
             
         while True:
@@ -348,7 +348,7 @@ class Player():
         turn_to(ball_coords)    #DOESN'T WORK NOW
         # maybe do finding one more time
         go_to(1, ball_coords, ball_distance)  #DOESN'T WORK NOW
-
+        '''
         # Searching for ball
         while not flag_ball:
             flag_ball, ball_coords, ball_distance = finding('ball')      # (True/False), (x,y), distance
