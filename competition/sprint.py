@@ -5,6 +5,7 @@ import os
 import math
 import json
 import time
+from turtle import forward
 import cv2
 
 current_work_directory = os.getcwd()
@@ -41,6 +42,11 @@ class Sprint(Competition):
         self.motion.gaitHeight = 190 # 190
         self.motion.stepHeight = 40  # 20
         self.stepLength = 70 #70 
+        self.forward = True
+        self.stopDistance = 0.2
+        self.stepIncrement = 10
+        self.stepDecrement = 10
+        self.maxStepLength = -50
         self.sensor = KondoCameraSensor(path_to_camera_config)
         self.aruco_init()
     def aruco_init(self):
@@ -62,12 +68,18 @@ class Sprint(Competition):
         for cycle in range(self.number_of_cycles):
             img = self.sensor.snapshot().img
             rvec, tvec = self.aruco_position(img)
-            rotation = 0 
+
             if cycle ==0 : stepLength1 = self.stepLength/4
             if cycle ==1 : stepLength1 = self.stepLength/2
             if cycle ==2 : stepLength1 = self.stepLength/4 * 3
-            self.motion.walk_Cycle(stepLength1,0,max(rvec[0][0][1],0.1) if rvec[0][0][1] > 0 else max(rvec[0][0][1],0.1),cycle, self.number_of_cycles)
+            
+            if tvec[1][0][0] < self.stopDistance: stepLength1 = -self.stepLength
 
+            self.motion.walk_Cycle(stepLength1,
+                                    0,
+                                    0 if -0.1 < rvec[0][0][1] < 0.1 else rvec[0][0][1],
+                                    cycle, 
+                                    self.number_of_cycles)
 if __name__ == "__main__":
     sprint = Sprint("/home/pi/kondo_fira22/Camera_calibration/mtx.yaml")
     sprint.run_forward_1()    
