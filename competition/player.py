@@ -115,7 +115,7 @@ class Player():
             self.motion.fr1 = 4 # 4
             self.motion.fr2 = 10 # 10
             ##self.motion.initPoses = self.motion.fr2 
-            self.motion.gaitHeight = 190 # 190
+            self.motion.gaitHeight = 220 # 190
             self.motion.stepHeight = 40  # 20
             stepLength = 70 #70 
         if pressed_button == 2  :   
@@ -147,7 +147,7 @@ class Player():
                 rotation = 0 + invert * self.motion.body_euler_angle['yaw'] * 1.0
                 #if rotation < 0: rotation *= 5
                 rotation = self.motion.normalize_rotation(rotation)
-                rotation = 0.
+                rotation = 0.7
                 self.motion.walk_Cycle(stepLength1,0,rotation,cycle, number_Of_Cycles)
                 '''if self.motion.i_see_ball:
                     stepLength1 = stepLength/3 * 2

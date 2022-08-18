@@ -1,11 +1,9 @@
-
-
+import multiprocessing
 import sys
 import os
-import math
-import json
 import time
 import cv2
+from multiprocessing import Process
 
 current_work_directory = os.getcwd()
 current_work_directory = current_work_directory.replace('\\', '/')
@@ -19,9 +17,7 @@ sys.path.append( current_work_directory + 'Soccer/Motion/')
 SIMULATION=2
 from class_Motion import Glob
 from reload import KondoCameraSensor
-
-if SIMULATION == 2:
-    from class_Motion import Motion1 as Motion
+from class_Motion import Motion1 as Motion
 
 class Competition:
     pass
@@ -38,9 +34,19 @@ class Sprint(Competition):
         self.motion.fr1 = 4 # 4
         self.motion.fr2 = 10 # 10
         ##self.motion.initPoses = self.motion.fr2 
-        self.motion.gaitHeight = 190 # 190
+        self.motion.gaitHeight = 220 # 190
         self.motion.stepHeight = 40  # 20
         self.stepLength = 70 #70 
+        self.forward = True
+        self.stopDistance = 0.2
+        self.stepIncrement = 10
+        self.stepDecrement = 10
+        self.maxStepLengthBack = -70
+        self.cam_proc = Process(target=self.process_vision)
+        self.rvec = [[[]]]
+        self.tvec = [[[]]]
+        self.stopFlag = False
+
         self.sensor = KondoCameraSensor(path_to_camera_config)
         self.aruco_init()
     def aruco_init(self):
@@ -49,25 +55,49 @@ class Sprint(Competition):
     def aruco_position(self, img):
         (corners, ids, rejected) = cv2.aruco.detectMarkers(img, self.arucoDict,
                         parameters=self.arucoParams)
-        print(corners)
-        print(self.sensor.camera_matrix, self.sensor.dist_matrix)
+        # print(corners)
+        # print(self.sensor.camera_matrix, self.sensor.dist_matrix)
         if corners != []:
-            tvec, rvec = cv2.aruco.estimatePoseSingleMarkers(corners[0], 0.05, self.sensor.camera_matrix, self.sensor.dist_matrix)
+            rvec, tvec = cv2.aruco.estimatePoseSingleMarkers(corners[0], 0.17, self.sensor.camera_matrix, self.sensor.dist_matrix)
         else : return [[[0,0,0]]],[[[0,0,0]]]
         print("rvec : ", rvec)
         print("tvec : ", tvec)    
-        return tvec, rvec
+        return rvec, tvec
+
+    def process_vision(self):
+        while not self.stopFlag:
+            img = self.sensor.snapshot().img
+            self.rvec, self.tvec = self.aruco_position(img)
 
     def run_forward_1(self):
+        stepLength1 = 0
+        self.motion.walk_Initial_Pose()
+        self.cam_proc.start()
+        time.sleep(2)
         for cycle in range(self.number_of_cycles):
-            img = self.sensor.snapshot().img
-            rvec, tvec = self.aruco_position(img)
-            rotation = 0 
-            if cycle ==0 : stepLength1 = self.stepLength/4
-            if cycle ==1 : stepLength1 = self.stepLength/2
-            if cycle ==2 : stepLength1 = self.stepLength/4 * 3
-            self.motion.walk_Cycle(stepLength1,0,max(rvec[0][0][1],0.1) if rvec[0][0][1] > 0 else max(rvec[0][0][1],0.1),cycle, self.number_of_cycles)
+            
 
+            #if cycle ==0 : stepLength1 = self.stepLength/4
+            #if cycle ==1 : stepLength1 = self.stepLength/2
+            #if cycle ==2 : stepLength1 = self.stepLength/4 * 3
+              
+            if cycle<10 and stepLength1 < self.stepLength:
+
+                stepLength1 += self.stepIncrement
+           
+            if 0 < self.tvec[0][0][2] < self.stopDistance and stepLength1 > self.maxStepLengthBack:
+                stepLength1 = -self.stepDecrement
+            step_rot = 0 if -0.3 < self.rvec[0][0][1] < 0.1 else -max(-0.6,min(0.4,self.rvec[0][0][1]))
+            self.motion.refresh_Orientation()
+            print(f"step_l {stepLength1} step_rot {step_rot}")
+            self.motion.walk_Cycle(stepLength1,
+                                    0,
+                                    0,
+                                    cycle, 
+                                    self.number_of_cycles)
+        self.motion.walk_Final_Pose()
+        self.stopFlag = True
+        self.cam_proc.join()
 if __name__ == "__main__":
     sprint = Sprint("/home/pi/kondo_fira22/Camera_calibration/mtx.yaml")
     sprint.run_forward_1()    
