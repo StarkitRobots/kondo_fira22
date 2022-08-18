@@ -3,7 +3,7 @@ import sys
 import os
 import time
 import cv2
-from multiprocessing import Process
+from multiprocessing import Process, Pipe
 
 current_work_directory = os.getcwd()
 current_work_directory = current_work_directory.replace('\\', '/')
@@ -23,7 +23,8 @@ class Competition:
     pass
 
 class Sprint(Competition):
-    def __init__(self, path_to_camera_config):   
+    def __init__(self):
+        self.path_to_camera_config = "/home/pi/kondo_fira22/Camera_calibration/mtx.yaml"
         self.glob = Glob(SIMULATION, current_work_directory)
         self.motion = Motion(self.glob)
         self.motion.activation()
@@ -42,16 +43,18 @@ class Sprint(Competition):
         self.stepIncrement = 10
         self.stepDecrement = 10
         self.maxStepLengthBack = -70
-        self.cam_proc = Process(target=self.process_vision)
-        self.rvec = [[[]]]
-        self.tvec = [[[]]]
+        
+        self.parent_conn, child_conn = Pipe()
+        self.cam_proc = Process(target=self.process_vision, args=(child_conn,))
+        
+        self.rvec = [[[0,0,0]]]
+        self.tvec = [[[0,0,0]]]
         self.stopFlag = False
 
-        self.sensor = KondoCameraSensor(path_to_camera_config)
-        self.aruco_init()
     def aruco_init(self):
         self.arucoDict = cv2.aruco.Dictionary_get(cv2.aruco.DICT_4X4_50)
         self.arucoParams = cv2.aruco.DetectorParameters_create()
+    
     def aruco_position(self, img):
         (corners, ids, rejected) = cv2.aruco.detectMarkers(img, self.arucoDict,
                         parameters=self.arucoParams)
@@ -59,15 +62,16 @@ class Sprint(Competition):
         # print(self.sensor.camera_matrix, self.sensor.dist_matrix)
         if corners != []:
             rvec, tvec = cv2.aruco.estimatePoseSingleMarkers(corners[0], 0.17, self.sensor.camera_matrix, self.sensor.dist_matrix)
-        else : return [[[0,0,0]]],[[[0,0,0]]]
-        print("rvec : ", rvec)
-        print("tvec : ", tvec)    
+        else : return [[[0,0,0]]],[[[0,0,0]]]    
         return rvec, tvec
 
-    def process_vision(self):
+    def process_vision(self, conn):
+        self.sensor = KondoCameraSensor(self.path_to_camera_config)
+        self.aruco_init()
         while not self.stopFlag:
             img = self.sensor.snapshot().img
-            self.rvec, self.tvec = self.aruco_position(img)
+            rvec, tvec = self.aruco_position(img)
+            conn.send((rvec, tvec))
 
     def run_forward_1(self):
         stepLength1 = 0
@@ -76,7 +80,7 @@ class Sprint(Competition):
         time.sleep(2)
         for cycle in range(self.number_of_cycles):
             
-
+            self.rvec, self.tvec = self.parent_conn.recv()
             #if cycle ==0 : stepLength1 = self.stepLength/4
             #if cycle ==1 : stepLength1 = self.stepLength/2
             #if cycle ==2 : stepLength1 = self.stepLength/4 * 3
@@ -90,6 +94,8 @@ class Sprint(Competition):
             step_rot = 0 if -0.3 < self.rvec[0][0][1] < 0.1 else -max(-0.6,min(0.4,self.rvec[0][0][1]))
             self.motion.refresh_Orientation()
             print(f"step_l {stepLength1} step_rot {step_rot}")
+            # print("rvec : ", self.rvec)
+            # print("tvec : ", self.tvec)
             self.motion.walk_Cycle(stepLength1,
                                     0,
                                     0,
@@ -98,7 +104,11 @@ class Sprint(Competition):
         self.motion.walk_Final_Pose()
         self.stopFlag = True
         self.cam_proc.join()
+
+    def __del__(self):
+        self.stopFlag = True
+        self.cam_proc.join()
 if __name__ == "__main__":
-    sprint = Sprint("/home/pi/kondo_fira22/Camera_calibration/mtx.yaml")
+    sprint = Sprint()
     sprint.run_forward_1()    
 
