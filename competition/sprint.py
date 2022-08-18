@@ -57,9 +57,21 @@ class Sprint(Competition):
         while (True):
             img = self.sensor.snapshot().img
             rvec, tvec = self.aruco_position(img)
-            rotation = 0
-
+            rotation = 0 
+            # if cycle ==0 : stepLength1 = stepLength/4
+            # if cycle ==1 : stepLength1 = stepLength/2
+            # if cycle ==2 : stepLength1 = stepLength/4 * 3
             self.motion.walk_Cycle(self.stepLength,0,rotation,3, 10)
+    def run_forward(self):
+        while (True):
+            img = self.sensor.snapshot().img
+            rvec, tvec = self.aruco_position(img)
+            rotation = 0 
+            # if cycle ==0 : stepLength1 = stepLength/4
+            # if cycle ==1 : stepLength1 = stepLength/2
+            # if cycle ==2 : stepLength1 = stepLength/4 * 3
+            self.motion.walk_Cycle(self.stepLength,0,rotation,3, 10)
+
 if __name__ == "__main__":
     sprint = Sprint()
     sprint.run_forward()    
