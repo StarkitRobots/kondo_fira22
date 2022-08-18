@@ -98,6 +98,7 @@ class Player():
         if self.role == 'balancing_test': self.balancing_test_main_cycle()
         if self.role == 'triple_jump': self.triple_jump_main_cycle()
         if self.role == 'basketball': self.basketball_main_cycle()
+        if self.role == 'archery': self.archery_main_cycle()
 
     def common_init(self):
         self.motion.activation()
@@ -554,6 +555,52 @@ class Player():
                     continue
             self.motion.walk_Final_Pose()
             return
+    def archery_main_cycle(self):
+
+        def get_pixels_of_target(name):
+            center = (None, None)
+            self.glob.camera_ON = True
+            center = self.motion.check_camera(name)
+            center_x = center[0]
+            center_y = center[1]
+            return center_x, center_y
+
+        def release_the_bowstring():
+            self.motion.play_Soft_Motion_Slot(name = 'archery_release_the_bowstring')
+
+        cam_frame = None
+        traj_coords = []
+        timestamps = []
+
+        pelvis_rot = 0
+        pelvis_rot_mistake = 0.1
+        pelvis_rot_const = 1.4
+        pointed_to_target = False
+
+        number_of_frames = 100
+
+        period = 0
+        circle_x = 0
+        circle_y = 0
+        circle_r = 0
+        circle_error = 0
+
+        l_ind = 0
+
+        time_delay = 1.1
+        time_accuracy = 0.1
+        
+        self.motion.play_Soft_Motion_Slot(name = 'archery_ready')
+        input()
+        self.motion.play_Soft_Motion_Slot(name = 'archery_setup')
+        time.sleep(4)
+        self.motion.play_Soft_Motion_Slot(name = 'archery_pull')
+        to_continue = True
+        while to_continue:
+            time.sleep(0.05)
+            to_continue = tick()    # it should return False
+        print('shoot')
+        release_the_bowstring()     # kondo should let go bowstring here
 
 
 if __name__=="__main__":
