@@ -66,16 +66,16 @@ if __name__ == "__main__":
 
         print("Setting the resolution...")
         fmt = camera.set_resolution(1600, 1300)
-        # fmt = camera.set_resolution(480, 360)
+        #fmt = camera.set_resolution(480, 360)
         # print("Current resolution is {}".format(fmt))
         # set_controls(camera)
         mtx = []
         dist = []
-        with open("calibration_matrix.yaml", 'r') as f:
-            data = yaml.load(f, Loader=yaml.loader.UnsafeLoader)
-            mtx = np.array([np.array(i) for i in data["camera_matrix"]])        
-            dist = np.array( data["dist_coeff"][0])
-            print (mtx,dist,sep="\n")
+        # with open("calibration_matrix.yaml", 'r') as f:
+        #     data = yaml.load(f, Loader=yaml.loader.UnsafeLoader)
+        #     mtx = np.array([np.array(i) for i in data["camera_matrix"]])        
+        #     dist = np.array( data["dist_coeff"][0])
+        #     print (mtx,dist,sep="\n")
 
             # Debug: print the values
         mtx, dist = loadCoefficients("mtx.yaml")
@@ -119,7 +119,7 @@ if __name__ == "__main__":
                     ids = ids.flatten()
                     # loop over the detected ArUCo corners
                     a = np.eye(3)
-                    tvec, rvec = cv2.aruco.estimatePoseSingleMarkers(corners[0], 0.05, mtx, dist)
+                    tvec, rvec = cv2.aruco.estimatePoseSingleMarkers(corners[0], 0.17, mtx, dist)
                     print("rvec : ", rvec)
                     print("tvec : ", tvec)
                     for (markerCorner, markerID) in zip(corners, ids):

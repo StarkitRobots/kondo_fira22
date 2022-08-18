@@ -51,7 +51,7 @@ objp[:,:2] = np.mgrid[0:corner_x,0:corner_y].T.reshape(-1,2)
 objpoints = [] # 3d point in real world space
 jpegpoints = [] # 2d points in image plane.
 
-source_path = "/home/pi/MIPI_Camera_old/RPI/python/Camera_calibration" #ini untuk source image kita simpan kat mane??
+source_path = "/home/pi/kondo_fira22/Camera_calibration" #ini untuk source image kita simpan kat mane??
 #print(os.getcwd())
 print('image found :',len(os.listdir(source_path)))
 

@@ -1,5 +1,3 @@
-
-
 import sys
 import os
 import math
@@ -39,14 +37,14 @@ class Sprint(Competition):
         self.motion.fr1 = 4 # 4
         self.motion.fr2 = 10 # 10
         ##self.motion.initPoses = self.motion.fr2 
-        self.motion.gaitHeight = 190 # 190
+        self.motion.gaitHeight = 220 # 190
         self.motion.stepHeight = 40  # 20
         self.stepLength = 70 #70 
         self.forward = True
         self.stopDistance = 0.2
         self.stepIncrement = 10
         self.stepDecrement = 10
-        self.maxStepLength = -50
+        self.maxStepLengthBack = -70
         self.sensor = KondoCameraSensor(path_to_camera_config)
         self.aruco_init()
     def aruco_init(self):
@@ -55,29 +53,39 @@ class Sprint(Competition):
     def aruco_position(self, img):
         (corners, ids, rejected) = cv2.aruco.detectMarkers(img, self.arucoDict,
                         parameters=self.arucoParams)
-        print(corners)
-        print(self.sensor.camera_matrix, self.sensor.dist_matrix)
+        # print(corners)
+        # print(self.sensor.camera_matrix, self.sensor.dist_matrix)
         if corners != []:
-            tvec, rvec = cv2.aruco.estimatePoseSingleMarkers(corners[0], 0.05, self.sensor.camera_matrix, self.sensor.dist_matrix)
+            rvec, tvec = cv2.aruco.estimatePoseSingleMarkers(corners[0], 0.17, self.sensor.camera_matrix, self.sensor.dist_matrix)
         else : return [[[0,0,0]]],[[[0,0,0]]]
         print("rvec : ", rvec)
         print("tvec : ", tvec)    
-        return tvec, rvec
+        return rvec, tvec
 
     def run_forward_1(self):
+        stepLength1 = 0
+        self.motion.walk_Initial_Pose()
+        time.sleep(2)
         for cycle in range(self.number_of_cycles):
             img = self.sensor.snapshot().img
             rvec, tvec = self.aruco_position(img)
 
-            if cycle ==0 : stepLength1 = self.stepLength/4
-            if cycle ==1 : stepLength1 = self.stepLength/2
-            if cycle ==2 : stepLength1 = self.stepLength/4 * 3
-            
-            if tvec[1][0][0] < self.stopDistance: stepLength1 = -self.stepLength
+            #if cycle ==0 : stepLength1 = self.stepLength/4
+            #if cycle ==1 : stepLength1 = self.stepLength/2
+            #if cycle ==2 : stepLength1 = self.stepLength/4 * 3
+              
+            if cycle<10 and stepLength1 < self.stepLength:
 
+                stepLength1 += self.stepIncrement
+           
+            if 0 < tvec[0][0][2] < self.stopDistance and stepLength1 > self.maxStepLengthBack:
+                stepLength1 = -self.stepDecrement
+            step_rot = 0 if -0.3 < rvec[0][0][1] < 0.1 else -max(-0.6,min(0.4,rvec[0][0][1]))
+            self.motion.refresh_Orientation()
+            print(f"step_l {stepLength1} step_rot {step_rot}")
             self.motion.walk_Cycle(stepLength1,
                                     0,
-                                    0 if -0.1 < rvec[0][0][1] < 0.1 else rvec[0][0][1],
+                                    0,
                                     cycle, 
                                     self.number_of_cycles)
 if __name__ == "__main__":

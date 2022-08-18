@@ -540,7 +540,7 @@ class Motion1:
                             if i in self.hand_joints : continue
                         pos = int(angles[i]*1698 + 7500)
                         servoDatas.append( self.kondo.ServoData(self.ACTIVESERVOS[i][0],self.ACTIVESERVOS[i][1],pos))
-                    print(servoDatas)
+                    # print(servoDatas)
                     servoDatas = self.reOrderServoData(servoDatas)
                     #start2 = self.pyb.millis()
                     if j == 0:
@@ -589,7 +589,7 @@ class Motion1:
             self.xr, self.xl = self.params['BODY_TILT_AT_WALK'] * stepLength / 120, self.params['BODY_TILT_AT_WALK'] * stepLength / 120
             if self.glob.SIMULATION == 2: 
                 start1 = self.pyb.millis()
-                print("timer : ", self.pyb.elapsed_millis(test1))
+                # print("timer : ", self.pyb.elapsed_millis(test1))
             if 0<= iii < self.fr1 :                                              # FASA 1
                 alpha = alpha01 * (iii/2+0.5*framestep)
                 #alpha = alpha01 * iii/2
@@ -677,7 +677,7 @@ class Motion1:
             #self.xtl += 10
             self.check_camera()
             self.refresh_Orientation()
-            print('self.body_euler_angle["pitch"]', self.body_euler_angle['pitch'])
+            # print('self.body_euler_angle["pitch"]', self.body_euler_angle['pitch'])
 
             #print('iii = ', iii, 'ytr =', self.ytr, 'ytl =', self.ytl)
             if not self.falling_Flag ==0: return
@@ -764,7 +764,7 @@ class Motion1:
                     servoDatas = []
                     disp = []
                     for i in range(len(angles)):
-#                        print(angles)
+#                        #print(angles)
                         if self.keep_hands_up:
                             if i in self.hand_joints : continue
                         pos = int(angles[i]*1698 + 7500)
@@ -776,7 +776,7 @@ class Motion1:
                     #print('disp[4] = ', disp[4], 'disp[15]=', disp[15])
                     time1 = self.pyb.elapsed_millis(start1)
                     time2 = self.pyb.elapsed_millis(start2)
-                    print('calc time =',time1 - time2, 'transfer time =', time2 )
+                    # print('calc time =',time1 - time2, 'transfer time =', time2 )
                     self.pyb.delay(self.frame_delay - time1)
                 #self.refresh_Orientation()
         # returning xr, xl, yr, yl to initial value
@@ -818,7 +818,7 @@ class Motion1:
             #self.xr, self.xl = self.params['BODY_TILT_AT_WALK'] * stepLength / 120, self.params['BODY_TILT_AT_WALK'] * stepLength / 120
             if self.glob.SIMULATION == 2: 
                 start1 = self.pyb.millis()
-                print("timer : ", self.pyb.elapsed_millis(test1))
+                # print("timer : ", self.pyb.elapsed_millis(test1))
             if 0<= iii <self.fr1 :                                              # FASA 1
                 support_leg = 'both=>left'
                 alpha = alpha01 * (iii/2+0.5*framestep)
@@ -912,7 +912,7 @@ class Motion1:
             #self.xtl += 10
             self.check_camera()
             self.refresh_Orientation()
-            print('self.body_euler_angle["pitch"]', self.body_euler_angle['pitch'])
+            # print('self.body_euler_angle["pitch"]', self.body_euler_angle['pitch'])
 
             #print('iii = ', iii, 'ytr =', self.ytr, 'ytl =', self.ytl)
             if not self.falling_Flag ==0: return
