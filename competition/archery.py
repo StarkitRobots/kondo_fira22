@@ -146,7 +146,7 @@ def detect_circle_params(x_coords, y_coords):
 
     return xc_2b, yc_2b, R_2b, residu_2b
 
-def calculate_period(positions, timestamps): #measurments):
+def calculate_period(positions): #measurments):
     def dotproduct(v1, v2):
         return sum((a*b) for a, b in zip(v1, v2))
 
@@ -169,7 +169,7 @@ def calculate_period(positions, timestamps): #measurments):
     # measurments = sorted(measurments, key=lambda x: x[2])
     # x_coords, y_coords, time_stamps = zip(*measurements)
 
-    time_stamps = timestamps
+    # time_stamps = timestamps
     x_coords, y_coords = zip (*positions)
 
     measurements = list (zip (x_coords, y_coords, timestamps))
@@ -185,9 +185,9 @@ def calculate_period(positions, timestamps): #measurments):
     for st1, st2 in zip(measurements[:-1], measurements[1:]):
         angle += compute_angle(st2[0], st2[1], st1[0], st1[1], circle_x, circle_y)
 
-    all_time = measurements[-1][2] - measurements[0][2]
-    period = all_time / angle * 2 * math.pi
-    return period, circle_x, circle_y, circle_r, circle_error
+    # all_time = measurements[-1][2] - measurements[0][2]
+    # period = all_time / angle * 2 * math.pi
+    return  circle_x, circle_y, circle_r, circle_error
 
 def find_target_center(frame):
     # cv2.imshow("real", frame)
@@ -328,14 +328,14 @@ class ArcheryFSM:
             return (np.arctan(response.y / response.x))
 
     def move_pelvis(self):
-        self.servos_client(["pelvis"], [-self.pelvis_rot*self.pelvis_rot_const])
+        self.servos_client(0,2, -self.pelvis_rot*self.pelvis_rot_const)
 
     def release_the_bowstring(self):
-        self.servos_client(["left_finger_pitch"], [-1])
+        self.servos_client(13,2, -1)
 
 
     def servos_client (self,id,sio position):
-        self.motion.kondo.set_servo_pos(id,sio,position)
+        self.motion.set_servo_pos(id,sio,position)
 
 
     def motion_client(self, motion_name):
@@ -374,6 +374,7 @@ class ArcheryFSM:
         return predicted_time   
 
     def tick(self):
+        self.update_camera_frame()
         if self.cam_frame is not None:
             if(len(self.traj_coords) > self.number_of_frames) and (not self.pointed_to_target):
                 tail_len = self.number_of_frames
@@ -388,7 +389,7 @@ class ArcheryFSM:
                 
                 # print(len(self.traj_coords), self.l_ind)
                 
-                self.period, self.circle_x, self.circle_y, self.circle_r, self.circle_error = calculate_period(self.traj_coords[self.l_ind : ], self.timestamps)
+                self.circle_x, self.circle_y, self.circle_r, self.circle_error = calculate_period(self.traj_coords[self.l_ind : ])
                 
                 self.pelvis_rot += self.count_pelvis_rotation()
                 print(self.pelvis_rot)
@@ -432,26 +433,28 @@ class ArcheryFSM:
                 #     break
             elif(len(self.traj_coords) > self.number_of_frames) and (self.pointed_to_target):
                 tail_len = self.number_of_frames
+                self.cam_frame = self.update_camera_frame()
                 frame = self.cam_frame.copy()
                 trajectory_x, trajectory_y = find_target_center(frame)
                 self.traj_coords.append([trajectory_x, trajectory_y])
-                self.timestamps.append(time.time())
+                # self.timestamps.append(time.time())
                 
                 if (len(self.traj_coords) > tail_len):
                     l_ind = len(self.traj_coords) - tail_len
                 
-                self.period, self.circle_x, self.circle_y, self.circle_r, self.circle_error = calculate_period(self.traj_coords[self.l_ind : ], self.timestamps)
+                self.circle_x, self.circle_y, self.circle_r, self.circle_error = calculate_period(self.traj_coords[self.l_ind : ], self.timestamps)
 
-                pred_time = self.predict_time()
-                print(pred_time)
+                # pred_time = self.predict_time()
+                # print(pred_time)
 
-                if((pred_time - self.time_delay) < self.time_accuracy):
-                    return False
+                # if((pred_time - self.time_delay) < self.time_accuracy):
+                #     return False
             else:
+                self.cam_frame = self.update_camera_frame()
                 frame = self.cam_frame
                 trajectory_x, trajectory_y = find_target_center(frame)
                 self.traj_coords.append([trajectory_x, trajectory_y])
-                self.timestamps.append(time.time())
+                # self.timestamps.append(time.time())
         # cam.release()
         # cv2.destroyAllWindows()
         # cv2.waitKey(10)
@@ -459,8 +462,8 @@ class ArcheryFSM:
 
 
 if __name__ == "__main__":
-    rospy.init_node("archery")
-    archery = ArcheryFSM()
+    # rospy.init_node("archery")
+    archery = Archery()
     image_sub = rospy.Subscriber('/usb_cam/image_raw', Image, archery.update_camera_frame)
 
     archery.motion_client("archery_ready")  #ACTION 1
