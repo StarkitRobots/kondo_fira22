@@ -100,6 +100,7 @@ class Player():
         if self.role == 'balancing_test': self.balancing_test_main_cycle()
         if self.role == 'triple_jump': self.triple_jump_main_cycle()
         if self.role == 'basketball': self.basketball_main_cycle()
+        if self.role == 'archery': self.archery_main_cycle()
 
     def common_init(self):
         self.motion.activation()
@@ -556,6 +557,25 @@ class Player():
                     continue
             self.motion.walk_Final_Pose()
             return
+    def archery_main_cycle(self):
+
+        def tick():         # I dont know how it should work
+            return None
+
+        def release_the_bowstring():
+            self.motion.play_Soft_Motion_Slot(name = 'archery_release_the_bowstring')
+
+        self.motion.play_Soft_Motion_Slot(name = 'archery_ready')
+        input()
+        self.motion.play_Soft_Motion_Slot(name = 'archery_setup')
+        time.sleep(4)
+        self.motion.play_Soft_Motion_Slot(name = 'archery_pull')
+        to_continue = True
+        while to_continue:
+            time.sleep(0.05)
+            to_continue = tick()    # it should return False
+        print('shoot')
+        release_the_bowstring()     # kondo should let go bowstring here
 
 
 if __name__=="__main__":
