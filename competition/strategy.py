@@ -559,12 +559,39 @@ class Player():
             return
     def archery_main_cycle(self):
 
-        def tick():         # I dont know how it should work
-            return None
+        def get_pixels_of_target(name):
+            center = (None, None)
+            self.glob.camera_ON = True
+            center = self.motion.check_camera(name)
+            center_x = center[0]
+            center_y = center[1]
+            return center_x, center_y
 
         def release_the_bowstring():
             self.motion.play_Soft_Motion_Slot(name = 'archery_release_the_bowstring')
 
+        cam_frame = None
+        traj_coords = []
+        timestamps = []
+
+        pelvis_rot = 0
+        pelvis_rot_mistake = 0.1
+        pelvis_rot_const = 1.4
+        pointed_to_target = False
+
+        number_of_frames = 100
+
+        period = 0
+        circle_x = 0
+        circle_y = 0
+        circle_r = 0
+        circle_error = 0
+
+        l_ind = 0
+
+        time_delay = 1.1
+        time_accuracy = 0.1
+        
         self.motion.play_Soft_Motion_Slot(name = 'archery_ready')
         input()
         self.motion.play_Soft_Motion_Slot(name = 'archery_setup')

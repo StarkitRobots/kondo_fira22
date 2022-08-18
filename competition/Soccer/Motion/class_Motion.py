@@ -209,15 +209,18 @@ class Motion1:
                 self.cv2.waitKey(10)
             if name == 'ball':
                 coords = img.find_blobs([self.glob.TH['orange ball']['th']], pixels_threshold=self.glob.TH['orange ball']['pixel'], area_threshold=self.glob.TH['orange ball']['area'], merge=True)
+                print(f"number of found objects: {len(coords)}")
             if name == 'basket':
                 coords = img.find_blobs([self.glob.TH['red basket']['th']], pixels_threshold=self.glob.TH['red basket']['pixel'], area_threshold=self.glob.TH['red basket']['area'], merge=True)
+                print(f"number of found objects: {len(coords)}")
             if name == 'stripe':
                 coords = img.find_blobs([self.glob.TH['yellow stripe']['th']], pixels_threshold=self.glob.TH['yellow stripe']['pixel'], area_threshold=self.glob.TH['yellow stripe']['area'], merge=True)
-            if name == 'lol':
-                img.find_blobs([self.glob.TH['orange ball']['th']], pixels_threshold=self.glob.TH['orange ball']['pixel'], area_threshold=self.glob.TH['orange ball']['area'], merge=True)
+                print(f"number of found objects: {len(coords)}")
+            if name == 'archery':
+                center_coords = img.find_target_center([self.glob.TH['archery']['thblue']], self.glob.TH['archery']['thyellow'], area_threshold=self.glob.TH['archery']['thred'], merge=True)
+                if center_coords != (None, None):       print(f"Coordinates of center of target are {center_coords}")
+                return center_coords
 
-
-            print(f"number of found objects: {len(coords)}")
             if name == 'ball' or name == 'basket':
                 center = []
                 for coord in coords:
@@ -240,6 +243,7 @@ class Motion1:
                     return center_of_bottom
                 else:
                     return [(None, None)]
+            
             '''
             if img.find_blobs([self.glob.TH['orange ball']['th']], pixels_threshold=self.glob.TH['orange ball']['pixel'],
                              area_threshold=self.glob.TH['orange ball']['area'], merge=True):
