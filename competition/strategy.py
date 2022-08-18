@@ -77,7 +77,9 @@ class Player():
         self.motion.sim_Disable()
 
     def real(self, button):
+        
         self.motion = Motion(self.glob)
+        
         if self.role == 'run_test':
             self.motion.neck_tilt = -2000
             if self.glob.SIMULATION == 2:
@@ -90,6 +92,7 @@ class Player():
                 for j in range(20):
                     self.motion.sim.simxSynchronousTrigger(self.motion.clientID)
         pressed_button = 1# self.motion.push_Button(button)
+        
         self.common_init()
         if self.role == 'run_test': self.run_test_main_cycle(pressed_button)
         if self.role == 'kondo_walk': self.kondo_walk_main_cycle(pressed_button)
@@ -298,9 +301,9 @@ class Player():
         #self.motion.kondo.motionPlay(78) 
         #self.motion.activation()
         #self.motion.falling_Flag = 0
-        
+
         #PROVERKA OF VISION
-            
+
         while True:
             pixels = get_pixels('basket')
             if pixels != (None, None):
@@ -310,6 +313,7 @@ class Player():
             if pixels != (None, None):
                 coords = get_distance(pixels, 'ball')
                 print(f"coordinates of ball: {coords}")
+            time.sleep(10)
         
         #END OF PROVERKA OF VISION
         
@@ -323,12 +327,17 @@ class Player():
 
         # self.motion.move_head(1000, -2000)
         # Finding ball and putting it to self.ball_coordinates for future approach.
-
-        while not flag_ball:
-            flag_ball, ball_coords, ball_distance = finding('ball')      # (True/False), (x,y), distance
-        print(f"result of finding ball: {ball_coords} and {ball_distance}")
         
+        flag_ball = False
+        print("zdorova")
+        while True:
+            print("ya kryg")
+            while not flag_ball:
+                flag_ball, ball_coords, ball_distance = finding('ball')      # (True/False), (x,y), distance
+            print(f"result of finding ball: {ball_coords} and {ball_distance}")
+            time.sleep(20)
 
+        
         #Approaching to the ball on 0.8 of distance
         
         flag_ball = False
@@ -586,7 +595,7 @@ if __name__=="__main__":
     #if SIMULATION != 0:
     #    player.motion.print_Diagnostics()
     #player.test_walk_2()
-    player.real( 1)
+    player.real(1)
 
 
 

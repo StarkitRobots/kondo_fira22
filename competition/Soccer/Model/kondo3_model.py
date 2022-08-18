@@ -7,8 +7,8 @@ class RobotModel:
 
         self.glob = glob
         self.params = self.glob.params
-        #self.base_height = self.glob.params['HEIGHT_OF_CAMERA']/1000 #for head with body
-        self.base_height = 125/1000 #for head without body
+        self.base_height = self.glob.params['HEIGHT_OF_CAMERA']/1000 #for head with body
+        #self.base_height = 125/1000 #for head without body
         self.neck_height = self.glob.params['HEIGHT_OF_NECK']/1000
         self.robot_height = self.base_height + self.neck_height
         self.tilt_bias = 0.0
