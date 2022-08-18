@@ -1,10 +1,9 @@
+import multiprocessing
 import sys
 import os
-import math
-import json
 import time
-from turtle import forward
 import cv2
+from multiprocessing import Process
 
 current_work_directory = os.getcwd()
 current_work_directory = current_work_directory.replace('\\', '/')
@@ -18,9 +17,7 @@ sys.path.append( current_work_directory + 'Soccer/Motion/')
 SIMULATION=2
 from class_Motion import Glob
 from reload import KondoCameraSensor
-
-if SIMULATION == 2:
-    from class_Motion import Motion1 as Motion
+from class_Motion import Motion1 as Motion
 
 class Competition:
     pass
@@ -45,6 +42,11 @@ class Sprint(Competition):
         self.stepIncrement = 10
         self.stepDecrement = 10
         self.maxStepLengthBack = -70
+        self.cam_proc = Process(target=self.process_vision)
+        self.rvec = [[[]]]
+        self.tvec = [[[]]]
+        self.stopFlag = False
+
         self.sensor = KondoCameraSensor(path_to_camera_config)
         self.aruco_init()
     def aruco_init(self):
@@ -62,13 +64,18 @@ class Sprint(Competition):
         print("tvec : ", tvec)    
         return rvec, tvec
 
+    def process_vision(self):
+        while not self.stopFlag:
+            img = self.sensor.snapshot().img
+            self.rvec, self.tvec = self.aruco_position(img)
+
     def run_forward_1(self):
         stepLength1 = 0
         self.motion.walk_Initial_Pose()
+        self.cam_proc.start()
         time.sleep(2)
         for cycle in range(self.number_of_cycles):
-            img = self.sensor.snapshot().img
-            rvec, tvec = self.aruco_position(img)
+            
 
             #if cycle ==0 : stepLength1 = self.stepLength/4
             #if cycle ==1 : stepLength1 = self.stepLength/2
@@ -78,9 +85,9 @@ class Sprint(Competition):
 
                 stepLength1 += self.stepIncrement
            
-            if 0 < tvec[0][0][2] < self.stopDistance and stepLength1 > self.maxStepLengthBack:
+            if 0 < self.tvec[0][0][2] < self.stopDistance and stepLength1 > self.maxStepLengthBack:
                 stepLength1 = -self.stepDecrement
-            step_rot = 0 if -0.3 < rvec[0][0][1] < 0.1 else -max(-0.6,min(0.4,rvec[0][0][1]))
+            step_rot = 0 if -0.3 < self.rvec[0][0][1] < 0.1 else -max(-0.6,min(0.4,self.rvec[0][0][1]))
             self.motion.refresh_Orientation()
             print(f"step_l {stepLength1} step_rot {step_rot}")
             self.motion.walk_Cycle(stepLength1,
@@ -88,6 +95,9 @@ class Sprint(Competition):
                                     0,
                                     cycle, 
                                     self.number_of_cycles)
+        self.motion.walk_Final_Pose()
+        self.stopFlag = True
+        self.cam_proc.join()
 if __name__ == "__main__":
     sprint = Sprint("/home/pi/kondo_fira22/Camera_calibration/mtx.yaml")
     sprint.run_forward_1()    
