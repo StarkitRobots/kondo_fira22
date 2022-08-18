@@ -1,5 +1,3 @@
-
-
 import sys
 import os
 import math
@@ -567,6 +565,7 @@ if __name__=="__main__":
     #    player.motion.print_Diagnostics()
     #player.test_walk_2()
     player.real( 1)
+
 
 
 

@@ -14,8 +14,10 @@ class Basketball:
     step_length = 32
     side_length = 20
     angle = 0.05
+
     step_time = 1   #I DON'T KNOW how long it is
     side_time = 1   #I DON'T KNOW how long it is
+
     step_time_koef = step_time / step_length
     side_time_koef = side_time / side_length
     '''

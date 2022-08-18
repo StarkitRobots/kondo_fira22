@@ -1,1 +1,1 @@
-/home/ss21mipt/Documents/starkit/Azers_project/VREP/programming/legacyRemoteApi/remoteApiBindings/python/python
+/home/hua/kondo_fira22/VREP/programming/legacyRemoteApi/remoteApiBindings/python/python
