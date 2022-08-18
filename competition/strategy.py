@@ -23,7 +23,6 @@ else:
 sys.path.append( current_work_directory + 'Soccer/')
 sys.path.append( current_work_directory + 'Soccer/Motion/')
 SIMULATION=2
-from class_Motion import Glob
 
 if SIMULATION == 2:
     from player import Player
