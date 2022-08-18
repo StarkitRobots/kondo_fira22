@@ -109,10 +109,10 @@ class Motion_sim(Motion1):
             activePoseOld = []
             l1 = len(self.activePose)
             for ind in range(len(self.activePose)): activePoseOld.append(self.activePose[ind])
-            if len(activePoseOld) < 25:
+            if len(activePoseOld) < 27:
                 activePoseOld.append(0)
                 activePoseOld.append(0)
-            self.activePose =[]
+            self.activePose = []
             for j in range(len(motion) - 1):
                     self.activePose.append(0.017*motion[j+1]*0.03375)
             pulseNum = int(motion[0]*self.FRAMELENGTH * 1000 / self.simThreadCycleInMs)
@@ -130,7 +130,7 @@ class Motion_sim(Motion1):
     def sim_Start(self):
         #print ('Simulation started')
         self.sim.simxFinish(-1) # just in case, close all opened connections
-        simThreadCycleInMs = 5
+        simThreadCycleInMs = 30
         if self.glob.SIMULATION == 3 or self.glob.SIMULATION  == 0:
             self.clientID=self.sim.simxStart('127.0.0.1', -19997, True, True, 5000, simThreadCycleInMs) # Connect to V-REP
         if self.glob.SIMULATION == 1:

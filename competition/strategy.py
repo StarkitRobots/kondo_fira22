@@ -21,6 +21,7 @@ else:
 
 sys.path.append( current_work_directory + 'Soccer/')
 sys.path.append( current_work_directory + 'Soccer/Motion/')
+sys.path.append( current_work_directory + 'Motion/')
 
 from class_Motion import Glob
 
@@ -63,6 +64,7 @@ class Player():
         if self.role == 'sidestep_test': self.sidestep_test_main_cycle()
         if self.role == 'balancing_test': self.balancing_test_main_cycle()
         if self.role == 'basketball': self.basketball_main_cycle()
+        if self.role == 'triple_jump': self.triple_jump_main_cycle()
         if SIMULATION != 0:
             self.motion.sim_Progress(1)
         self.motion.sim_Stop()
@@ -132,11 +134,14 @@ class Player():
         stepLength = 40
         sideLength = 0
         #self.motion.first_Leg_Is_Right_Leg = False
-        self.motion.walk_Initial_Pose()
-
+        #self.motion.walk_Initial_Pose()
+        
         #Start find stripe
         self.glob.camera_ON = True
+        
         center = self.motion.check_camera('stripe')
+        if center[0] == (None, None):
+            center = [(100, 100)]
         pixels = center[0]
                 
         coords = self.motion.self_coords_from_pixels(pixels[0], pixels[1], 'stripe')
@@ -145,8 +150,9 @@ class Player():
         r_x = coords[0]
         r_y = coords[1]
         #Final find stripe
-
+        
         #Start go to stripe
+
         while math.fabs(r_x - point[0]) >= acc or math.fabs(r_y - point[1]) >= acc or math.fabs(r_theta - point[2]) >= acc:
             
             point = center_point()
@@ -155,7 +161,7 @@ class Player():
             steps = approach(r_x, r_y, r_theta, point[0], point[1], point[2])
             try:
                 r_x, r_y, r_theta = localisation(steps[1])
-                print(r_x, r_y, r_theta)
+                print(f"r_x: {r_x}; r_y: {r_y}; r_theta: {r_theta}")
                 if self.motion.first_Leg_Is_Right_Leg: invert = -1
                 else: invert = 1
                     
@@ -182,7 +188,8 @@ class Player():
                     
             except IndexError:
                 r_x, r_y, r_theta = point[0], point[1], point[2]
-        self.motion.walk_Final_Pose()
+        #self.motion.walk_Final_Pose()
+        
         #Robots on the stripe
         #self.motion.simulateMotion(name = 'Kondo3_TripleJump')
         self.motion.play_Soft_Motion_Slot(name = 'Kondo3_TripleJump')
@@ -359,7 +366,7 @@ class Player():
 
 
 if __name__=="__main__":
-    player = Player('run_test')  # 'run_test', 'balancing_test', 'basketball', 'weight_lifting', 'kondo_walk'
+    player = Player('triple_jump')  # 'run_test', 'balancing_test', 'basketball', 'weight_lifting', 'kondo_walk'
     #player.deep_learning()
     #for i in range(1):
     #    player.test_walk()
