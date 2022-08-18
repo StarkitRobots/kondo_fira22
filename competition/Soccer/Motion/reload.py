@@ -66,6 +66,109 @@ class Image:
     def __init__ (self, img_):
         self.img = img_.copy ()
 
+    def find_target_center(self, thblue, thyellow, thred):
+        # cv2.imshow("real", frame)
+        avarage_x = 0
+        avarage_y = 0
+        
+    #Switch to HSV 
+        hsv = cv2.cvtColor(self.img, cv2.COLOR_BGR2HSV)
+        gray = cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY)
+        
+        low_th_blue = (thblue[0], thblue[2], thblue[4])
+        high_th_blue = (thblue[1], thblue[3], thblue[5])
+
+        low_th_yellow = (thyellow[0], thyellow[2], thyellow[4])
+        high_th_yellow = (thyellow[1], thyellow[3], thyellow[5])
+
+        low_th_red = (thred[0], thred[2], thred[4])
+        high_th_red = (thred[1], thred[3], thred[5])
+
+    #Detect blue circle
+        mask_blue = cv2.inRange(hsv, low_th_blue, high_th_blue)    
+        
+
+        blured_blue = cv2.medianBlur(mask_blue*gray, 5)
+        
+        kernel_blue = np.ones((5,5), np.uint8)
+        img_erosion_blue = cv2.erode(blured_blue, kernel_blue, iterations=1)
+        img_dilation_blue = cv2.dilate(img_erosion_blue, kernel_blue, iterations=1)
+        
+        canny_blue = cv2.Canny(img_dilation_blue, 350, 360)
+        
+        # cv2.imshow("blue", canny_blue)
+        
+        circle_blue = cv2.HoughCircles(canny_blue, cv2.HOUGH_GRADIENT, 1.4, 100)
+        
+    #Detect yellow circle
+        mask_yellow = cv2.inRange(hsv, low_th_yellow, low_th_yellow)
+        
+        blured_yellow = cv2.medianBlur(mask_yellow*gray, 5)
+        
+        kernel_yellow = np.ones((5,5), np.uint8)
+        img_erosion_yellow = cv2.erode(blured_yellow, kernel_yellow, iterations=1)
+        img_dilation_yellow = cv2.dilate(img_erosion_yellow, kernel_yellow, iterations=1)
+        
+        canny_yellow = cv2.Canny(img_dilation_yellow, 180, 190)
+        
+        # cv2.imshow("yellow", canny_yellow)
+        
+        circle_yellow = cv2.HoughCircles(canny_yellow, cv2.HOUGH_GRADIENT, 1.4, 100)
+        
+    #Detect red circle
+        mask_red = cv2.inRange(hsv, low_th_red, low_th_red)
+        
+        blured_red = cv2.medianBlur(mask_red*gray, 7)
+        
+        kernel_red = np.ones((7,7), np.uint8)
+        img_erosion_red = cv2.erode(blured_red, kernel_red, iterations=1)
+        img_dilation_red = cv2.dilate(img_erosion_red, kernel_red, iterations=1)
+        
+        canny_red = cv2.Canny(img_dilation_red, 350, 360) 
+        
+        # cv2.imshow("red", canny_red)
+        
+        circle_red = cv2.HoughCircles(canny_red, cv2.HOUGH_GRADIENT, 2.2, 100)
+        
+    #Find center
+        
+    #if circle_blue is not None and circle_yellow is not None and circle_red is not None:
+        #convert the (x, y) coordinates and radius of the circles to integers
+        counter = 0
+        total_x = 0
+        total_y = 0
+        
+        if circle_blue is not None:
+            circle_blue = np.round(circle_blue[0, :]).astype("int")
+            total_x += circle_blue[0][0]
+            total_y += circle_blue[0][1]
+            counter += 1
+            
+        if circle_yellow is not None:
+            circle_yellow = np.round(circle_yellow[0, :]).astype("int")
+            total_x += circle_yellow[0][0]
+            total_y += circle_yellow[0][1]
+            counter += 1
+            
+        if circle_red is not None:
+            circle_red = np.round(circle_red[0, :]).astype("int")
+            total_x += circle_red[0][0]
+            total_y += circle_red[0][1]
+            counter += 1
+            
+        if counter > 0:
+            avarage_x = total_x // counter
+            avarage_y = total_y // counter
+            # print(avarage_x, avarage_y)
+            # # draw a rectangle
+            # # corresponding to the center of the circles
+            # cv2.rectangle(output, (avarage_x - 5, avarage_y - 5), (avarage_x + 5, avarage_y + 5), (0, 128, 255), -1)
+            # # show the output image
+            # cv2.imshow("output", np.hstack([frame, output]))
+            # cv2.waitKey(10)
+        return (avarage_x , avarage_y)
+
+
     def find_blobs (self, ths, pixels_threshold, area_threshold, merge=False, margin=0, invert = False):
         masks = []
         for th in ths:
@@ -260,12 +363,12 @@ class KondoCameraSensor(Sensor):
     def loadCoefficients(path):
         """ Loads camera matrix and distortion coefficients. """
         # FILE_STORAGE_READ
-        # print(path)
+        print(path)
         cv_file = cv2.FileStorage(path, cv2.FILE_STORAGE_READ)
         camera_matrix = cv_file.getNode("camera_matrix").mat()
         dist_matrix = cv_file.getNode("dist_coeff").mat()
         cv_file.release()
-        # print(camera_matrix, dist_matrix)
+        print(camera_matrix, dist_matrix)
         return [camera_matrix, dist_matrix]
     @staticmethod
     def _cameraInit(path):
@@ -274,7 +377,7 @@ class KondoCameraSensor(Sensor):
         KondoCameraSensor.camera.set_mode(6)
         KondoCameraSensor.camera.set_resolution(KondoCameraSensor.resolution["width"],
                 KondoCameraSensor.resolution["height"])
-        KondoCameraSensor.camera_matrix, KondoCameraSensor.dist_matrix = KondoCameraSensor.loadCoefficients(path)
+        if path != None: KondoCameraSensor.camera_matrix, KondoCameraSensor.dist_matrix = KondoCameraSensor.loadCoefficients(path)
 
     def align_down(self, size, align):
             return (size & ~((align)-1))
@@ -283,7 +386,7 @@ class KondoCameraSensor(Sensor):
             return self.align_down(size + align - 1, align)
     
 
-    def __init__(self, path_to_config):
+    def __init__(self, path_to_config=None):
         if (KondoCameraSensor.camera == None):
             self._cameraInit(path_to_config)
 
@@ -312,6 +415,9 @@ class KondoCameraSensor(Sensor):
             image, KondoCameraSensor.camera_matrix, KondoCameraSensor.dist_matrix, None, None
             )
         return Image(image)
+    def __del__(self):
+        KondoCameraSensor.camera.close_camera()
+
 def main ():
 #    sensor = Sensor ("rgb_basket.jpg")
     sensor = KondoCameraSensor()

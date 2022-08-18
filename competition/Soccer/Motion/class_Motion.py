@@ -5,7 +5,7 @@ import sys, os
 import math, time, json
 from compute_Alpha_v4 import Alpha
 import starkit
-
+import cv2
 path_to_model = os.getcwd() + "/Soccer/Model/"
 from reload import *
 sys.path.append(path_to_model)
@@ -187,13 +187,16 @@ class Motion1:
             #uart = pyb.UART(1, 1250000, parity=0)
             #k = kondo.Kondo()
             ##k.init(uart)
+            
             self.kondo = Rcb4BaseLib()
             self.kondo.open('/dev/ttyAMA2', 1250000, 1.3)
+            
             self.clock = time.clock()
             # self.kondo.motionPlay(25)
             self.pyb = pyb
-            self.sensor = KondoCameraSensor
+            self.sensor = KondoCameraSensor("/home/pi/semen/kondo_fira22/Camera_calibration/mtx.yaml")
             self.image = None
+            self.cv2 = cv2
             #-------------------------------------------------------------------------------------------------------------------------------
     def check_camera(self, name):
         if self.glob.camera_ON:
@@ -256,13 +259,17 @@ class Motion1:
 
     def self_coords_from_pixels(self, pixel_x, pixel_y, name):
         robot_model = RobotModel(self.glob)
-        self.neck_tilt = (self.kondo.getSinglePos(12, 2) - 7500) * ((3 * np.pi / 2) / 8000) 
-        self.neck_pan = (self.kondo.getSinglePos(0, 1) - 7500) * ((3 * np.pi / 2) / 8000)
+        t = self.kondo.getSinglePos(12, 2)
+        tilt = t[1]
+        p = self.kondo.getSinglePos(0, 1)
+        pan = p[1]
+        self.neck_tilt = int( (tilt - 7500) * ((3 * np.pi / 2) / 8000) ) 
+        self.neck_pan = int( (pan - 7500) * ((3 * np.pi / 2) / 8000) )
         robot_model.update_camera_pan_tilt(self.neck_pan, self.neck_tilt)
         #robot_model.update_camera_pan_tilt(0, 0)
         print((self.params["HEIGHT_OF_CAMERA"] + self.params["HEIGHT_OF_NECK"])/1000)
         if name == 'ball':
-            height = 0
+            height = 0.32
             #height = 0.289
         elif name == 'basket':
             height = 0.285 # MB???
