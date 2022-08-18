@@ -1,1 +1,42 @@
-{"orange ball": {"th": [38, 92, -6, 60, 43, 76], "pixel": 20, "area": 20}, "blue posts": {"th": [0, 32, -9, 26, -55, -33], "pixel": 50, "area": 50}, "yellow posts": {"th": [55, 100, -34, -25, 23, 123], "pixel": 50, "area": 50}, "white posts": {"th": [44, 100, -18, 29, -14, 93], "pixel": 50, "area": 50}, "green field": {"th": [21, 69, -69, -19, 5, 48], "pixel": 10, "area": 10}, "white marking": {"th": [78, 100, -81, 52, -98, 127], "pixel": 10, "area": 10}}
+{
+    "orange ball": {
+        "th": [ 16, 25, 155, 200, 30, 200 ],
+        "pixel": 300,
+        "area": 300
+    },
+    "red basket": {
+        "th": [ 10, 15, 110, 175, 50, 105 ],
+        "pixel": 600,
+        "area": 600
+    },
+    "yellow stripe": {
+        "th": [ 20, 40, 240, 255, 240, 255 ],
+        "pixel": 10,
+        "area": 10
+    },
+    "blue posts": {
+        "th": [ 0, 32, -9, 26, -55, -33 ],
+        "pixel": 50,
+        "area": 50
+    },
+    "yellow posts": {
+        "th": [ 55, 100, -34, -25, 23, 123 ],
+        "pixel": 50,
+        "area": 50
+    },
+    "white posts": {
+        "th": [ 44, 100, -18, 29, -14, 93 ],
+        "pixel": 50,
+        "area": 50
+    },
+    "green field": {
+        "th": [ 21, 69, -69, -19, 5, 48 ],
+        "pixel": 10,
+        "area": 10
+    },
+    "white marking": {
+        "th": [ 78, 100, -81, 52, -98, 127 ],
+        "pixel": 10,
+        "area": 10
+    }
+}
