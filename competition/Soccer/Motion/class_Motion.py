@@ -6,6 +6,11 @@ import math, time, json
 from compute_Alpha_v4 import Alpha
 import starkit
 
+path_to_model = os.getcwd() + "/Soccer/Model/"
+from reload import *
+sys.path.append(path_to_model)
+from kondo3_model import RobotModel
+
 class Glob:
     def __init__(self, simulation, current_work_directory):
         self.camera_ON = False
@@ -189,24 +194,80 @@ class Motion1:
             self.pyb = pyb
             self.sensor = None
             self.image = None
-               #-------------------------------------------------------------------------------------------------------------------------------
-    def check_camera(self):
+            #-------------------------------------------------------------------------------------------------------------------------------
+    def check_camera(self, name):
         if self.glob.camera_ON:
             thresholds = [(30, 100, 15, 127, 15, 127), # generic_red_thresholds
                             (30, 100, -64, -8, -32, 32), # generic_green_thresholds
                             (0, 30, 0, 64, -128, 0)] # generic_blue_thresholds
             if self.glob.SIMULATION == 2 :
                 img = self.sensor.snapshot()
+                self.cv2.imshow('image', img.img)
+                self.cv2.waitKey(10)
                 #for blob in img.find_blobs(thresholds, pixels_threshold=20, area_threshold=20, merge=True):
                 #    print('blob.code:', blob.code())
             else:
                 img_ = self.vision_Sensor_Get_Image()
-                img_ = self.cv2.resize(img_, (80,60))
                 img = self.re.Image(img_)
-            if img.find_blobs([self.glob.TH['orange ball']['th']], pixels_threshold=self.glob.TH['orange ball']['pixel'],
-                             area_threshold=self.glob.TH['orange ball']['area'], merge=True):
-                print('I see ball')
-                self.i_see_ball = True
+                self.cv2.imshow('image', img_)
+                self.cv2.waitKey(10)
+            if name == 'ball':
+                coords = img.find_blobs([self.glob.TH['orange ball']['th']], pixels_threshold=self.glob.TH['orange ball']['pixel'], area_threshold=self.glob.TH['orange ball']['area'], merge=True)
+                print(f"number of found objects: {len(coords)}")
+            if name == 'basket':
+                coords = img.find_blobs([self.glob.TH['red basket']['th']], pixels_threshold=self.glob.TH['red basket']['pixel'], area_threshold=self.glob.TH['red basket']['area'], merge=True)
+                print(f"number of found objects: {len(coords)}")
+            if name == 'stripe':
+                coords = img.find_blobs([self.glob.TH['yellow stripe']['th']], pixels_threshold=self.glob.TH['yellow stripe']['pixel'], area_threshold=self.glob.TH['yellow stripe']['area'], merge=True)
+                print(f"number of found objects: {len(coords)}")
+            if name == 'archery':
+                center_coords = img.find_target_center([self.glob.TH['archery']['thblue']], self.glob.TH['archery']['thyellow'], area_threshold=self.glob.TH['archery']['thred'], merge=True)
+                if center_coords != (None, None):       print(f"Coordinates of center of target are {center_coords}")
+                return center_coords
+
+            if name == 'ball' or name == 'basket':
+                center = []
+                for coord in coords:
+                    center0 = (coord.cx(), coord.cy())  #pixel's (x, y) coordinates of object's center
+                    center.append(center0)
+                    print(f"object's center's coordinates: {center0}")
+                if len(center) != 0:
+                    return center
+                else:
+                    return [(None, None)]
+            elif name == 'stripe':
+                center_of_bottom = []
+                for coord in coords:
+                    c_bottom_x = coord.x() + int(coord.w() / 2)
+                    c_bottom_y = coord.y() + coord.h()
+                    center_of_bottom0 = (c_bottom_x, c_bottom_y)   #(coord.cx(), coord.cy())  #pixel's (x, y) coordinates of object's center
+                    center_of_bottom.append(center_of_bottom0)
+                    print(f"object's center's coordinates: {center_of_bottom0}")
+                if len(center_of_bottom) != 0:
+                    return center_of_bottom
+                else:
+                    return [(None, None)]
+    '''
+        if img.find_blobs([self.glob.TH['orange ball']['th']], pixels_threshold=self.glob.TH['orange ball']['pixel'],
+            area_threshold=self.glob.TH['orange ball']['area'], merge=True):
+            print('I see ball')
+            self.i_see_ball = True
+    '''
+
+    def self_coords_from_pixels(self, pixel_x, pixel_y, name):
+        robot_model = RobotModel(self.glob)
+        robot_model.update_camera_pan_tilt(self.neck_pan, self.neck_tilt)
+        #robot_model.update_camera_pan_tilt(0, 0)
+        print((self.params["HEIGHT_OF_CAMERA"] + self.params["HEIGHT_OF_NECK"])/1000)
+        if name == 'ball':
+            height = 0
+            #height = 0.289
+        elif name == 'basket':
+            height = 0.285 # MB???
+        elif name == 'stripe':
+            height = 0
+        return robot_model.image2self(pixel_x, pixel_y, height)
+
 
     def imu_body_yaw(self):
         yaw = self.neck_pan*self.TIK2RAD + self.euler_angle['yaw']
