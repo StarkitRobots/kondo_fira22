@@ -6,8 +6,7 @@ try:
     from button_test import Button_Test
     button = Button_Test()
     pressed_button = button.wait_for_button_pressing()
-    if pressed_button == 9:
-        execfile("threshold_tuner_server.py")
+
     from strategy import Player
 
     if pressed_button == 1:
