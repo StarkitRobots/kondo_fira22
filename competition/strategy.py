@@ -31,6 +31,7 @@ from localisation import localisation
 
 if SIMULATION == 2:
     from class_Motion import Motion1 as Motion
+    import kondo_controller as kondo
 else:
     from class_Motion import *
     from class_Motion_sim import*
@@ -104,6 +105,27 @@ class Player():
         self.motion.falling_Flag = 0
 
     def basketball_main_cycle(self):
+        
+        def move_head_real(tilt, pan):
+
+            sd_t = kondo.ServoData()
+            sd_p = kondo.ServoData()
+
+            sd_t.id = 12
+            sd_t.sio = 2
+            sd_t.data = tilt
+
+            sd_p.id = 0
+            sd_p.sio = 1
+            sd_p.data = pan
+
+            kondo.setServoPos([sd_t, sd_p], 5)
+            return 
+
+        def rad_to_kondo(angle):
+            angle = angle + (3*np.pi/4)
+            turn = 3500 + angle*(8000/(3*np.pi/2))
+            return turn
 
         def get_pixels(name):
             center = []
@@ -118,7 +140,7 @@ class Player():
             return coords
 
         def radians_search(frequency):
-            res = list(zip(np.zeros(frequency), np.linspace(-np.pi/2, np.pi/2, frequency))) + list(zip(np.zeros(frequency) - np.pi/4, np.linspace(np.pi/2, -np.pi/2, frequency)))
+            res = list(zip(np.zeros(frequency), np.linspace(-np.pi/4, np.pi/4, frequency))) + list(zip(np.zeros(frequency) - np.pi/4, np.linspace(np.pi/4, -np.pi/4, frequency)))
             return res + [[0, 0]]
 
         def finding(name):
@@ -130,7 +152,7 @@ class Player():
             l = []
             while len(l) < 2:
                 for elem in radians:
-                    self.motion.move_head(elem[1]*1000, elem[0]*1000) # NEED TO MOVE HEAD!!!
+                    move_head_real(rad_to_kondo(elem[0]), rad_to_kondo(elem[1])) # NEED TO MOVE HEAD!!!
                     time.sleep(3)
                     pixels = get_pixels(name)
                     if pixels != (None, None):

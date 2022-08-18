@@ -192,7 +192,7 @@ class Motion1:
             self.clock = time.clock()
             # self.kondo.motionPlay(25)
             self.pyb = pyb
-            self.sensor = None
+            self.sensor = KondoCameraSensor
             self.image = None
             #-------------------------------------------------------------------------------------------------------------------------------
     def check_camera(self, name):
@@ -256,6 +256,8 @@ class Motion1:
 
     def self_coords_from_pixels(self, pixel_x, pixel_y, name):
         robot_model = RobotModel(self.glob)
+        self.neck_tilt = (self.kondo.getSinglePos(12, 2) - 7500) * ((3 * np.pi / 2) / 8000) 
+        self.neck_pan = (self.kondo.getSinglePos(0, 1) - 7500) * ((3 * np.pi / 2) / 8000)
         robot_model.update_camera_pan_tilt(self.neck_pan, self.neck_tilt)
         #robot_model.update_camera_pan_tilt(0, 0)
         print((self.params["HEIGHT_OF_CAMERA"] + self.params["HEIGHT_OF_NECK"])/1000)
@@ -736,7 +738,7 @@ class Motion1:
             angles = self.computeAlphaForWalk(self.SIZES, self.limAlpha1 )
             #self.xtr += 10
             #self.xtl += 10
-            self.check_camera()
+            # self.check_camera()
             self.refresh_Orientation()
             print('self.body_euler_angle["pitch"]', self.body_euler_angle['pitch'])
 
@@ -971,7 +973,7 @@ class Motion1:
             angles = self.computeAlphaForWalk(self.SIZES, self.limAlpha1 )
             #self.xtr += 10
             #self.xtl += 10
-            self.check_camera()
+            # self.check_camera()
             self.refresh_Orientation()
             print('self.body_euler_angle["pitch"]', self.body_euler_angle['pitch'])
 
