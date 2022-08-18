@@ -81,7 +81,7 @@ class Image:
 
             masks.append (mask)
 
-        #cv2.imshow ("a", mask)
+        cv2.imshow ("a", mask)
 
         final_mask = masks [0].copy ()
         if (len (masks) > 1):
@@ -111,6 +111,7 @@ class Image:
                 blobs.append (new_blob)
 
         return blobs
+
 
     def binary (self, th):
         #low  = (th [0], th [2], th [4])

@@ -193,12 +193,50 @@ class Motion1:
                             (0, 30, 0, 64, -128, 0)] # generic_blue_thresholds
             if self.glob.SIMULATION == 2 :
                 img = self.sensor.snapshot()
+                self.cv2.imshow('image', img.img)
+                self.cv2.waitKey(10)
                 #for blob in img.find_blobs(thresholds, pixels_threshold=20, area_threshold=20, merge=True):
                 #    print('blob.code:', blob.code())
             else:
                 img_ = self.vision_Sensor_Get_Image()
                 img_ = self.cv2.resize(img_, (80,60))
                 img = self.re.Image(img_)
+                self.cv2.imshow('image', img_)
+                self.cv2.waitKey(10)
+            if name == 'ball':
+                coords = img.find_blobs([self.glob.TH['orange ball']['th']], pixels_threshold=self.glob.TH['orange ball']['pixel'], area_threshold=self.glob.TH['orange ball']['area'], merge=True)
+            if name == 'basket':
+                coords = img.find_blobs([self.glob.TH['red basket']['th']], pixels_threshold=self.glob.TH['red basket']['pixel'], area_threshold=self.glob.TH['red basket']['area'], merge=True)
+            if name == 'stripe':
+                coords = img.find_blobs([self.glob.TH['yellow stripe']['th']], pixels_threshold=self.glob.TH['yellow stripe']['pixel'], area_threshold=self.glob.TH['yellow stripe']['area'], merge=True)
+            if name == 'lol':
+                img.find_blobs([self.glob.TH['orange ball']['th']], pixels_threshold=self.glob.TH['orange ball']['pixel'], area_threshold=self.glob.TH['orange ball']['area'], merge=True)
+
+
+            print(f"number of found objects: {len(coords)}")
+            if name == 'ball' or name == 'basket':
+                center = []
+                for coord in coords:
+                    center0 = (coord.cx(), coord.cy())  #pixel's (x, y) coordinates of object's center
+                    center.append(center0)
+                    print(f"object's center's coordinates: {center0}")
+                if len(center) != 0:
+                    return center
+                else:
+                    return [(None, None)]
+            elif name == 'stripe':
+                center_of_bottom = []
+                for coord in coords:
+                    c_bottom_x = coord.x() + int(coord.w() / 2)
+                    c_bottom_y = coord.y() + coord.h()
+                    center_of_bottom0 = (c_bottom_x, c_bottom_y)   #(coord.cx(), coord.cy())  #pixel's (x, y) coordinates of object's center
+                    center_of_bottom.append(center_of_bottom0)
+                    print(f"object's center's coordinates: {center_of_bottom0}")
+                if len(center_of_bottom) != 0:
+                    return center_of_bottom
+                else:
+                    return [(0, 0)]
+            '''
             if img.find_blobs([self.glob.TH['orange ball']['th']], pixels_threshold=self.glob.TH['orange ball']['pixel'],
                              area_threshold=self.glob.TH['orange ball']['area'], merge=True):
                 print('I see ball')
@@ -656,7 +694,7 @@ class Motion1:
             angles = self.computeAlphaForWalk(self.SIZES, self.limAlpha1 )
             self.xtr += 20
             self.xtl += 20
-            self.check_camera()
+            #self.check_camera('stripe')
             #print('iii = ', iii, 'ytr =', self.ytr, 'ytl =', self.ytl)
             if not self.falling_Flag ==0: return
             if len(angles)==0:
