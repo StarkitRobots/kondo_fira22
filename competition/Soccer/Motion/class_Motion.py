@@ -78,7 +78,9 @@ class Motion1:
                     21:['Get_Up_From_Defence',1000], 22:['',0], 23:['PanaltyDefenceReady_Fast',500], 24:['PenaltyDefenceF',300], 25:['',0],
                     26:['',0], 27:['',0], 28:['',0], 29:['',0], 30:['Soccer_Walk_FF0',0],
                     31:['Soccer_Walk_FF1',0], 32:['Soccer_Walk_FF2',0], 33: ['Soccer_Get_UP_Stomach',0], 34:['Soccer_Get_UP_Face_Up',0],
-                    35: ['Get_Up_Right',0], 36: ['PenaltyDefenceR',2000], 37: ['PenaltyDefenceL',2000]}
+                    35: ['Get_Up_Right',0], 36: ['PenaltyDefenceR',2000], 37: ['PenaltyDefenceL',2000],   38:[ "archery_ready" , 111],
+    39: ["archery_setup" , 112],
+     40 :["archery_pull" , 113]}
         self.stepLengthPlaner_is_ON = False
         self.TIK2RAD = 0.00058909
         self.slowTime   = 0.0             # seconds
@@ -192,11 +194,15 @@ class Motion1:
             self.clock = time.clock()
             # self.kondo.motionPlay(25)
             self.pyb = pyb
-            self.sensor = None
             self.sensor = KondoCameraSensor()
             self.image = None
             self.cv2 = cv2
                #-------------------------------------------------------------------------------------------------------------------------------
+    def set_servo_pos(self,id,sio,angle):
+        servoDatas = self.kondo.ServoData(id,sio,angle*1698 + 7500)
+        self.kondo.setServoPos (self,[servoDatas], 10)
+        pass
+
     def check_camera(self, name):
         if self.glob.camera_ON:
             thresholds = [(30, 100, 15, 127, 15, 127), # generic_red_thresholds
@@ -260,7 +266,7 @@ class Motion1:
     def self_coords_from_pixels(self, pixel_x, pixel_y, name):
         robot_model = RobotModel(self.glob)
         robot_model.update_camera_pan_tilt(self.neck_pan, self.neck_tilt)
-        #robot_model.update_camera_pan_tilt(0, 0)
+        #robot_model.update_camera_pan_tilt(0, motion_client0)
         print((self.params["HEIGHT_OF_CAMERA"] + self.params["HEIGHT_OF_NECK"])/1000)
         if name == 'ball':
             height = 0
