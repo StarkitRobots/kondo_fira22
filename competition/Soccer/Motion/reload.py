@@ -282,9 +282,11 @@ class KondoCameraSensor(Sensor):
     def align_up(self, size, align):
             return self.align_down(size + align - 1, align)
     
+
     def __init__(self, path_to_config):
         if (KondoCameraSensor.camera == None):
             self._cameraInit(path_to_config)
+
     def snapshot(self):
         frame = KondoCameraSensor.camera.capture(encoding='raw')
         height = int(self.align_up(KondoCameraSensor.resolution["height"], 16))                                                         
