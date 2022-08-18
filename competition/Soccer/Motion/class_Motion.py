@@ -218,15 +218,28 @@ class Motion1:
 
 
             print(f"number of found objects: {len(coords)}")
-            center = []
-            for coord in coords:
-                center0 = (coord.cx(), coord.cy())  #pixel's (x, y) coordinates of object's center
-                center.append(center0)
-                print(f"object's center's coordinates: {center0}")
-            if len(center) != 0:
-                return center
-            else:
-                return [(None, None)]
+            if name == 'ball' or name == 'basket':
+                center = []
+                for coord in coords:
+                    center0 = (coord.cx(), coord.cy())  #pixel's (x, y) coordinates of object's center
+                    center.append(center0)
+                    print(f"object's center's coordinates: {center0}")
+                if len(center) != 0:
+                    return center
+                else:
+                    return [(None, None)]
+            elif name == 'stripe':
+                center_of_bottom = []
+                for coord in coords:
+                    c_bottom_x = coord.x() + int(coord.w() / 2)
+                    c_bottom_y = coord.y() + coord.h()
+                    center_of_bottom0 = (c_bottom_x, c_bottom_y)   #(coord.cx(), coord.cy())  #pixel's (x, y) coordinates of object's center
+                    center_of_bottom.append(center_of_bottom0)
+                    print(f"object's center's coordinates: {center_of_bottom0}")
+                if len(center_of_bottom) != 0:
+                    return center_of_bottom
+                else:
+                    return [(None, None)]
             '''
             if img.find_blobs([self.glob.TH['orange ball']['th']], pixels_threshold=self.glob.TH['orange ball']['pixel'],
                              area_threshold=self.glob.TH['orange ball']['area'], merge=True):
