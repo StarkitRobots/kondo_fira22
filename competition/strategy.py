@@ -266,9 +266,8 @@ class Player():
             plt.show()
         def go_to(coords, distance):
             print("Start going")
-            stepLength = 30
+            stepLength = 70
             number_of_cycles = int(distance*1000/stepLength)
-            self.motion.frames_per_cycle = 100
             self.motion.walk_Initial_Pose()
             time.sleep(3)
             self.motion.frames_per_cycle = self.default_frames_per_cycle
@@ -278,7 +277,7 @@ class Player():
                                         0.25,
                                         cycle, 
                                         number_of_cycles)
-            #self.motion.walk_Final_Pose()
+            self.motion.walk_Final_Pose()
             
             '''
             r_x, r_y, r_theta = 1, 2, 0 #robot's coordinates
@@ -405,11 +404,17 @@ class Player():
         self.motion.gaitHeight = 220 # 190
         self.motion.stepHeight = 40  # 20
 
-        draw_graphics(test_series(4))
+        # draw_graphics(test_series(4))
+
+
+        coords = (0.2, 0)
+        distance = np.sqrt(coords[0]**2 + coords[1]**2)
+        print(f"DISTANCY IS {distance}")
+        go_to(coords, distance)
 
         # self.motion.move_head(1000, -2000)
         # Finding ball and putting it to self.ball_coordinates for future approach.
-        move_head_real(rad_to_kondo(-np.pi/8), rad_to_kondo(0))
+        # move_head_real(rad_to_kondo(-np.pi/8), rad_to_kondo(0))
         '''
         flag_ball = False
         print("zdorova")
