@@ -146,7 +146,7 @@ def calculate_period(positions): #measurments):
 
 def find_target_center(frame):
     # print(frame)
-    cv2.imshow("real", frame)
+    # cv2.imshow("real", frame)
     avarage_x = 0
     avarage_y = 0
     
@@ -180,7 +180,7 @@ def find_target_center(frame):
     
     canny_yellow = cv2.Canny(img_dilation_yellow, 180, 190)
     
-    cv2.imshow("yellow", canny_yellow)
+    # cv2.imshow("yellow", canny_yellow)
     
     circle_yellow = cv2.HoughCircles(canny_yellow, cv2.HOUGH_GRADIENT, 1.4, 100)
     
@@ -258,10 +258,10 @@ class Archery:
 
         self.pelvis_rot = 0
         self.pelvis_rot_mistake = 0.1
-        self.pelvis_rot_const = 1.4
+        self.pelvis_rot_const =1.1
         self.pointed_to_target = False
 
-        self.number_of_frames = 100
+        self.number_of_frames = 1
 
         self.period = 0
         self.circle_x = 0
@@ -283,7 +283,7 @@ class Archery:
             # rospy.loginfo(self.circle_x, self.circle_y, 0, 0)
             print(int(self.circle_x))
             response = self.motion.self_coords_from_pixels(int(self.circle_x), int(self.circle_y), "basket")#, 0, 0, 0.555)# get_coords(int(self.circle_x), int(self.circle_y), 0, 0, 0.555)
-            return (np.arctan(response.y / response.x))
+            return (np.arctan(response[1] / response[0]))
 
     def move_pelvis(self):
         self.servos_client(0,2, -self.pelvis_rot*self.pelvis_rot_const)
@@ -292,8 +292,8 @@ class Archery:
         self.servos_client(13,2, -1)
 
 
-    def servos_client (self,id,sio, position):
-        self.motion.set_servo_pos(id,sio,position)
+    def servos_client (self,ids,sio, position):
+        self.motion.set_servo_pos(ids,sio,position)
 
 
     def motion_client(self, motion_name):
@@ -350,20 +350,21 @@ class Archery:
                 self.circle_x, self.circle_y, self.circle_r, self.circle_error = calculate_period(self.traj_coords[self.l_ind : ])
                 
                 self.pelvis_rot += self.count_pelvis_rotation()
-                print(self.pelvis_rot)
+                # print(self.pelvis_rot)
 
                 self.pointed_to_target = True
-                print ("I m pelvis rotate")
+                print (f"I m pelvis rotate {self.pelvis_rot}")
                 self.move_pelvis()
                 self.traj_coords.clear()
 
 
                 # Visual output
                 print(self.circle_x, self.circle_y)
+                circle_x = self.circle_x 
+                circle_y = self.circle_y 
+
                 if circle_x is not None:
                      if (abs(circle_x) < 5000 and abs(circle_y) < 5000):
-                         cv2.circle(output, (int(circle_x), int(circle_y)), int(circle_r), (0, 255, 0), 4)
-                         cv2.rectangle(output, (int(circle_x) - 5, int(circle_y) - 5), (int(circle_x) + 5, int(circle_y) + 5), (0, 128, 255), -1)
                 #         # font
                          font = cv2.FONT_HERSHEY_SIMPLEX
 
@@ -379,10 +380,6 @@ class Archery:
                 #         # Line thickness of 2 px
                          thickness = 2
                          # Using cv2.putText() method
-                         output = cv2.putText(output, str(period), org, font, 
-                                     fontScale, color, thickness, cv2.LINE_AA)
-                         cv2.imshow("output", np.hstack([frame, output]))
-                         cv2.waitKey(10)
 
                 #Close on q
                 key = cv2.waitKey(50)
@@ -399,7 +396,7 @@ class Archery:
                 if (len(self.traj_coords) > tail_len):
                     l_ind = len(self.traj_coords) - tail_len
                 
-                self.circle_x, self.circle_y, self.circle_r, self.circle_error = calculate_period(self.traj_coords[self.l_ind : ], self.timestamps)
+                self.circle_x, self.circle_y, self.circle_r, self.circle_error = calculate_period(self.traj_coords[self.l_ind : ], )
 
                 # pred_time = self.predict_time()
                 # print(pred_time)
