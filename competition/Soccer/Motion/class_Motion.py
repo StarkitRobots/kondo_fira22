@@ -50,7 +50,7 @@ class Motion1:
 
         #FACTOR =  [ 1,-1,-1,1,-1,-1, 1,1,1,-1,1,-1,-1, 1,1,-1,-1, 1,1,1,-1,-1, 1]  # v2.3
         #self.FACTOR =  [ 1,1,1,-1,1,1, 1,1,1,1,1,1,1, 1,-1,1,1, 1,1,1,1, 1, 1, 1, 1]  # Surrogat 1
-        self.FACTOR =  [ -1,-1,1,-1,1,1, 1,1,1,1,1,-1,-1, 1,1,-1,1, 1,1,1,1, 1, 1, 1, 1]  # Kondo-3
+        self.FACTOR =  [ -1,-1,1,-1,1,1, 1,1,1,1,1,-1,-1, 1,1,-1,1, 1,1,1,1, 1, 1, 1, 1, -1, 1]  # Kondo-3
         a5 = 40  # мм расстояние от оси симметрии до оси сервы 5
         b5 = 0  # мм расстояние от оси сервы 5 до оси сервы 6 по горизонтали
         c5 = 0     # мм расстояние от оси сервы 6 до нуля Z по вертикали
@@ -161,7 +161,7 @@ class Motion1:
         self.left_hip_pitch_target_position = 0
         self.ACTIVEJOINTS = ['Leg_right_10','Leg_right_9','Leg_right_8','Leg_right_7','Leg_right_6','Leg_right_5','hand_right_4',
             'hand_right_3','hand_right_2','hand_right_1','Tors1','Leg_left_10','Leg_left_9','Leg_left_8',
-            'Leg_left_7','Leg_left_6','Leg_left_5','hand_left_4','hand_left_3','hand_left_2','hand_left_1','head0','head12', 'hand_right_11', 'hand_left_11']
+            'Leg_left_7','Leg_left_6','Leg_left_5','hand_left_4','hand_left_3','hand_left_2','hand_left_1','head0','head12', 'hand_right_11', 'hand_left_11', 'hand_right_13', 'hand_left_13']
         self.hand_joints =[6, 7, 8, 9, 17, 18, 19, 20, 23, 24]
         self.ACTIVEJOINTS_NO_Hands = ['Leg_right_10','Leg_right_9','Leg_right_8','Leg_right_7','Leg_right_6','Leg_right_5',
                                       'Tors1','Leg_left_10','Leg_left_9','Leg_left_8',
@@ -259,13 +259,17 @@ class Motion1:
 
     def self_coords_from_pixels(self, pixel_x, pixel_y, name):
         robot_model = RobotModel(self.glob)
-        t = self.kondo.getSinglePos(12, 2)
-        tilt = t[1]
-        p = self.kondo.getSinglePos(0, 1)
-        pan = p[1]
-        self.neck_tilt = int( (tilt - 7500) * ((3 * np.pi / 2) / 8000) ) 
-        self.neck_pan = int( (pan - 7500) * ((3 * np.pi / 2) / 8000) )
-        robot_model.update_camera_pan_tilt(self.neck_pan, self.neck_tilt)
+        t, tilt = self.kondo.getSinglePos(12, 2)
+        print(self.kondo.getSinglePos(12, 2))
+        #tilt = t[1]
+        p, pan = self.kondo.getSinglePos(0, 1)
+        #pan = p[1]
+        self.neck_tilt = (tilt - 7500) * ((3 * np.pi / 2) / 8000) 
+        self.neck_pan =  (pan - 7500)  * ((3 * np.pi / 2) / 8000)
+        print("**********************************")
+        print(f"         tilt {self.neck_tilt}, pan {self.neck_pan}")
+        print("**********************************")
+        robot_model.update_camera_pan_tilt(self.neck_pan, -self.neck_tilt)
         #robot_model.update_camera_pan_tilt(0, 0)
         print((self.params["HEIGHT_OF_CAMERA"] + self.params["HEIGHT_OF_NECK"])/1000)
         if name == 'ball':
@@ -331,7 +335,7 @@ class Motion1:
     def play_Soft_Motion_Slot(self, name = ''):             # the slot from file will be played in robot 
         ACTIVESERVOS = [(10,2),(9,2),(8,2),(7,2),(6,2),(5,2),(4,2),
                 (3,2),(2,2),(1,2),(0,2),(10,1),(9,1),(8,1),
-                (7,1),(6,1),(5,1),(4,1),(3,1),(2,1),(1,1),(0,1),(12,2),(11,2),(11,1)]
+                (7,1),(6,1),(5,1),(4,1),(3,1),(2,1),(1,1),(0,1),(12,2),(11,2),(11,1), (13, 2), (13,1)]
         # (10,2) Прав Стопа Вбок, (9,2) Прав Стопа Вперед,(8,2) Прав Голень, (7,2) Прав Колено,
         # (6,2)  Прав Бедро,      (5,2) Прав Таз,         (1,2) Прав Ключица,(4,2) Прав Локоть, (0,2) Торс
         # (10,1) Лев Стопа Вбок,  (9,1) Лев Стопа Вперед, (8,1) Лев Голень,  (7,1) Лев Колено
