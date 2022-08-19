@@ -198,9 +198,9 @@ class Motion1:
             self.image = None
             self.cv2 = cv2
                #-------------------------------------------------------------------------------------------------------------------------------
-    def set_servo_pos(self,id,sio,angle):
-        servoDatas = self.kondo.ServoData(id,sio,angle*1698 + 7500)
-        self.kondo.setServoPos (self,[servoDatas], 10)
+    def set_servo_pos(self,ids,sio,angle):
+        servoDatas = self.kondo.ServoData(ids,sio,int(angle*1698 + 7500))
+        self.kondo.setServoPos ([servoDatas], 10)
         pass
 
     def check_camera(self, name):
