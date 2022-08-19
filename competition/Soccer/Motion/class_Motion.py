@@ -612,12 +612,16 @@ class Motion1:
                         servoDatas.append( self.kondo.ServoData(self.ACTIVESERVOS[i][0],self.ACTIVESERVOS[i][1],pos))
                     # print(servoDatas)
                     servoDatas = self.reOrderServoData(servoDatas)
+                    # head tilt
+                    servoDatas.append(self.kondo.ServoData(12,2 ,int(-0.2*1698 + 7500)))
                     #start2 = self.pyb.millis()
-                    if j == 0:
-                        a=self.kondo.setServoPos (servoDatas, 10)
-                        self.pyb.delay(250)
-                    else:
-                        a=self.kondo.setServoPos (servoDatas, self.frames_per_cycle)
+                    # if j == 0:
+                    #     a=self.kondo.setServoPos (servoDatas, 10)
+                    #     self.pyb.delay(250)
+                    # else:
+                    #     a=self.kondo.setServoPos (servoDatas, self.frames_per_cycle)
+
+                    a=self.kondo.setServoPos (servoDatas, self.frames_per_cycle)
                     #print(servoDatas)
                     #print(clock.avg())
                     time1 = self.pyb.elapsed_millis(start1)
@@ -833,6 +837,11 @@ class Motion1:
                     self.kondo.setServoSpeed(servoSpeedDatas)
                     servoDatas = []
                     disp = []
+                    # Check self.ACTIVESERVOS
+                    angles[3] += self.params['BODY_TILT_SERV07'] # (7,2)
+                    angles[14] += self.params['BODY_TILT_SERVO7'] # (7,1)
+                    angles[1] += self.params['BODY_TILT_SERVO9'] # (9,2)
+                    angles[12] += self.params['BODY_TILT_SERVO9'] #(9,1) 
                     for i in range(len(angles)):
 #                        #print(angles)
                         if self.keep_hands_up:
@@ -1574,7 +1583,6 @@ class Motion1:
             return True
 
     def walk_Final_Pose(self):
-        return 
         self.robot_In_0_Pose = False
         if not self.falling_Test() == 0:
             if self.falling_Flag == 3: print('STOP!')
