@@ -325,6 +325,17 @@ class Player():
         flag_basket = False
         flag_evade = False
 
+        self.motion.activation()
+        self.motion.falling_Flag = 0
+        self.number_of_cycles = 3000000 #30
+        self.motion.simThreadCycleInMs = 20 # 20
+        self.motion.amplitude = 32 #32
+        self.motion.fr1 = 4 # 4
+        self.motion.fr2 = 10 # 10
+        ##self.motion.initPoses = self.motion.fr2 
+        self.motion.gaitHeight = 220 # 190
+        self.motion.stepHeight = 40  # 20
+
         # self.motion.move_head(1000, -2000)
         # Finding ball and putting it to self.ball_coordinates for future approach.
         

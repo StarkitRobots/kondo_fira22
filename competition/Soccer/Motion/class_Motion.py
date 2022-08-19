@@ -224,7 +224,7 @@ class Motion1:
                 coords = img.find_blobs([self.glob.TH['yellow stripe']['th']], pixels_threshold=self.glob.TH['yellow stripe']['pixel'], area_threshold=self.glob.TH['yellow stripe']['area'], merge=True)
                 print(f"number of found objects: {len(coords)}")
             if name == 'archery':
-                center_coords = img.find_target_center([self.glob.TH['archery']['thblue']], self.glob.TH['archery']['thyellow'], area_threshold=self.glob.TH['archery']['thred'], merge=True)
+                center_coords = img.find_target_center(self.glob.TH['archery']['thblue'], self.glob.TH['archery']['thyellow'], self.glob.TH['archery']['thred'])
                 if center_coords != (None, None):       print(f"Coordinates of center of target are {center_coords}")
                 return center_coords
 
@@ -263,8 +263,8 @@ class Motion1:
         tilt = t[1]
         p = self.kondo.getSinglePos(0, 1)
         pan = p[1]
-        self.neck_tilt = int( (tilt - 7500) * ((3 * np.pi / 2) / 8000) ) 
-        self.neck_pan = int( (pan - 7500) * ((3 * np.pi / 2) / 8000) )
+        self.neck_tilt = (tilt - 7500) * ((3 * np.pi / 2) / 8000)
+        self.neck_pan = (pan - 7500) * ((3 * np.pi / 2) / 8000) 
         robot_model.update_camera_pan_tilt(self.neck_pan, self.neck_tilt)
         #robot_model.update_camera_pan_tilt(0, 0)
         print((self.params["HEIGHT_OF_CAMERA"] + self.params["HEIGHT_OF_NECK"])/1000)
