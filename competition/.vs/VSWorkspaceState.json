@@ -2,8 +2,12 @@
   "ExpandedNodes": [
     "",
     "\\Soccer",
-    "\\Soccer\\Motion"
+    "\\Soccer\\Init_params",
+    "\\Soccer\\Init_params\\Real",
+    "\\Soccer\\Motion",
+    "\\Soccer\\Motion\\motion_slots",
+    "\\__pycache__"
   ],
-  "SelectedNode": "\\strategy.py",
+  "SelectedNode": "\\Soccer\\Motion\\motion_slots\\basketball_taking_ball.json",
   "PreviewInSolutionExplorer": false
 }

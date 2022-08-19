@@ -167,7 +167,7 @@ class Motion1:
                                       'Tors1','Leg_left_10','Leg_left_9','Leg_left_8',
                                       'Leg_left_7','Leg_left_6','Leg_left_5']
         if self.glob.SIMULATION == 2 :
-            from button_test import wait_for_button_pressing
+            #from button_test import wait_for_button_pressing
             import starkit
             import pyb
             from kondo_controller import Rcb4BaseLib
