@@ -31,7 +31,6 @@ from localisation import localisation
 
 if SIMULATION == 2:
     from class_Motion import Motion1 as Motion
-    import kondo_controller as kondo
 else:
     from class_Motion import *
     from class_Motion_sim import*
@@ -111,8 +110,8 @@ class Player():
         
         def move_head_real(tilt, pan):
 
-            sd_t = kondo.ServoData()
-            sd_p = kondo.ServoData()
+            sd_t = self.motion.kondo.ServoData()
+            sd_p = self.motion.kondo.ServoData()
 
             sd_t.id = 12
             sd_t.sio = 2
@@ -122,12 +121,11 @@ class Player():
             sd_p.sio = 1
             sd_p.data = pan
 
-            kondo.setServoPos([sd_t, sd_p], 5)
-            return 
+            self.motion.kondo.setServoPos([sd_t, sd_p], 5)
 
         def rad_to_kondo(angle):
             angle = angle + (3*np.pi/4)
-            turn = 3500 + angle*(8000/(3*np.pi/2))
+            turn = 3500 + int(angle*(8000/(3*np.pi/2)))
             return turn
 
         def get_pixels(name):
@@ -153,11 +151,23 @@ class Player():
             print("Start finding ball")
             radians = radians_search(5)
             l = []
+            fl = 0
             while len(l) < 2:
                 for elem in radians:
-                    move_head_real(rad_to_kondo(elem[0]), rad_to_kondo(elem[1])) # NEED TO MOVE HEAD!!!
-                    time.sleep(3)
+                    # move_head_real(rad_to_kondo(elem[0]), rad_to_kondo(elem[1])) # NEED TO MOVE HEAD!!!
+                    time.sleep(1)
                     pixels = get_pixels(name)
+                    print(f"PIXELS BLYAT':{pixels}")
+                    if not 600 < pixels[0] < 1000 and fl < 1 or not 400 < pixels[1] < 800 and fl < 1:
+                        angle_p = pixels[0] * (np.pi / 1600)
+                        angle_p = angle_p - (np.pi / 2)
+                        
+                        angle_t = pixels[1] * (np.pi / 1600)
+                        angle_t = angle_t - (np.pi / 2)
+                        
+                        move_head_real(rad_to_kondo(-np.pi/8), rad_to_kondo(angle_p))
+                        pixels = get_pixels(name)
+                        fl += 1
                     if pixels != (None, None):
                         coords = get_distance(pixels, name)
                         print(coords)
@@ -167,6 +177,7 @@ class Player():
                         print("GOVNO")
             mediana_of_coords = tuple(np.median(np.array(l), axis = 0))
             print(f"MEDIANA: {mediana_of_coords}")
+            move_head_real(rad_to_kondo(0), rad_to_kondo(0))
             if mediana_of_coords != (None, None):
                 flag = True
                 distance = np.sqrt(mediana_of_coords[0] ** 2 + mediana_of_coords[1] ** 2)
@@ -398,6 +409,7 @@ class Player():
 
         # self.motion.move_head(1000, -2000)
         # Finding ball and putting it to self.ball_coordinates for future approach.
+        move_head_real(rad_to_kondo(-np.pi/8), rad_to_kondo(0))
         '''
         flag_ball = False
         print("zdorova")
@@ -406,7 +418,11 @@ class Player():
             flag_ball, ball_coords, ball_distance = finding('ball')      # (True/False), (x,y), distance
         print(f"result of finding ball: {ball_coords} and {ball_distance}")
 
+        ball_coord_x = ball_coords[0] * 1.4
+        ball_coord_y = ball_coords[1] * 1.2
         
+        ball_coords = (ball_coord_x, ball_coord_y)
+        print(f"POGONNYE LENGTHS ARE {ball_coords}")
         #Approaching to the ball on 0.8 of distance
         
         flag_ball = False
@@ -438,6 +454,8 @@ class Player():
             flag_basket, basket_coords, basket_distance = finding('basket')      # (True/False), (x,y), distance
         print(f"result of finding ball: {basket_coords} and {basket_distance}")
 
+
+        self.motion.play_Soft_Motion_Slot(name = 'basketball_taking_ball')
         # Take ball and do several steps from ball holder
         
         flag_basket = False
@@ -445,7 +463,7 @@ class Player():
             flag_evade = thinking_take(ball_coords, basket_coords)
         print("Atom avoided collision with holder")
         
-
+        
         # Searching for basket again
 
         while not flag_basket:          # DOESN'T WORKING, THERE SHOULD BE MASK AND THRESHOLDING
@@ -472,10 +490,12 @@ class Player():
         go_to(1, basket_coords, basket_distance)  #DOESN'T WORK NOW
 
         # put the ball into basketcase
+        '''
+        self.motion.play_Soft_Motion_Slot(name = 'basketball_taking_ball_coleni')
         
-        self.motion.play_Soft_Motion_Slot(name = 'basketball_throwing_ball')
+        self.motion.play_Soft_Motion_Slot(name = 'basketball_throwing_ball_new')
         
-
+        '''
         print("HE HIT THE BALL OR NO. I don't NO")
         while True:
             n = int(input())
@@ -483,7 +503,8 @@ class Player():
         '''
 
     def triple_jump_main_cycle(self):
-        self.motion.kondo.motionPlay(77)
+        
+        self.motion.play_Soft_Motion_Slot(name = 'Kondo3_TripleJump')
 
     def run_test_main_cycle(self, pressed_button):
         if pressed_button == 1:             # fast step
