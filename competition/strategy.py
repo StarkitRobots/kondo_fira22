@@ -203,19 +203,77 @@ class Player():
             self.walk_client(False, 0, 0, 0)
         '''
 
-        def turn_to(coords):
+        def turn_to(angle):
             print("Start turning to ball/basketcase")
-            degree = np.arctan(coords[1] / coords[0]) * 180 / np.pi
-            print(str(degree))
+            number_of_cycles = 10
+            for cycle in range(number_of_cycles):                
+                self.motion.walk_Cycle(0,
+                                        0,
+                                        0.25 + angle / number_of_cycles,
+                                        cycle, 
+                                        number_of_cycles)
+            print(str(angle))
             # rotate(degree)      #THIS FUNCTION NEEDS ANOTHER VIEW
             time.sleep(1)
+        def test_forward(number_of_cycles):
+            print("Start going. Number of cycles : {number_of_cycles} ")
+            stepLength = 30
+            self.motion.frames_per_cycle = 100
+            self.motion.walk_Initial_Pose()
+            time.sleep(3)
+            self.motion.frames_per_cycle = self.default_frames_per_cycle
+            for cycle in range(number_of_cycles):                
+                self.motion.walk_Cycle(stepLength,
+                                        0,
+                                        0.25,
+                                        cycle, 
+                                        number_of_cycles)
+        def test_rotation(number_of_cycles):
+            print(f"Start turning to ball/basketcase. Number of cycles :{number_of_cycles}")
+            
+            for cycle in range(number_of_cycles):                
+                self.motion.walk_Cycle(0,
+                                        0,
+                                        0.25,
+                                        cycle, 
+                                        number_of_cycles)
 
-        def go_to(percent_distance, coords, distance):
+        def test_series(n):
+            data_cycles = []
+            data_distance = []
+            for i in range(1,
+            n,2):
+                test_forward(i)
+                data_distance.append(float(input()))
+                data_cycles.append(i)
+            print(data_distance)
+            return data_cycles, data_distance 
+        def draw_graphics(data_cycles,data_distance):
+            import numpy as np
+            import matplotlib.pyplot as plt
+            plt.plot(data_cycles,data_distance)
+            plt.show()
+        def go_to(coords, distance):
             print("Start going")
+            stepLength = 30
+            number_of_cycles = int(distance*1000/stepLength)
+            self.motion.frames_per_cycle = 100
+            self.motion.walk_Initial_Pose()
+            time.sleep(3)
+            self.motion.frames_per_cycle = self.default_frames_per_cycle
+            for cycle in range(number_of_cycles):                
+                self.motion.walk_Cycle(stepLength,
+                                        0,
+                                        0.25,
+                                        cycle, 
+                                        number_of_cycles)
+            #self.motion.walk_Final_Pose()
+            
+            '''
             r_x, r_y, r_theta = 1, 2, 0 #robot's coordinates
         #img = Image(cv2.imread("Soccer\\5837.png", cv2.COLOR_BGR2LAB))
         #blob = img.find_blobs([[100, 110, 140, 210, 220, 230], [50, 70, 80, 230, 240, 250], [10, 20, 30, 251, 252, 253]], 30, 30)
-        
+            
             point = [100, 100, 100]
             acc = 0.001
             cycle = 2
@@ -269,7 +327,7 @@ class Player():
             self.motion.walk_Final_Pose()
             #self.motion.simulateMotion(name = 'Kondo3_TripleJump')
                 ## NEED TO GO TO THE BALL!!!
-
+            '''
         def thinking_take(ball_coordinates, basketcase_coordinates):
             print("Start thinking and taking ball")
             basketcase_linia = ((basketcase_coordinates[0]) / (basketcase_coordinates[1]))
@@ -336,25 +394,26 @@ class Player():
         self.motion.gaitHeight = 220 # 190
         self.motion.stepHeight = 40  # 20
 
+        draw_graphics(test_series(4))
+
         # self.motion.move_head(1000, -2000)
         # Finding ball and putting it to self.ball_coordinates for future approach.
-        
+        '''
         flag_ball = False
         print("zdorova")
-        while True:
-            print("ya kryg")
-            while not flag_ball:
-                flag_ball, ball_coords, ball_distance = finding('ball')      # (True/False), (x,y), distance
-            print(f"result of finding ball: {ball_coords} and {ball_distance}")
-            time.sleep(20)
+        print("ya kryg")
+        while not flag_ball:
+            flag_ball, ball_coords, ball_distance = finding('ball')      # (True/False), (x,y), distance
+        print(f"result of finding ball: {ball_coords} and {ball_distance}")
 
         
         #Approaching to the ball on 0.8 of distance
         
         flag_ball = False
-        turn_to(ball_coords)    #DOESN'T WORK NOW
+        angle = np.arctan(ball_coords[1] / ball_coords[0])
+        turn_to(angle)    #DOESN'T WORK NOW
         # maybe do finding one more time
-        go_to(0.8, ball_coords, ball_distance)  #DOESN'T WORK NOW
+        go_to(ball_coords * 0.8, ball_distance)  #DOESN'T WORK NOW
         
         # Correct the ball position
 
@@ -368,7 +427,7 @@ class Player():
         turn_to(ball_coords)    #DOESN'T WORK NOW
         # maybe do finding one more time
         go_to(1, ball_coords, ball_distance)  #DOESN'T WORK NOW
-        '''
+        
         # Searching for ball
         while not flag_ball:
             flag_ball, ball_coords, ball_distance = finding('ball')      # (True/False), (x,y), distance
