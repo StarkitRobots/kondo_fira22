@@ -46,7 +46,7 @@ class Sprint(Competition):
         
         # sprint params
         self.forward = True
-        self.stopDistance = 0.2
+        self.stopDistance = 0.33
         self.stepIncrement = 10
         self.stepDecrement = 10
         self.maxStepLengthBack = -70
@@ -96,17 +96,33 @@ class Sprint(Competition):
 
             distanceToMark = self.tvec[0][0][2]
            
-            if 0 < distanceToMark < self.stopDistance and stepLength1 > self.maxStepLengthBack:
-                stepLength1 = -self.stepDecrement
+            # ### backward walk test
+            # self.forward = False
+            # self.motion.stepHeight = 70
+            # self.motion.params['BODY_TILT_AT_WALK'] = 0.05
+            # ###
+
+            stepLength1 = self.maxStepLengthBack
+
+            if self.forward and 0 < distanceToMark < self.stopDistance:
+                self.forward = False
+                self.motion.stepHeight = 70
+                self.motion.params['BODY_TILT_AT_WALK'] = 0.05
+
+            if not self.forward and stepLength1 > self.maxStepLengthBack:
+                stepLength1 -= self.stepDecrement
+
             #step_rot = 0 if -0.3 < self.rvec[0][0][1] < 0.1 else -max(-0.4,min(0.4,self.rvec[0][0][1]))
-            step_rot = 0 if -0.2 < self.rvec[0][0][1] < 0.2 else 0.1 * (self.rvec[0][0][1] / abs(self.rvec[0][0][1]))
+            aruco_side_dist = self.tvec[0][0][0]
+            step_rot = 0 if -0.1 < aruco_side_dist < 0.1 else -0.2 * (aruco_side_dist / abs(aruco_side_dist))
             self.motion.refresh_Orientation()
             print(f"step_l {stepLength1} step_rot {step_rot}")
             print("rvec : ", self.rvec)
-            print("tvec DISTANCE: ", distanceToMark)
+            print("tvec: ", self.tvec)
+            
             self.motion.walk_Cycle(stepLength1,
                                     0,
-                                    step_rot,
+                                    0.25 + step_rot,
                                     cycle, 
                                     self.number_of_cycles)
         #self.motion.walk_Final_Pose()
