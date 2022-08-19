@@ -371,7 +371,7 @@ class Player():
         turn_to(ball_coords)    #DOESN'T WORK NOW
         # maybe do finding one more time
         go_to(1, ball_coords, ball_distance)  #DOESN'T WORK NOW
-        '''
+        
         # Searching for ball
         while not flag_ball:
             flag_ball, ball_coords, ball_distance = finding('ball')      # (True/False), (x,y), distance
@@ -385,7 +385,7 @@ class Player():
 
         self.motion.play_Soft_Motion_Slot(name = 'basketball_taking_ball')
         # Take ball and do several steps from ball holder
-        '''
+        
         flag_basket = False
         while not flag_evade:
             flag_evade = thinking_take(ball_coords, basket_coords)
@@ -419,7 +419,9 @@ class Player():
 
         # put the ball into basketcase
         '''
-        self.motion.play_Soft_Motion_Slot(name = 'basketball_throwing_ball')
+        self.motion.play_Soft_Motion_Slot(name = 'basketball_taking_ball_coleni')
+        
+        self.motion.play_Soft_Motion_Slot(name = 'basketball_throwing_ball_new')
         
         '''
         print("HE HIT THE BALL OR NO. I don't NO")
