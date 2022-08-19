@@ -104,148 +104,148 @@ class Player():
         self.motion.falling_Flag = 0
 
     def basketball_main_cycle(self):
-        '''
-        def get_pixels(name):
-            center = []
-            self.glob.camera_ON = True
-            center = self.motion.check_camera(name)
-            pixels = center[0]
-            return pixels
+        
+        #def get_pixels(name):
+        #    center = []
+        #    self.glob.camera_ON = True
+        #    center = self.motion.check_camera(name)
+        #    pixels = center[0]
+        #    return pixels
 
-        def get_distance(pixels, name):
-            coords = self.motion.self_coords_from_pixels(pixels[0], pixels[1], name)
-            print(f"coordinates of object: {coords}")
-            return coords
+        #def get_distance(pixels, name):
+        #    coords = self.motion.self_coords_from_pixels(pixels[0], pixels[1], name)
+        #    print(f"coordinates of object: {coords}")
+        #    return coords
 
-        def radians_search(frequency):
-            res = list(zip(np.zeros(frequency), np.linspace(-np.pi/2, np.pi/2, frequency))) + list(zip(np.zeros(frequency) - np.pi/4, np.linspace(np.pi/2, -np.pi/2, frequency)))
-            return res + [[0, 0]]
+        #def radians_search(frequency):
+        #    res = list(zip(np.zeros(frequency), np.linspace(-np.pi/2, np.pi/2, frequency))) + list(zip(np.zeros(frequency) - np.pi/4, np.linspace(np.pi/2, -np.pi/2, frequency)))
+        #    return res + [[0, 0]]
 
-        def finding(name):
-            flag = False
-            mediana_of_coords = (None, None)
-            distance = 0
-            print("Start finding ball")
-            radians = radians_search(5)
-            l = []
-            while len(l) < 2:
-                for elem in radians:
-                    self.motion.move_head(elem[1]*1000, elem[0]*1000) # NEED TO MOVE HEAD!!!
-                    time.sleep(3)
-                    pixels = get_pixels(name)
-                    if pixels != (None, None):
-                        coords = get_distance(pixels, name)
-                        print(coords)
-                        l.append(coords)
-                # choose the mediana of all balls in coordinates of robor and look at dispersy, check massive of all finded balls
-                    else:
-                        print("GOVNO")
-            mediana_of_coords = tuple(np.median(np.array(l), axis = 0))
-            print(f"MEDIANA: {mediana_of_coords}")
-            if mediana_of_coords != (None, None):
-                flag = True
-                distance = np.sqrt(mediana_of_coords[0] ** 2 + mediana_of_coords[1] ** 2)
-            return flag, mediana_of_coords, distance
+        #def finding(name):
+        #    flag = False
+        #    mediana_of_coords = (None, None)
+        #    distance = 0
+        #    print("Start finding ball")
+        #    radians = radians_search(5)
+        #    l = []
+        #    while len(l) < 2:
+        #        for elem in radians:
+        #            self.motion.move_head(elem[1]*1000, elem[0]*1000) # NEED TO MOVE HEAD!!!
+        #            time.sleep(3)
+        #            pixels = get_pixels(name)
+        #            if pixels != (None, None):
+        #                coords = get_distance(pixels, name)
+        #                print(coords)
+        #                l.append(coords)
+        #        # choose the mediana of all balls in coordinates of robor and look at dispersy, check massive of all finded balls
+        #            else:
+        #                print("GOVNO")
+        #    mediana_of_coords = tuple(np.median(np.array(l), axis = 0))
+        #    print(f"MEDIANA: {mediana_of_coords}")
+        #    if mediana_of_coords != (None, None):
+        #        flag = True
+        #        distance = np.sqrt(mediana_of_coords[0] ** 2 + mediana_of_coords[1] ** 2)
+        #    return flag, mediana_of_coords, distance
 
         
-        def rotate(to_rotate_deg):    #XYETAAAAAAA
+        #def rotate(to_rotate_deg):    #XYETAAAAAAA
 
-            imu_start = self.imu_client().x
-            imu_end = imu_start - to_rotate_deg
-            imu_end %= 360
-            rotation = 0.2
-            print(to_rotate_deg)
+        #    imu_start = self.imu_client().x
+        #    imu_end = imu_start - to_rotate_deg
+        #    imu_end %= 360
+        #    rotation = 0.2
+        #    print(to_rotate_deg)
 
-            while True:
-                imu = self.imu_client()
-                print("imu: ", imu.x)
-                print("imu end: ", imu_end)
-                if np.abs(imu.x - imu_end) < 3:
-                    break
+        #    while True:
+        #        imu = self.imu_client()
+        #        print("imu: ", imu.x)
+        #        print("imu end: ", imu_end)
+        #        if np.abs(imu.x - imu_end) < 3:
+        #            break
                 
-                if imu.x - imu_end > 0:
-                    if math.fabs(imu.x - imu_end) <= 180:
-                        self.walk_client(True, 0, 0, rotation)
-                    else:
-                        self.walk_client(True, 0, 0, -rotation)
-                if  imu.x - imu_end <= 0:
-                    print("Negative")
-                    if math.fabs(imu.x - imu_end) <= 180:
-                        self.walk_client(True, 0, 0, -rotation)
-                    else:
-                        self.walk_client(True, 0, 0, rotation)
+        #        if imu.x - imu_end > 0:
+        #            if math.fabs(imu.x - imu_end) <= 180:
+        #                self.walk_client(True, 0, 0, rotation)
+        #            else:
+        #                self.walk_client(True, 0, 0, -rotation)
+        #        if  imu.x - imu_end <= 0:
+        #            print("Negative")
+        #            if math.fabs(imu.x - imu_end) <= 180:
+        #                self.walk_client(True, 0, 0, -rotation)
+        #            else:
+        #                self.walk_client(True, 0, 0, rotation)
                 
-            self.walk_client(False, 0, 0, 0)
+        #    self.walk_client(False, 0, 0, 0)
         
 
-        def turn_to(coords):
-            print("Start turning to ball/basketcase")
-            degree = np.arctan(coords[1] / coords[0]) * 180 / np.pi
-            print(str(degree))
-            # rotate(degree)      #THIS FUNCTION NEEDS ANOTHER VIEW
-            time.sleep(1)
-        '''
+        #def turn_to(coords):
+        #    print("Start turning to ball/basketcase")
+        #    degree = np.arctan(coords[1] / coords[0]) * 180 / np.pi
+        #    print(str(degree))
+        #    # rotate(degree)      #THIS FUNCTION NEEDS ANOTHER VIEW
+        #    time.sleep(1)
+        
         def go_to(percent_distance, coords, distance):
             print("Start going")
-        '''
-            r_x, r_y, r_theta = 1, 2, 0 #robot's coordinates
-        #img = Image(cv2.imread("Soccer\\5837.png", cv2.COLOR_BGR2LAB))
-        #blob = img.find_blobs([[100, 110, 140, 210, 220, 230], [50, 70, 80, 230, 240, 250], [10, 20, 30, 251, 252, 253]], 30, 30)
         
-            point = [100, 100, 100]
-            acc = 0.001
-            cycle = 2
-            number_of_cycles = 30 #30
-            self.motion.simThreadCycleInMs = 10
-            self.motion.amplitude = 0 #32
-            self.motion.fr1 = 8 # 4
-            self.motion.fr2 = 12
-            ##self.motion.initPoses = self.motion.fr2 
-            self.motion.gaitHeight = 160
-            self.motion.stepHeight = 40  # 20
-            stepLength = 40
-            sideLength = 0
-            #self.motion.first_Leg_Is_Right_Leg = False
-            self.motion.walk_Initial_Pose()
-            while math.fabs(r_x - point[0]) >= acc or math.fabs(r_y - point[1]) >= acc or math.fabs(r_theta - point[2]) >= acc:
-                point = center_point()
-                r_x = coords[0]
-                r_y = coords[1]
+        #    r_x, r_y, r_theta = 1, 2, 0 #robot's coordinates
+        ##img = Image(cv2.imread("Soccer\\5837.png", cv2.COLOR_BGR2LAB))
+        ##blob = img.find_blobs([[100, 110, 140, 210, 220, 230], [50, 70, 80, 230, 240, 250], [10, 20, 30, 251, 252, 253]], 30, 30)
+        
+        #    point = [100, 100, 100]
+        #    acc = 0.001
+        #    cycle = 2
+        #    number_of_cycles = 30 #30
+        #    self.motion.simThreadCycleInMs = 10
+        #    self.motion.amplitude = 0 #32
+        #    self.motion.fr1 = 8 # 4
+        #    self.motion.fr2 = 12
+        #    ##self.motion.initPoses = self.motion.fr2 
+        #    self.motion.gaitHeight = 160
+        #    self.motion.stepHeight = 40  # 20
+        #    stepLength = 40
+        #    sideLength = 0
+        #    #self.motion.first_Leg_Is_Right_Leg = False
+        #    self.motion.walk_Initial_Pose()
+        #    while math.fabs(r_x - point[0]) >= acc or math.fabs(r_y - point[1]) >= acc or math.fabs(r_theta - point[2]) >= acc:
+        #        point = center_point()
+        #        r_x = coords[0]
+        #        r_y = coords[1]
                 
-                steps = approach(r_x, r_y, r_theta, point[0], point[1], point[2])
-                try:
-                    r_x, r_y, r_theta = localisation(steps[1])
-                    print(r_x, r_y, r_theta)
-                    if self.motion.first_Leg_Is_Right_Leg: invert = -1
-                    else: invert = 1
+        #        steps = approach(r_x, r_y, r_theta, point[0], point[1], point[2])
+        #        try:
+        #            r_x, r_y, r_theta = localisation(steps[1])
+        #            print(r_x, r_y, r_theta)
+        #            if self.motion.first_Leg_Is_Right_Leg: invert = -1
+        #            else: invert = 1
                     
-                    if not self.motion.falling_Flag == 0: break
-                    stepLength1 = stepLength
-                    if cycle == 0 : stepLength1 = stepLength/3
-                    if cycle == 1 : stepLength1 = stepLength/3 * 2
-                    if (r_x - point[0])**2 + (r_x - point[1])**2 <= stepLength: stepLength1 = math.sqrt((r_x - point[0])**2 + (r_x - point[1])**2)
-                    #rotation = steps[0][2]
-                    #rotation = self.motion.normalize_rotation(rotation) 
-                    rotation = 0
-                    number_of_cycles += 1
-                    self.motion.walk_Cycle(stepLength1, sideLength, rotation, cycle, number_of_cycles)
-                    if not self.motion.falling_Flag == 0:
-                        if self.motion.falling_Flag == 3: 
-                            print('STOP!')
-                            return
-                        else: 
-                            print('FALLING!!!', self.motion.falling_Flag)
-                            self.motion.falling_Flag = 0
-                            continue
-                    cycle += 1
-                    number_of_cycles += 1
+        #            if not self.motion.falling_Flag == 0: break
+        #            stepLength1 = stepLength
+        #            if cycle == 0 : stepLength1 = stepLength/3
+        #            if cycle == 1 : stepLength1 = stepLength/3 * 2
+        #            if (r_x - point[0])**2 + (r_x - point[1])**2 <= stepLength: stepLength1 = math.sqrt((r_x - point[0])**2 + (r_x - point[1])**2)
+        #            #rotation = steps[0][2]
+        #            #rotation = self.motion.normalize_rotation(rotation) 
+        #            rotation = 0
+        #            number_of_cycles += 1
+        #            self.motion.walk_Cycle(stepLength1, sideLength, rotation, cycle, number_of_cycles)
+        #            if not self.motion.falling_Flag == 0:
+        #                if self.motion.falling_Flag == 3: 
+        #                    print('STOP!')
+        #                    return
+        #                else: 
+        #                    print('FALLING!!!', self.motion.falling_Flag)
+        #                    self.motion.falling_Flag = 0
+        #                    continue
+        #            cycle += 1
+        #            number_of_cycles += 1
                     
-                except IndexError:
-                    r_x, r_y, r_theta = point[0], point[1], point[2]
-            self.motion.walk_Final_Pose()
-            #self.motion.simulateMotion(name = 'Kondo3_TripleJump')
-                ## NEED TO GO TO THE BALL!!!
-        '''
+        #        except IndexError:
+        #            r_x, r_y, r_theta = point[0], point[1], point[2]
+        #    self.motion.walk_Final_Pose()
+        #    #self.motion.simulateMotion(name = 'Kondo3_TripleJump')
+        #        ## NEED TO GO TO THE BALL!!!
+        
         #def thinking_take(ball_coordinates, basketcase_coordinates):
             
             # print("Start thinking and taking ball")
@@ -256,7 +256,7 @@ class Player():
             # if math.fabs(distance) > 0.16:
             #     # TAKE THE BALL
 
-        self.motion.play_Soft_Motion_Slot(name = 'archery_with_winner_motion')
+        self.motion.play_Soft_Motion_Slot(name = 'triple_jump')
         
 
         #         time.sleep(1)
