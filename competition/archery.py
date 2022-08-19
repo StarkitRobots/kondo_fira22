@@ -240,6 +240,7 @@ def find_target_center(frame):
 class Archery:
     def __init__(self):
         self.glob = Glob(SIMULATION, current_work_directory)
+        self.glob.camera_ON = True
         self.motion = Motion(self.glob)
         self.motion.activation()
         self.motion.falling_Flag = 0
@@ -284,7 +285,16 @@ class Archery:
             print(int(self.circle_x))
             response = self.motion.self_coords_from_pixels(int(self.circle_x), int(self.circle_y), "basket")#, 0, 0, 0.555)# get_coords(int(self.circle_x), int(self.circle_y), 0, 0, 0.555)
             return (np.arctan(response[1] / response[0]))
-
+    
+    def get_pixels_of_target(self, name):
+        center = (None, None)
+        self.glob.camera_ON = True
+        print()
+        center = self.motion.check_camera(name)
+        center_x = center[0]
+        center_y = center[1]
+        return center_x, center_y
+    
     def move_pelvis(self):
         self.servos_client(0,2, -self.pelvis_rot*self.pelvis_rot_const)
 
@@ -333,12 +343,13 @@ class Archery:
 
     def tick(self):
         self.update_camera_frame()
+        name = 'archery'
         if self.cam_frame is not None:
             if(len(self.traj_coords) > self.number_of_frames) and (not self.pointed_to_target):
                 tail_len = self.number_of_frames
                 frame = self.cam_frame.copy()
                 # output = frame.copy()
-                trajectory_x, trajectory_y = find_target_center(frame)
+                trajectory_x, trajectory_y = self.get_pixels_of_target(name)
                 self.traj_coords.append([trajectory_x, trajectory_y])
                 self.timestamps.append(time.time())
                 
@@ -389,7 +400,7 @@ class Archery:
                 tail_len = self.number_of_frames
                 self.cam_frame = self.update_camera_frame()
                 frame = self.cam_frame.copy()
-                trajectory_x, trajectory_y = find_target_center(frame)
+                trajectory_x, trajectory_y = self.get_pixels_of_target(name)
                 self.traj_coords.append([trajectory_x, trajectory_y])
                 # self.timestamps.append(time.time())
                 
@@ -406,7 +417,7 @@ class Archery:
             else:
                 self.cam_frame = self.update_camera_frame()
                 frame = self.cam_frame
-                trajectory_x, trajectory_y = find_target_center(frame)
+                trajectory_x, trajectory_y = self.get_pixels_of_target(name)
                 self.traj_coords.append([trajectory_x, trajectory_y])
                 # self.timestamps.append(time.time())
         # cam.release()
@@ -418,7 +429,7 @@ class Archery:
 if __name__ == "__main__":
     # rospy.init_node("archery")
     archery = Archery()
-
+    
     # archery.motion_client("archery_ready")  #ACTION 1
     # input()
     # archery.motion_client("archery_setup")  #ACTION 2
