@@ -286,14 +286,14 @@ class KondoCameraSensor(Sensor):
     def __init__(self, path_to_config):
         if (KondoCameraSensor.camera == None):
             self._cameraInit(path_to_config)
-            # try:
-            #     #print("Enable Auto Exposure...")
-            #     #KondoCameraSensor.camera.software_auto_exposure(enable = True)
-            #     #print("Enable Auto White Balance...")
-            #     #KondoCameraSensor.camera.software_auto_white_balance(enable = True)
-            #     #KondoCameraSensor.camera.manual_set_awb_compensation(100, 100)
-            # except Exception as e:
-            #     print(e)
+            try:
+                print("Enable Auto Exposure...")
+                KondoCameraSensor.camera.software_auto_exposure(enable = True)
+                #print("Enable Auto White Balance...")
+                #KondoCameraSensor.camera.software_auto_white_balance(enable = True)
+                #KondoCameraSensor.camera.manual_set_awb_compensation(100, 100)
+            except Exception as e:
+                print(e)
     def __del__(self):
         KondoCameraSensor.camera.close()
 
