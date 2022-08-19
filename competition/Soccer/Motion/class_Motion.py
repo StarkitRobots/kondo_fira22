@@ -767,6 +767,11 @@ class Motion1:
                     self.kondo.setServoSpeed(servoSpeedDatas)
                     servoDatas = []
                     disp = []
+                    # Check self.ACTIVESERVOS
+                    angles[3] += self.params['BODY_TILT_SERV07'] # (7,2)
+                    angles[14] += self.params['BODY_TILT_SERVO7'] # (7,1)
+                    angles[1] += self.params['BODY_TILT_SERVO9'] # (9,2)
+                    angles[12] += self.params['BODY_TILT_SERVO9'] #(9,1) 
                     for i in range(len(angles)):
 #                        #print(angles)
                         if self.keep_hands_up:
