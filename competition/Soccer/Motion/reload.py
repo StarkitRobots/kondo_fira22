@@ -377,7 +377,7 @@ class KondoCameraSensor(Sensor):
         KondoCameraSensor.camera.set_mode(6)
         KondoCameraSensor.camera.set_resolution(KondoCameraSensor.resolution["width"],
                 KondoCameraSensor.resolution["height"])
-        KondoCameraSensor.camera_matrix, KondoCameraSensor.dist_matrix = KondoCameraSensor.loadCoefficients(path)
+        if path != None: KondoCameraSensor.camera_matrix, KondoCameraSensor.dist_matrix = KondoCameraSensor.loadCoefficients(path)
 
     def align_down(self, size, align):
             return (size & ~((align)-1))
@@ -386,7 +386,7 @@ class KondoCameraSensor(Sensor):
             return self.align_down(size + align - 1, align)
     
 
-    def __init__(self, path_to_config):
+    def __init__(self, path_to_config=None):
         if (KondoCameraSensor.camera == None):
             self._cameraInit(path_to_config)
 
@@ -415,6 +415,9 @@ class KondoCameraSensor(Sensor):
             image, KondoCameraSensor.camera_matrix, KondoCameraSensor.dist_matrix, None, None
             )
         return Image(image)
+    def __del__(self):
+        KondoCameraSensor.camera.close_camera()
+
 def main ():
 #    sensor = Sensor ("rgb_basket.jpg")
     sensor = KondoCameraSensor()

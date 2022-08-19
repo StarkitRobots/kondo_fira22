@@ -26,50 +26,6 @@ from class_Motion import Motion1 as Motion
 
 
 
-class Sprint(Competition):
-    def __init__(self, path_to_camera_config):   
-        self.glob = Glob(SIMULATION, current_work_directory)
-        self.motion = Motion(self.glob)
-        self.motion.activation()
-        self.motion.falling_Flag = 0
-        self.number_of_cycles = 3000000 #30
-        self.motion.simThreadCycleInMs = 20 # 20
-        self.motion.amplitude = 32 #32
-        self.motion.fr1 = 4 # 4
-        self.motion.fr2 = 10 # 10
-        ##self.motion.initPoses = self.motion.fr2 
-        self.motion.gaitHeight = 190 # 190
-        self.motion.stepHeight = 40  # 20
-        self.stepLength = 70 #70 
-        self.sensor = KondoCameraSensor(path_to_camera_config)
-        self.aruco_init()
-    def aruco_init(self):
-        self.arucoDict = cv2.aruco.Dictionary_get(cv2.aruco.DICT_4X4_50)
-        self.arucoParams = cv2.aruco.DetectorParameters_create()
-    def aruco_position(self, img):
-        (corners, ids, rejected) = cv2.aruco.detectMarkers(img, self.arucoDict,
-                        parameters=self.arucoParams)
-        print(corners)
-        print(self.sensor.camera_matrix, self.sensor.dist_matrix)
-        if corners != []:
-            tvec, rvec = cv2.aruco.estimatePoseSingleMarkers(corners[0], 0.05, self.sensor.camera_matrix, self.sensor.dist_matrix)
-        else : return [[[0,0,0]]],[[[0,0,0]]]
-        print("rvec : ", rvec)
-        print("tvec : ", tvec)    
-        return tvec, rvec
-
-    def run_forward_1(self):
-        for cycle in range(self.number_of_cycles):
-            img = self.sensor.snapshot().img
-            rvec, tvec = self.aruco_position(img)
-            rotation = 0 
-            if cycle ==0 : stepLength1 = self.stepLength/4
-            if cycle ==1 : stepLength1 = self.stepLength/2
-            if cycle ==2 : stepLength1 = self.stepLength/4 * 3
-            self.motion.walk_Cycle(stepLength1,0,max(rvec[0][0][1],0.1) if rvec[0][0][1] > 0 else max(rvec[0][0][1],0.1),cycle, self.number_of_cycles)
-
-
-
 
 
 
@@ -77,9 +33,8 @@ class Sprint(Competition):
 import math
 import time
 import cv2
-import numpy as npfrom 
+import numpy as np 
 from scipy import optimize
-import model
 
 # class ExampleFSM:
 #     def __init__(self):
@@ -172,7 +127,7 @@ def calculate_period(positions): #measurments):
     # time_stamps = timestamps
     x_coords, y_coords = zip (*positions)
 
-    measurements = list (zip (x_coords, y_coords, timestamps))
+    measurements = list (zip (x_coords, y_coords))
     # print (measurements)
 
     circle_x, circle_y, circle_r, circle_error = detect_circle_params(x_coords, y_coords)
@@ -190,7 +145,8 @@ def calculate_period(positions): #measurments):
     return  circle_x, circle_y, circle_r, circle_error
 
 def find_target_center(frame):
-    # cv2.imshow("real", frame)
+    # print(frame)
+    cv2.imshow("real", frame)
     avarage_x = 0
     avarage_y = 0
     
@@ -224,7 +180,7 @@ def find_target_center(frame):
     
     canny_yellow = cv2.Canny(img_dilation_yellow, 180, 190)
     
-    # cv2.imshow("yellow", canny_yellow)
+    cv2.imshow("yellow", canny_yellow)
     
     circle_yellow = cv2.HoughCircles(canny_yellow, cv2.HOUGH_GRADIENT, 1.4, 100)
     
@@ -239,7 +195,7 @@ def find_target_center(frame):
     
     canny_red = cv2.Canny(img_dilation_red, 350, 360) 
     
-    # cv2.imshow("red", canny_red)
+    cv2.imshow("red", canny_red)
     
     circle_red = cv2.HoughCircles(canny_red, cv2.HOUGH_GRADIENT, 2.2, 100)
     
@@ -272,29 +228,30 @@ def find_target_center(frame):
     if counter > 0:
         avarage_x = total_x // counter
         avarage_y = total_y // counter
-        # print(avarage_x, avarage_y)
+        print(avarage_x, avarage_y)
         # # draw a rectangle
         # # corresponding to the center of the circles
         # cv2.rectangle(output, (avarage_x - 5, avarage_y - 5), (avarage_x + 5, avarage_y + 5), (0, 128, 255), -1)
         # # show the output image
-        # cv2.imshow("output", np.hstack([frame, output]))
-        # cv2.waitKey(10)
+        #cv2.imshow("output", np.hstack([frame, output]))
+        cv2.waitKey(10)
     return avarage_x , avarage_y
 
-class ArcheryFSM:
+class Archery:
     def __init__(self):
-
-
-
-
-
-
-
-
-
-
-
-
+        self.glob = Glob(SIMULATION, current_work_directory)
+        self.motion = Motion(self.glob)
+        self.motion.activation()
+        self.motion.falling_Flag = 0
+        self.number_of_cycles = 3000000 #30
+        self.motion.simThreadCycleInMs = 20 # 20
+        self.motion.amplitude = 32 #32
+        self.motion.fr1 = 4 # 4
+        self.motion.fr2 = 10 # 10
+        ##self.motion.initPoses = self.motion.fr2 
+        self.motion.gaitHeight = 190 # 190
+        self.motion.stepHeight = 40  # 20
+        self.stepLength = 70 #70 
         self.cam_frame = None
         self.traj_coords = []
         self.timestamps = []
@@ -317,9 +274,10 @@ class ArcheryFSM:
         self.time_delay = 1.1
         self.time_accuracy = 0.1
 
-    def update_camera_frame(self, msg):
+    def update_camera_frame(self):
         # self.cam_frame = np.frombuffer(msg.data, dtype=np.uint8).reshape(msg.height, msg.width, -1)
         self.cam_frame = self.motion.sensor.snapshot().img
+        return self.cam_frame
     def count_pelvis_rotation(self):
             # get_coords = rospy.ServiceProxy("model_service", ModelService)
             # rospy.loginfo(self.circle_x, self.circle_y, 0, 0)
@@ -334,7 +292,7 @@ class ArcheryFSM:
         self.servos_client(13,2, -1)
 
 
-    def servos_client (self,id,sio position):
+    def servos_client (self,id,sio, position):
         self.motion.set_servo_pos(id,sio,position)
 
 
@@ -369,7 +327,7 @@ class ArcheryFSM:
 
         predicted_time = angle_diff / angular_speed
 
-        #print (current_vec, angle_diff, angular_speed)
+        print (current_vec, angle_diff, angular_speed)
 
         return predicted_time   
 
@@ -387,7 +345,7 @@ class ArcheryFSM:
                 if (len(self.traj_coords) > tail_len):
                     l_ind = len(self.traj_coords) - tail_len
                 
-                # print(len(self.traj_coords), self.l_ind)
+                print(len(self.traj_coords), self.l_ind)
                 
                 self.circle_x, self.circle_y, self.circle_r, self.circle_error = calculate_period(self.traj_coords[self.l_ind : ])
                 
@@ -395,42 +353,41 @@ class ArcheryFSM:
                 print(self.pelvis_rot)
 
                 self.pointed_to_target = True
-
+                print ("I m pelvis rotate")
                 self.move_pelvis()
                 self.traj_coords.clear()
 
 
                 # Visual output
-                # print(self.circle_x, self.circle_y)
-                # if circle_x is not None:
-                #     if (abs(circle_x) < 5000 and abs(circle_y) < 5000):
-                #         cv2.circle(output, (int(circle_x), int(circle_y)), int(circle_r), (0, 255, 0), 4)
-                #         cv2.rectangle(output, (int(circle_x) - 5, int(circle_y) - 5), (int(circle_x) + 5, int(circle_y) + 5), (0, 128, 255), -1)
+                print(self.circle_x, self.circle_y)
+                if circle_x is not None:
+                     if (abs(circle_x) < 5000 and abs(circle_y) < 5000):
+                         cv2.circle(output, (int(circle_x), int(circle_y)), int(circle_r), (0, 255, 0), 4)
+                         cv2.rectangle(output, (int(circle_x) - 5, int(circle_y) - 5), (int(circle_x) + 5, int(circle_y) + 5), (0, 128, 255), -1)
                 #         # font
-                #         font = cv2.FONT_HERSHEY_SIMPLEX
+                         font = cv2.FONT_HERSHEY_SIMPLEX
 
                 #         # org
-                #         org = (50, 50)
+                         org = (50, 50)
 
                 #         # fontScale
-                #         fontScale = 1
+                         fontScale = 1
 
                 #         # Blue color in BGR
-                #         color = (255, 0, 0)
+                         color = (255, 0, 0)
 
                 #         # Line thickness of 2 px
-                #         thickness = 2
-
-                #         # Using cv2.putText() method
-                #         output = cv2.putText(output, str(period), org, font, 
-                #                     fontScale, color, thickness, cv2.LINE_AA)
-                #         cv2.imshow("output", np.hstack([frame, output]))
-                #         cv2.waitKey(10)
+                         thickness = 2
+                         # Using cv2.putText() method
+                         output = cv2.putText(output, str(period), org, font, 
+                                     fontScale, color, thickness, cv2.LINE_AA)
+                         cv2.imshow("output", np.hstack([frame, output]))
+                         cv2.waitKey(10)
 
                 #Close on q
-                # key = cv2.waitKey(50) & 0xFF
-                # if (key == ord('q')):
-                #     break
+                key = cv2.waitKey(50)
+                if (key == ord('q')):
+                    return
             elif(len(self.traj_coords) > self.number_of_frames) and (self.pointed_to_target):
                 tail_len = self.number_of_frames
                 self.cam_frame = self.update_camera_frame()
@@ -464,13 +421,12 @@ class ArcheryFSM:
 if __name__ == "__main__":
     # rospy.init_node("archery")
     archery = Archery()
-    image_sub = rospy.Subscriber('/usb_cam/image_raw', Image, archery.update_camera_frame)
 
-    archery.motion_client("archery_ready")  #ACTION 1
-    input()
-    archery.motion_client("archery_setup")  #ACTION 2
+    # archery.motion_client("archery_ready")  #ACTION 1
+    # input()
+    # archery.motion_client("archery_setup")  #ACTION 2
     time.sleep(4)
-    archery.motion_client("archery_pull")   #ACTION 3
+    # archery.motion_client("archery_pull")   #ACTION 3
     to_continue = True
     while to_continue:
         time.sleep(0.05)
