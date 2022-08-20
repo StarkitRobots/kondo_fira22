@@ -100,6 +100,9 @@ class Image:
         
         circle_blue = cv2.HoughCircles(canny_blue, cv2.HOUGH_GRADIENT, 1.4, 100)
         
+        #cv2.imshow('blue', circle_blue)
+        
+        #cv2.waitKey(10)
     #Detect yellow circle
         mask_yellow = cv2.inRange(hsv, low_th_yellow, low_th_yellow)
         
@@ -115,6 +118,9 @@ class Image:
         
         circle_yellow = cv2.HoughCircles(canny_yellow, cv2.HOUGH_GRADIENT, 1.4, 100)
         
+        #cv2.imshow('yellow', circle_yellow)
+        
+        #cv2.waitKey(10)
     #Detect red circle
         mask_red = cv2.inRange(hsv, low_th_red, low_th_red)
         
@@ -130,6 +136,9 @@ class Image:
         
         circle_red = cv2.HoughCircles(canny_red, cv2.HOUGH_GRADIENT, 2.2, 100)
         
+        #cv2.imshow('red', circle_red)
+    
+        #cv2.waitKey(10)
     #Find center
         
     #if circle_blue is not None and circle_yellow is not None and circle_red is not None:
@@ -164,8 +173,8 @@ class Image:
             # # corresponding to the center of the circles
             # cv2.rectangle(output, (avarage_x - 5, avarage_y - 5), (avarage_x + 5, avarage_y + 5), (0, 128, 255), -1)
             # # show the output image
-            # cv2.imshow("output", np.hstack([frame, output]))
-            # cv2.waitKey(10)
+            cv2.imshow("output", np.hstack([frame, output]))
+            cv2.waitKey(10)
         return (avarage_x , avarage_y)
 
 

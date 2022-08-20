@@ -151,6 +151,7 @@ class State:
 class Archery:
     def __init__(self):
         self.glob = Glob(SIMULATION, current_work_directory)
+        self.glob.camera_ON = True
         self.motion = Motion(self.glob)
         self.motion.activation()
         self.state = State.INIT
@@ -254,12 +255,10 @@ class Archery:
                 self.pointed_to_target = True
         return self.pointed_to_target
 
-
 if __name__ == "__main__":
     # rospy.init_node("archery")
     archery = Archery()
-
-    #archery.motion_client("archery_ready")  #ACTION 1
+    # archery.motion_client("archery_ready")  #ACTION 1
     # input()
     # archery.motion_client("archery_setup")  #ACTION 2
     time.sleep(4)
