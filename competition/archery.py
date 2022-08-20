@@ -243,7 +243,8 @@ class Archery:
     def tick(self):
         img = self.sensor.snapshot().img
         if img is not None:
-            target_current_x, target_current_y = img.find_target_center()
+            target_current_x, target_current_y = img.find_target_center(
+                self.glob.TH['archery']['thblue'], self.glob.TH['archery']['thyellow'], self.glob.TH['archery']['thred'])
         else:
             target_current_x = target_current_y = None
 
