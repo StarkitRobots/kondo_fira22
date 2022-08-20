@@ -79,8 +79,8 @@ class Motion1:
                     26:['',0], 27:['',0], 28:['',0], 29:['',0], 30:['Soccer_Walk_FF0',0],
                     31:['Soccer_Walk_FF1',0], 32:['Soccer_Walk_FF2',0], 33: ['Soccer_Get_UP_Stomach',0], 34:['Soccer_Get_UP_Face_Up',0],
                     35: ['Get_Up_Right',0], 36: ['PenaltyDefenceR',2000], 37: ['PenaltyDefenceL',2000],   38:[ "archery_ready" , 111],
-    39: ["archery_setup" , 112],
-     40 :["archery_pull" , 113]}
+    112: ["archery_setup" , 10],
+     113 :["archery_pull" , 10]}
         self.stepLengthPlaner_is_ON = False
         self.TIK2RAD = 0.00058909
         self.slowTime   = 0.0             # seconds
@@ -322,12 +322,14 @@ class Motion1:
         if self.glob.SIMULATION == 2:
             for key in self.MOTION_SLOT_DICT:
                 if self.MOTION_SLOT_DICT[key][0] == name:
+                    print(f"Play motion with id :{key} and name: {name}") 
                     self.kondo.motionPlay(key)
                     self.pyb.delay(self.MOTION_SLOT_DICT[key][1])
         else:
             self.simulateMotion(name = name)
 
     def play_Soft_Motion_Slot(self, name = ''):             # the slot from file will be played in robot 
+
         ACTIVESERVOS = [(10,2),(9,2),(8,2),(7,2),(6,2),(5,2),(4,2),
                 (3,2),(2,2),(1,2),(0,2),(10,1),(9,1),(8,1),
                 (7,1),(6,1),(5,1),(4,1),(3,1),(2,1),(1,1),(0,1),(12,2),(11,2),(11,1)]

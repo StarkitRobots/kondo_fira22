@@ -246,19 +246,25 @@ class Archery:
         return predicted_time   
 
     def process_vision(self):
-        while not self.stopFlag:
-            img = self.sensor.snapshot()
-            if img is not None:
-                target_current_x, target_current_y = img.find_target_center(
-                    self.glob.TH['archery']['thblue'], self.glob.TH['archery']['thyellow'], self.glob.TH['archery']['thred'])
-            else:
-                target_current_x = target_current_y = None
+        print(self.stopFlag)
+        print("receiving a picture")
+        img = self.sensor.snapshot()
+        if img is not None:
+            print("begining of reload")
+            self.target_current_x, self.target_current_y = img.find_target_center(
+            self.glob.TH['archery']['thblue'], self.glob.TH['archery']['thyellow'], self.glob.TH['archery']['thred'])
+        else:
+             print("XYETA")
+             self.target_current_x = target_current_y = None
 
     def tick(self):
-        if target_current_x is not None and target_current_x > 0:
-           angle_to_turn = self.targeting_kp * (target_current_x - self.target_desired_x)
+        print(f"************* {self.target_current_x} **************************** {self.target_current_y}")
+        if self.target_current_x is not None and self.target_current_x > 0:
+           angle_to_turn = self.targeting_kp * (self.target_current_x - self.target_desired_x)
            print(angle_to_turn)
+           print(f"penis is {self.pelvis_rot_mistake_in_pixels}")
            if abs(angle_to_turn) >= self.pelvis_rot_mistake_in_pixels:
+               print("starting turning")
                self.motion.set_servo_pos(0, 2, angle_to_turn)
            else:
                self.pointed_to_target = True
@@ -269,11 +275,13 @@ if __name__ == "__main__":
     archery = Archery()
     # archery.motion_client("archery_ready")  #ACTION 1
     # input()
-    # archery.motion_client("archery_setup")  #ACTION 2
-    #time.sleep(4)
-    # archery.motion_client("archery_pull")   #ACTION 3
+    # print ("archery ready")
+    archery.motion_client("archery_setup")  #ACTION 2
+    time.sleep(4)
+    archery.motion_client("archery_pull")   #ACTION 3
     pointed = False
     while True:
+        archery.process_vision()
         #time.sleep(archery.time_accuracy)
         pointed = archery.tick()
         if pointed:

@@ -124,7 +124,7 @@ class Image:
     #Detect red circle
         mask_red = cv2.inRange(hsv, low_th_red, high_th_red)
         
-        #cv2.imshow('red', cv2.resize(mask_red, (320, 260)))
+        cv2.imshow('red', cv2.resize(mask_red, (320, 260)))
         
         blured_red = cv2.medianBlur(mask_red*gray, 7)
         
