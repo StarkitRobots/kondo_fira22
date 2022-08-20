@@ -265,7 +265,7 @@ class Motion1:
         pan = p[1]
         self.neck_tilt = (tilt - 7500) * ((3 * np.pi / 2) / 8000)
         self.neck_pan = (pan - 7500) * ((3 * np.pi / 2) / 8000) 
-        robot_model.update_camera_pan_tilt(self.neck_pan, self.neck_tilt)
+        robot_model.update_camera_pan_tilt(self.neck_pan, -self.neck_tilt)
         #robot_model.update_camera_pan_tilt(0, 0)
         print((self.params["HEIGHT_OF_CAMERA"] + self.params["HEIGHT_OF_NECK"])/1000)
         if name == 'ball':
@@ -331,7 +331,7 @@ class Motion1:
     def play_Soft_Motion_Slot(self, name = ''):             # the slot from file will be played in robot 
         ACTIVESERVOS = [(10,2),(9,2),(8,2),(7,2),(6,2),(5,2),(4,2),
                 (3,2),(2,2),(1,2),(0,2),(10,1),(9,1),(8,1),
-                (7,1),(6,1),(5,1),(4,1),(3,1),(2,1),(1,1),(0,1),(12,2),(11,2),(11,1)]
+                (7,1),(6,1),(5,1),(4,1),(3,1),(2,1),(1,1),(0,1),(12,2),(11,2),(11,1), (13,2), (13,1)]
         # (10,2) Прав Стопа Вбок, (9,2) Прав Стопа Вперед,(8,2) Прав Голень, (7,2) Прав Колено,
         # (6,2)  Прав Бедро,      (5,2) Прав Таз,         (1,2) Прав Ключица,(4,2) Прав Локоть, (0,2) Торс
         # (10,1) Лев Стопа Вбок,  (9,1) Лев Стопа Вперед, (8,1) Лев Голень,  (7,1) Лев Колено
@@ -343,6 +343,7 @@ class Motion1:
             motion_list = slots[name]
             for motion in motion_list:
                 servoDatas = []
+                print (len (motion), len(ACTIVESERVOS))
                 for i in range(len(motion)-1):
                     pos = int(motion[i+1]) + 7500 #- self.servo_Trims[i]
                     servoDatas.append( self.kondo.ServoData(ACTIVESERVOS[i][0], ACTIVESERVOS[i][1],pos))
@@ -838,7 +839,7 @@ class Motion1:
                     servoDatas = []
                     disp = []
                     # Check self.ACTIVESERVOS
-                    angles[3] += self.params['BODY_TILT_SERV07'] # (7,2)
+                    angles[3] += self.params['BODY_TILT_SERVO7'] # (7,2)
                     angles[14] += self.params['BODY_TILT_SERVO7'] # (7,1)
                     angles[1] += self.params['BODY_TILT_SERVO9'] # (9,2)
                     angles[12] += self.params['BODY_TILT_SERVO9'] #(9,1) 
@@ -1584,7 +1585,7 @@ class Motion1:
 
     def walk_Final_Pose(self):
         self.robot_In_0_Pose = False
-        if not self.falling_Test() == 0:
+        if 0:#not self.falling_Test() == 0:
             if self.falling_Flag == 3: print('STOP!')
             else: print('FALLING!!!', self.falling_Flag)
             return[]

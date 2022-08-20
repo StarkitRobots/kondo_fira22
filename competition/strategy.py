@@ -267,10 +267,9 @@ class Player():
         def go_to(coords, distance):
             print("Start going")
             stepLength = 70
-            number_of_cycles = int(distance*1000/stepLength)
+            number_of_cycles = int(distance*4200/stepLength)
             self.motion.walk_Initial_Pose()
             time.sleep(3)
-            self.motion.frames_per_cycle = self.default_frames_per_cycle
             for cycle in range(number_of_cycles):                
                 self.motion.walk_Cycle(stepLength,
                                         0,
@@ -278,7 +277,7 @@ class Player():
                                         cycle, 
                                         number_of_cycles)
             self.motion.walk_Final_Pose()
-            
+            print("end of going")
             '''
             r_x, r_y, r_theta = 1, 2, 0 #robot's coordinates
         #img = Image(cv2.imread("Soccer\\5837.png", cv2.COLOR_BGR2LAB))
@@ -406,16 +405,16 @@ class Player():
 
         # draw_graphics(test_series(4))
 
-
+        '''
         coords = (0.2, 0)
         distance = np.sqrt(coords[0]**2 + coords[1]**2)
         print(f"DISTANCY IS {distance}")
         go_to(coords, distance)
-
+        '''
         # self.motion.move_head(1000, -2000)
         # Finding ball and putting it to self.ball_coordinates for future approach.
         # move_head_real(rad_to_kondo(-np.pi/8), rad_to_kondo(0))
-        '''
+        
         flag_ball = False
         print("zdorova")
         print("ya kryg")
@@ -434,7 +433,7 @@ class Player():
         angle = np.arctan(ball_coords[1] / ball_coords[0])
         turn_to(angle)    #DOESN'T WORK NOW
         # maybe do finding one more time
-        go_to(ball_coords * 0.8, ball_distance)  #DOESN'T WORK NOW
+        go_to(ball_coords, ball_distance)  #DOESN'T WORK NOW
         
         # Correct the ball position
 
@@ -442,13 +441,24 @@ class Player():
             flag_ball, ball_coords, ball_distance = finding('ball')      # (True/False), (x,y), distance
         print(f"result of finding ball: {ball_coords} and {ball_distance}")
 
+        if ball_coords[0] >= 0.1:
+            
+            ball_coord_x = ball_coords[0] * 1.4
+            ball_coord_y = ball_coords[1] * 1.2
+            
+            ball_coords = (ball_coord_x, ball_coord_y)
+            print(f"POGONNYE LENGTHS ARE {ball_coords}")
+
         # Finally approach a ball
         
-        flag_ball = False
-        turn_to(ball_coords)    #DOESN'T WORK NOW
-        # maybe do finding one more time
-        go_to(1, ball_coords, ball_distance)  #DOESN'T WORK NOW
-        
+            flag_ball = False
+            # turn_to(ball_coords)    #DOESN'T WORK NOW
+            # maybe do finding one more time
+            go_to(ball_coords, ball_distance)  #DOESN'T WORK NOW
+
+        angle = np.arctan(ball_coords[1] / ball_coords[0])
+        turn_to(ball_coords)
+        '''
         # Searching for ball
         while not flag_ball:
             flag_ball, ball_coords, ball_distance = finding('ball')      # (True/False), (x,y), distance
