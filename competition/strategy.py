@@ -256,7 +256,7 @@ class Player():
             # if math.fabs(distance) > 0.16:
             #     # TAKE THE BALL
 
-        self.motion.play_Soft_Motion_Slot(name = 'triple_jump')
+        self.motion.play_Soft_Motion_Slot(name = 'Kondo3_TripleJump')
         
 
         #         time.sleep(1)
