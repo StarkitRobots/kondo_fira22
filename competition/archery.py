@@ -20,7 +20,7 @@ sys.path.append( current_work_directory + 'Soccer/')
 sys.path.append( current_work_directory + 'Soccer/Motion/')
 SIMULATION=2
 from class_Motion import Glob
-from reload import KondoCameraSensor
+from reload import KondoCameraSensor, find_target_center
 from class_Motion import Motion1 as Motion
 
 
@@ -143,105 +143,17 @@ def calculate_period(positions): #measurments):
     # all_time = measurements[-1][2] - measurements[0][2]
     # period = all_time / angle * 2 * math.pi
     return  circle_x, circle_y, circle_r, circle_error
-
-def find_target_center(frame):
-    # print(frame)
-    # cv2.imshow("real", frame)
-    avarage_x = 0
-    avarage_y = 0
-    
-#Switch to HSV 
-    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    
-#Detect blue circle
-    mask_blue = cv2.inRange(hsv, (79,76,115), (125,199,212))
-    
-    blured_blue = cv2.medianBlur(mask_blue*gray, 5)
-    
-    kernel_blue = np.ones((5,5), np.uint8)
-    img_erosion_blue = cv2.erode(blured_blue, kernel_blue, iterations=1)
-    img_dilation_blue = cv2.dilate(img_erosion_blue, kernel_blue, iterations=1)
-    
-    canny_blue = cv2.Canny(img_dilation_blue, 350, 360)
-    
-    # cv2.imshow("blue", canny_blue)
-    
-    circle_blue = cv2.HoughCircles(canny_blue, cv2.HOUGH_GRADIENT, 1.4, 100)
-    
-#Detect yellow circle
-    mask_yellow = cv2.inRange(hsv, (8,60,140), (32,162,229))
-    
-    blured_yellow = cv2.medianBlur(mask_yellow*gray, 5)
-    
-    kernel_yellow = np.ones((5,5), np.uint8)
-    img_erosion_yellow = cv2.erode(blured_yellow, kernel_yellow, iterations=1)
-    img_dilation_yellow = cv2.dilate(img_erosion_yellow, kernel_yellow, iterations=1)
-    
-    canny_yellow = cv2.Canny(img_dilation_yellow, 180, 190)
-    
-    # cv2.imshow("yellow", canny_yellow)
-    
-    circle_yellow = cv2.HoughCircles(canny_yellow, cv2.HOUGH_GRADIENT, 1.4, 100)
-    
-#Detect red circle
-    mask_red = cv2.inRange(hsv, (0,52,93), (18,229,228))
-    
-    blured_red = cv2.medianBlur(mask_red*gray, 7)
-    
-    kernel_red = np.ones((7,7), np.uint8)
-    img_erosion_red = cv2.erode(blured_red, kernel_red, iterations=1)
-    img_dilation_red = cv2.dilate(img_erosion_red, kernel_red, iterations=1)
-    
-    canny_red = cv2.Canny(img_dilation_red, 350, 360) 
-    
-    cv2.imshow("red", canny_red)
-    
-    circle_red = cv2.HoughCircles(canny_red, cv2.HOUGH_GRADIENT, 2.2, 100)
-    
-#Find center
-    
-#if circle_blue is not None and circle_yellow is not None and circle_red is not None:
-    #convert the (x, y) coordinates and radius of the circles to integers
-    counter = 0
-    total_x = 0
-    total_y = 0
-    
-    if circle_blue is not None:
-        circle_blue = np.round(circle_blue[0, :]).astype("int")
-        total_x += circle_blue[0][0]
-        total_y += circle_blue[0][1]
-        counter += 1
-        
-    if circle_yellow is not None:
-        circle_yellow = np.round(circle_yellow[0, :]).astype("int")
-        total_x += circle_yellow[0][0]
-        total_y += circle_yellow[0][1]
-        counter += 1
-        
-    if circle_red is not None:
-        circle_red = np.round(circle_red[0, :]).astype("int")
-        total_x += circle_red[0][0]
-        total_y += circle_red[0][1]
-        counter += 1
-        
-    if counter > 0:
-        avarage_x = total_x // counter
-        avarage_y = total_y // counter
-        print(avarage_x, avarage_y)
-        # # draw a rectangle
-        # # corresponding to the center of the circles
-        # cv2.rectangle(output, (avarage_x - 5, avarage_y - 5), (avarage_x + 5, avarage_y + 5), (0, 128, 255), -1)
-        # # show the output image
-        #cv2.imshow("output", np.hstack([frame, output]))
-        cv2.waitKey(10)
-    return avarage_x , avarage_y
-
+class State:
+    INIT = -1
+    SEARCHING_TARGET = 0
+    TARGETING = 1
+    READY = 2
 class Archery:
     def __init__(self):
         self.glob = Glob(SIMULATION, current_work_directory)
         self.motion = Motion(self.glob)
         self.motion.activation()
+        self.state = State.INIT
         self.motion.falling_Flag = 0
         self.number_of_cycles = 3000000 #30
         self.motion.simThreadCycleInMs = 20 # 20
@@ -256,10 +168,11 @@ class Archery:
         self.traj_coords = []
         self.timestamps = []
 
-        self.pelvis_rot = 0
-        self.pelvis_rot_mistake = 0.1
-        self.pelvis_rot_const =1.1
+        self.target_desired_x = 0
+        self.pelvis_rot_mistake_in_pixels = 0.1
         self.pointed_to_target = False
+
+        self.targeting_kp = 10
 
         self.number_of_frames = 1
 
@@ -273,27 +186,22 @@ class Archery:
 
         self.time_delay = 1.1
         self.time_accuracy = 0.1
+        
+        self.sensor = KondoCameraSensor("/home/pi/kondo_fira22/Camera_calibration/mtx.yaml")
+        self.state = State.SEARCHING_TARGET
+    
+    # def count_pelvis_rotation(self):
+    #         # get_coords = rospy.ServiceProxy("model_service", ModelService)
+    #         # rospy.loginfo(self.circle_x, self.circle_y, 0, 0)
+    #         print(int(self.circle_x))
+    #         response = self.motion.self_coords_from_pixels(int(self.circle_x), int(self.circle_y), "basket")#, 0, 0, 0.555)# get_coords(int(self.circle_x), int(self.circle_y), 0, 0, 0.555)
+    #         return (np.arctan(response[1] / response[0]))
 
-    def update_camera_frame(self):
-        # self.cam_frame = np.frombuffer(msg.data, dtype=np.uint8).reshape(msg.height, msg.width, -1)
-        self.cam_frame = self.motion.sensor.snapshot().img
-        return self.cam_frame
-    def count_pelvis_rotation(self):
-            # get_coords = rospy.ServiceProxy("model_service", ModelService)
-            # rospy.loginfo(self.circle_x, self.circle_y, 0, 0)
-            print(int(self.circle_x))
-            response = self.motion.self_coords_from_pixels(int(self.circle_x), int(self.circle_y), "basket")#, 0, 0, 0.555)# get_coords(int(self.circle_x), int(self.circle_y), 0, 0, 0.555)
-            return (np.arctan(response[1] / response[0]))
-
-    def move_pelvis(self):
-        self.servos_client(0,2, -self.pelvis_rot*self.pelvis_rot_const)
+    def move_pelvis(self, angle):
+        self.motion.set_servo_pos(0,2, angle)
 
     def release_the_bowstring(self):
-        self.servos_client(13,2, -1)
-
-
-    def servos_client (self,ids,sio, position):
-        self.motion.set_servo_pos(ids,sio,position)
+        self.motion.set_servo_pos(13,2, -1)
 
 
     def motion_client(self, motion_name):
@@ -332,101 +240,33 @@ class Archery:
         return predicted_time   
 
     def tick(self):
-        self.update_camera_frame()
-        if self.cam_frame is not None:
-            if(len(self.traj_coords) > self.number_of_frames) and (not self.pointed_to_target):
-                tail_len = self.number_of_frames
-                frame = self.cam_frame.copy()
-                # output = frame.copy()
-                trajectory_x, trajectory_y = find_target_center(frame)
-                self.traj_coords.append([trajectory_x, trajectory_y])
-                self.timestamps.append(time.time())
-                
-                if (len(self.traj_coords) > tail_len):
-                    l_ind = len(self.traj_coords) - tail_len
-                
-                print(len(self.traj_coords), self.l_ind)
-                
-                self.circle_x, self.circle_y, self.circle_r, self.circle_error = calculate_period(self.traj_coords[self.l_ind : ])
-                
-                self.pelvis_rot += self.count_pelvis_rotation()
-                # print(self.pelvis_rot)
+        img = self.sensor.snapshot().img
+        if img is not None:
+            target_current_x, target_current_y = img.find_target_center()
+        else:
+            target_current_x = target_current_y = None
 
-                self.pointed_to_target = True
-                print (f"I m pelvis rotate {self.pelvis_rot}")
-                self.move_pelvis()
-                self.traj_coords.clear()
-
-
-                # Visual output
-                print(self.circle_x, self.circle_y)
-                circle_x = self.circle_x 
-                circle_y = self.circle_y 
-
-                if circle_x is not None:
-                     if (abs(circle_x) < 5000 and abs(circle_y) < 5000):
-                #         # font
-                         font = cv2.FONT_HERSHEY_SIMPLEX
-
-                #         # org
-                         org = (50, 50)
-
-                #         # fontScale
-                         fontScale = 1
-
-                #         # Blue color in BGR
-                         color = (255, 0, 0)
-
-                #         # Line thickness of 2 px
-                         thickness = 2
-                         # Using cv2.putText() method
-
-                #Close on q
-                key = cv2.waitKey(50)
-                if (key == ord('q')):
-                    return
-            elif(len(self.traj_coords) > self.number_of_frames) and (self.pointed_to_target):
-                tail_len = self.number_of_frames
-                self.cam_frame = self.update_camera_frame()
-                frame = self.cam_frame.copy()
-                trajectory_x, trajectory_y = find_target_center(frame)
-                self.traj_coords.append([trajectory_x, trajectory_y])
-                # self.timestamps.append(time.time())
-                
-                if (len(self.traj_coords) > tail_len):
-                    l_ind = len(self.traj_coords) - tail_len
-                
-                self.circle_x, self.circle_y, self.circle_r, self.circle_error = calculate_period(self.traj_coords[self.l_ind : ], )
-
-                # pred_time = self.predict_time()
-                # print(pred_time)
-
-                # if((pred_time - self.time_delay) < self.time_accuracy):
-                #     return False
+        if target_current_x is not None:
+            angle_to_turn = self.targeting_kp * (target_current_x - self.target_desired_x)
+            if abs(angle_to_turn) >= self.pelvis_rot_mistake_in_pixels:
+                self.motion.set_servo_pos(0, 2, angle_to_turn)
             else:
-                self.cam_frame = self.update_camera_frame()
-                frame = self.cam_frame
-                trajectory_x, trajectory_y = find_target_center(frame)
-                self.traj_coords.append([trajectory_x, trajectory_y])
-                # self.timestamps.append(time.time())
-        # cam.release()
-        # cv2.destroyAllWindows()
-        # cv2.waitKey(10)
-        return True
+                self.pointed_to_target = True
+        return self.pointed_to_target
 
 
 if __name__ == "__main__":
     # rospy.init_node("archery")
     archery = Archery()
 
-    # archery.motion_client("archery_ready")  #ACTION 1
+    #archery.motion_client("archery_ready")  #ACTION 1
     # input()
     # archery.motion_client("archery_setup")  #ACTION 2
     time.sleep(4)
     # archery.motion_client("archery_pull")   #ACTION 3
     to_continue = True
     while to_continue:
-        time.sleep(0.05)
+        time.sleep(archery.time_accuracy)
         to_continue = archery.tick()
     print('shoot')
     archery.release_the_bowstring()
