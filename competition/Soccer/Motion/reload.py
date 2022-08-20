@@ -73,6 +73,7 @@ class Image:
         
     #Switch to HSV 
         hsv = cv2.cvtColor(self.img, cv2.COLOR_BGR2HSV)
+        #cv2.imshow('hsv', cv2.resize(hsv, (320, 260)))
         gray = cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY)
         
         low_th_blue = (thblue[0], thblue[2], thblue[4])
@@ -96,15 +97,14 @@ class Image:
         
         canny_blue = cv2.Canny(img_dilation_blue, 350, 360)
         
-        # cv2.imshow("blue", canny_blue)
+        #cv2.imshow("blue", cv2.resize(blured_blue, (320, 260)))
         
         circle_blue = cv2.HoughCircles(canny_blue, cv2.HOUGH_GRADIENT, 1.4, 100)
-        
         #cv2.imshow('blue', circle_blue)
-        
         #cv2.waitKey(10)
     #Detect yellow circle
-        mask_yellow = cv2.inRange(hsv, low_th_yellow, low_th_yellow)
+        mask_yellow = cv2.inRange(hsv, low_th_yellow, high_th_yellow)
+
         
         blured_yellow = cv2.medianBlur(mask_yellow*gray, 5)
         
@@ -118,11 +118,13 @@ class Image:
         
         circle_yellow = cv2.HoughCircles(canny_yellow, cv2.HOUGH_GRADIENT, 1.4, 100)
         
-        #cv2.imshow('yellow', circle_yellow)
+        #cv2.imshow('yellow', cv2.resize(circle_yellow, (320, 260)))
         
         #cv2.waitKey(10)
     #Detect red circle
-        mask_red = cv2.inRange(hsv, low_th_red, low_th_red)
+        mask_red = cv2.inRange(hsv, low_th_red, high_th_red)
+        
+        #cv2.imshow('red', cv2.resize(mask_red, (320, 260)))
         
         blured_red = cv2.medianBlur(mask_red*gray, 7)
         
@@ -135,8 +137,18 @@ class Image:
         # cv2.imshow("red", canny_red)
         
         circle_red = cv2.HoughCircles(canny_red, cv2.HOUGH_GRADIENT, 2.2, 100)
+
+        result = self.img
+        # if circle_red is not None:        
+        #     circles = np.uint16(np.around(circle_red))
+        #     for i in circles[0,:]:
+        #         # draw the outer circle
+        #         cv2.circle(result,(i[0],i[1]),i[2],(0,255,0),2)
+        #         # draw the center of the circle
+        #         cv2.circle(result,(i[0],i[1]),2,(0,0,255),3)
+        # cv2.imshow('red', cv2.resize(result, (320, 260)))
         
-        #cv2.imshow('red', circle_red)
+        #cv2.imshow('red', cv2.resize(circle_red, (320, 260)))
     
         #cv2.waitKey(10)
     #Find center
@@ -168,14 +180,14 @@ class Image:
         if counter > 0:
             avarage_x = total_x // counter
             avarage_y = total_y // counter
-            # print(avarage_x, avarage_y)
-            # # draw a rectangle
-            # # corresponding to the center of the circles
-            # cv2.rectangle(output, (avarage_x - 5, avarage_y - 5), (avarage_x + 5, avarage_y + 5), (0, 128, 255), -1)
-            # # show the output image
-            cv2.imshow("output", np.hstack([frame, output]))
-            cv2.waitKey(10)
-        return (avarage_x , avarage_y)
+            print(avarage_x, avarage_y)
+            # draw a rectangle
+            # corresponding to the center of the circles
+            cv2.rectangle(result, (avarage_x - 5, avarage_y - 5), (avarage_x + 5, avarage_y + 5), (0, 128, 255), -1)
+            # show the output image
+        cv2.imshow("output", cv2.resize(result, (320, 260)))
+        cv2.waitKey(10)
+        return avarage_x , avarage_y
 
 
     def find_blobs (self, ths, pixels_threshold, area_threshold, merge=False, margin=0, invert = False):

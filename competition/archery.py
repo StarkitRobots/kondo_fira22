@@ -10,6 +10,7 @@ import math
 import json
 import time
 import cv2
+from threading import Thread
 
 current_work_directory = os.getcwd()
 current_work_directory = current_work_directory.replace('\\', '/')
@@ -20,7 +21,7 @@ sys.path.append( current_work_directory + 'Soccer/')
 sys.path.append( current_work_directory + 'Soccer/Motion/')
 SIMULATION=2
 from class_Motion import Glob
-from reload import KondoCameraSensor, find_target_center
+from reload import KondoCameraSensor
 from class_Motion import Motion1 as Motion
 
 
@@ -168,12 +169,13 @@ class Archery:
         self.cam_frame = None
         self.traj_coords = []
         self.timestamps = []
+        self.target_current_x = self.target_current_y = None
 
-        self.target_desired_x = 0
-        self.pelvis_rot_mistake_in_pixels = 0.1
+        self.target_desired_x = 800
+        self.pelvis_rot_mistake_in_pixels = 0.01
         self.pointed_to_target = False
 
-        self.targeting_kp = 10
+        self.targeting_kp = 0.0013
 
         self.number_of_frames = 1
 
@@ -190,6 +192,9 @@ class Archery:
         
         self.sensor = KondoCameraSensor("/home/pi/kondo_fira22/Camera_calibration/mtx.yaml")
         self.state = State.SEARCHING_TARGET
+
+        self.cam_proc = Thread(target=self.process_vision)
+        self.stopFlag = False
     
     # def count_pelvis_rotation(self):
     #         # get_coords = rospy.ServiceProxy("model_service", ModelService)
@@ -240,20 +245,23 @@ class Archery:
 
         return predicted_time   
 
-    def tick(self):
-        img = self.sensor.snapshot().img
-        if img is not None:
-            target_current_x, target_current_y = img.find_target_center(
-                self.glob.TH['archery']['thblue'], self.glob.TH['archery']['thyellow'], self.glob.TH['archery']['thred'])
-        else:
-            target_current_x = target_current_y = None
-
-        if target_current_x is not None:
-            angle_to_turn = self.targeting_kp * (target_current_x - self.target_desired_x)
-            if abs(angle_to_turn) >= self.pelvis_rot_mistake_in_pixels:
-                self.motion.set_servo_pos(0, 2, angle_to_turn)
+    def process_vision(self):
+        while not self.stopFlag:
+            img = self.sensor.snapshot()
+            if img is not None:
+                target_current_x, target_current_y = img.find_target_center(
+                    self.glob.TH['archery']['thblue'], self.glob.TH['archery']['thyellow'], self.glob.TH['archery']['thred'])
             else:
-                self.pointed_to_target = True
+                target_current_x = target_current_y = None
+
+    def tick(self):
+        if target_current_x is not None and target_current_x > 0:
+           angle_to_turn = self.targeting_kp * (target_current_x - self.target_desired_x)
+           print(angle_to_turn)
+           if abs(angle_to_turn) >= self.pelvis_rot_mistake_in_pixels:
+               self.motion.set_servo_pos(0, 2, angle_to_turn)
+           else:
+               self.pointed_to_target = True
         return self.pointed_to_target
 
 if __name__ == "__main__":
@@ -262,11 +270,12 @@ if __name__ == "__main__":
     # archery.motion_client("archery_ready")  #ACTION 1
     # input()
     # archery.motion_client("archery_setup")  #ACTION 2
-    time.sleep(4)
+    #time.sleep(4)
     # archery.motion_client("archery_pull")   #ACTION 3
-    to_continue = True
-    while to_continue:
-        time.sleep(archery.time_accuracy)
-        to_continue = archery.tick()
-    print('shoot')
+    pointed = False
+    while True:
+        #time.sleep(archery.time_accuracy)
+        pointed = archery.tick()
+        if pointed:
+            print('shoot')
     archery.release_the_bowstring()
