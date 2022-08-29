@@ -768,7 +768,7 @@ class Motion1:
                     servoDatas = []
                     disp = []
                     # Check self.ACTIVESERVOS
-                    angles[3] += self.params['BODY_TILT_SERV07'] # (7,2)
+                    angles[3] += self.params['BODY_TILT_SERVO7'] # (7,2)
                     angles[14] += self.params['BODY_TILT_SERVO7'] # (7,1)
                     angles[1] += self.params['BODY_TILT_SERVO9'] # (9,2)
                     angles[12] += self.params['BODY_TILT_SERVO9'] #(9,1) 
