@@ -136,7 +136,7 @@ class Image:
         
         # cv2.imshow("red", canny_red)
         
-        circle_red = cv2.HoughCircles(canny_red, cv2.HOUGH_GRADIENT, 2.2, 100)
+        circle_red = cv2.HoughCircles(canny_red, cv2.HOUGH_GRADIENT, 3, 100)
 
         result = self.img
         # if circle_red is not None:        

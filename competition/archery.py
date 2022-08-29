@@ -172,7 +172,7 @@ class Archery:
         self.target_current_x = self.target_current_y = None
 
         self.target_desired_x = 800
-        self.pelvis_rot_mistake_in_pixels = 0.01
+        self.pelvis_rot_mistake_in_pixels = 0.08
         self.pointed_to_target = False
 
         self.targeting_kp = 0.0013
@@ -207,7 +207,7 @@ class Archery:
         self.motion.set_servo_pos(0,2, angle)
 
     def release_the_bowstring(self):
-        self.motion.set_servo_pos(13,2, -1)
+        self.motion.set_servo_pos(13,1, -1)
 
 
     def motion_client(self, motion_name):
@@ -273,17 +273,32 @@ class Archery:
 if __name__ == "__main__":
     # rospy.init_node("archery")
     archery = Archery()
-    # archery.motion_client("archery_ready")  #ACTION 1
+    # archery.release_the_bowstring()   # archery.motion_client("archery_ready")  #ACTION 1
+    # time.sleep(2)
     # input()
+    
     # print ("archery ready")
     archery.motion_client("archery_setup")  #ACTION 2
-    time.sleep(4)
-    archery.motion_client("archery_pull")   #ACTION 3
+    time.sleep(12)
+    
     pointed = False
-    while True:
+    x = time.time()
+    while not pointed:
         archery.process_vision()
         #time.sleep(archery.time_accuracy)
         pointed = archery.tick()
+        if time.time() - x > 25:
+            pointed = True
         if pointed:
             print('shoot')
-    archery.release_the_bowstring()
+    from os import system
+    print("****** HE IS READY TO SHOOT ******")
+    system("mpg123 -q /home/pi/Desktop/bomb-has-been-planted-sound-effect-cs-go.mp3")
+    #system("mpg123 -q /home/pi/Desktop/movie_1.mp3")
+    for i in range (0, 8):
+        print((8 - i))
+        time.sleep(1)
+    archery.motion_client("archery_pull")   #ACTION 3
+    print("ZDOROVA")
+    #archery.release_the_bowstring()
+    
