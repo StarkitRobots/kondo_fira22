@@ -5,7 +5,16 @@ import os
 import math
 import json
 import time
-
+from basketball import Basketball
+from sprint import Sprint
+from triple_jump import TripleJump
+from archery import Archery 
+from weight_lifting import WeightLifting 
+from run_test import RunTest
+from kondo_walk import KondoWalk
+from run_turf_test import RunTurfTest
+from sidestep_test import SidestepTest
+from balancing_test import BalancingTest
 
 current_work_directory = os.getcwd()
 current_work_directory = current_work_directory.replace('\\', '/')
@@ -39,6 +48,7 @@ class Player():
         self.role = role   
         self.glob = Glob(SIMULATION, current_work_directory)
         self.motion = None
+        self.competition = None
         self.dl_params ={}
 
     def simulation(self):
@@ -57,6 +67,7 @@ class Player():
         #            self.motion.sim.simxSynchronousTrigger(self.motion.clientID)
         self.common_init()
         #eval('self.' + self.role + '_main_cycle()')
+        
         if self.role == 'run_test': self.run_test_main_cycle(1)
         if self.role == 'kondo_walk': self.kondo_walk_main_cycle(1)
         if self.role == 'weight_lifting': self.weight_lifting_main_cycle(1)
@@ -64,6 +75,7 @@ class Player():
         if self.role == 'sidestep_test': self.sidestep_test_main_cycle()
         if self.role == 'balancing_test': self.balancing_test_main_cycle()
         if self.role == 'basketball': self.basketball_main_cycle()
+        
         if SIMULATION != 0:
             self.motion.sim_Progress(1)
         self.motion.sim_Stop()
@@ -87,14 +99,38 @@ class Player():
         # pressed_button = self.motion.push_Button(button)
         pressed_button = button
         self.common_init()
-        if self.role == 'run_test': self.run_test_main_cycle(pressed_button)
-        if self.role == 'kondo_walk': self.kondo_walk_main_cycle(pressed_button)
-        if self.role == 'weight_lifting': self.weight_lifting_main_cycle(pressed_button)
-        if self.role == 'run_turf_test': self.run_turf_test_main_cycle(pressed_button)
-        if self.role == 'sidestep_test': self.sidestep_test_main_cycle()
-        if self.role == 'balancing_test': self.balancing_test_main_cycle()
-        if self.role == 'triple_jump': self.triple_jump_main_cycle()
-        if self.role == 'basketball': self.basketball_main_cycle()
+
+        # if self.role == 'run_test': self.run_test_main_cycle(pressed_button)
+        # if self.role == 'kondo_walk': self.kondo_walk_main_cycle(pressed_button)
+        # if self.role == 'weight_lifting': self.weight_lifting_main_cycle(pressed_button)
+        # if self.role == 'run_turf_test': self.run_turf_test_main_cycle(pressed_button)
+        # if self.role == 'sidestep_test': self.sidestep_test_main_cycle()
+        # if self.role == 'balancing_test': self.balancing_test_main_cycle()
+        # if self.role == 'triple_jump': self.triple_jump_main_cycle()
+        # if self.role == 'basketball': self.basketball_main_cycle()
+
+        if self.role == 'run_test':
+            self.competition = RunTest(pressed_button)
+        if self.role == 'kondo_walk':
+            self.competition = KondoWalk(pressed_button)
+        if self.role == 'weight_lifting':
+            self.competition = WeightLifting(pressed_button)
+        if self.role == 'run_turf_test':
+            self.competition = RunTurfTest(pressed_button)
+        if self.role == 'sidestep_test':
+            self.competition = SidestepTest()
+        if self.role == 'balancing_test':
+            self.competition = BalancingTest()
+        if self.role == 'triple_jump':
+            self.competition = TripleJump()
+        if self.role == 'basketball':
+            self.competition = Basketball()
+        if self.role == 'sprint':
+            self.competition = Sprint()
+        if self.role == 'archery':
+            self.competition = Archery()
+        if self.role == 'basketball':
+            self.competition = Basketball()
 
     def common_init(self):
         self.motion.activation()
@@ -115,7 +151,7 @@ class Player():
             self.motion.fr1 = 4 # 4
             self.motion.fr2 = 10 # 10
             ##self.motion.initPoses = self.motion.fr2 
-            self.motion.gaitHeight = 190 # 190
+            self.motion.gaitHeight = 220 # 190
             self.motion.stepHeight = 40  # 20
             stepLength = 70 #70 
         if pressed_button == 2  :   
@@ -147,7 +183,7 @@ class Player():
                 rotation = 0 + invert * self.motion.body_euler_angle['yaw'] * 1.0
                 #if rotation < 0: rotation *= 5
                 rotation = self.motion.normalize_rotation(rotation)
-                rotation = 0.
+                rotation = 0.7
                 self.motion.walk_Cycle(stepLength1,0,rotation,cycle, number_Of_Cycles)
                 '''if self.motion.i_see_ball:
                     stepLength1 = stepLength/3 * 2
