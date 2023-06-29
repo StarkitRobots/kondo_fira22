@@ -4,6 +4,16 @@ import math
 import json
 import time
 import numpy as np
+from basketball import Basketball
+from sprint import Sprint
+from triple_jump import TripleJump
+from archery import Archery 
+from weight_lifting import WeightLifting 
+from tests.run_test import RunTest
+from tests.kondo_walk import KondoWalk
+from tests.run_turf_test import RunTurfTest
+from tests.sidestep_test import SidestepTest
+from tests.balancing_test import BalancingTest
 
 #from basketball.basketball_node import Basketball
 
@@ -90,15 +100,38 @@ class Player():
                     self.motion.sim.simxSynchronousTrigger(self.motion.clientID)
         pressed_button = 1# self.motion.push_Button(button)
         self.common_init()
-        if self.role == 'run_test': self.run_test_main_cycle(pressed_button)
-        if self.role == 'kondo_walk': self.kondo_walk_main_cycle(pressed_button)
-        if self.role == 'weight_lifting': self.weight_lifting_main_cycle(pressed_button)
-        if self.role == 'run_turf_test': self.run_turf_test_main_cycle(pressed_button)
-        if self.role == 'sidestep_test': self.sidestep_test_main_cycle()
-        if self.role == 'balancing_test': self.balancing_test_main_cycle()
-        if self.role == 'triple_jump': self.triple_jump_main_cycle()
-        if self.role == 'basketball': self.basketball_main_cycle()
-        if self.role == 'archery': self.archery_main_cycle()
+        
+        # if self.role == 'run_test': self.run_test_main_cycle(pressed_button)
+        # if self.role == 'kondo_walk': self.kondo_walk_main_cycle(pressed_button)
+        # if self.role == 'weight_lifting': self.weight_lifting_main_cycle(pressed_button)
+        # if self.role == 'run_turf_test': self.run_turf_test_main_cycle(pressed_button)
+        # if self.role == 'sidestep_test': self.sidestep_test_main_cycle()
+        # if self.role == 'balancing_test': self.balancing_test_main_cycle()
+        # if self.role == 'triple_jump': self.triple_jump_main_cycle()
+        # if self.role == 'basketball': self.basketball_main_cycle()
+
+        if self.role == 'run_test':
+            self.competition = RunTest(pressed_button)
+        if self.role == 'kondo_walk':
+            self.competition = KondoWalk(pressed_button)
+        if self.role == 'weight_lifting':
+            self.competition = WeightLifting(pressed_button)
+        if self.role == 'run_turf_test':
+            self.competition = RunTurfTest(pressed_button)
+        if self.role == 'sidestep_test':
+            self.competition = SidestepTest()
+        if self.role == 'balancing_test':
+            self.competition = BalancingTest()
+        if self.role == 'triple_jump':
+            self.competition = TripleJump()
+        if self.role == 'basketball':
+            self.competition = Basketball()
+        if self.role == 'sprint':
+            self.competition = Sprint()
+        if self.role == 'archery':
+            self.competition = Archery()
+        if self.role == 'basketball':
+            self.competition = Basketball()
 
     def common_init(self):
         self.motion.activation()
