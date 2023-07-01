@@ -4,16 +4,16 @@ import math
 import json
 import time
 import numpy as np
-from basketball import Basketball
-from sprint import Sprint
-from triple_jump import TripleJump
-from archery import Archery 
-from weight_lifting import WeightLifting 
+from basketball.basketball import Basketball
+from sprint.sprint import Sprint
+from triple_jump.triple_jump import TripleJump
+from archery.archery import Archery 
+from weight_lifting.weight_lifting import WeightLifting 
 from tests.run_test import RunTest
 from tests.kondo_walk import KondoWalk
 from tests.run_turf_test import RunTurfTest
-from tests.sidestep_test import SidestepTest
 from tests.balancing_test import BalancingTest
+from competition import Competition
 
 #from basketball.basketball_node import Basketball
 
@@ -51,9 +51,9 @@ else:
 class Player():
     def __init__(self, role):
         self.role = role   
-        self.glob = Glob(SIMULATION, current_work_directory)
-        self.motion = None
-        self.dl_params ={}
+        # self.glob = Glob(SIMULATION, current_work_directory)
+        # self.motion = None
+        # self.dl_params ={}
 
     def simulation(self):
         self.motion = Motion(self.glob)
@@ -86,20 +86,20 @@ class Player():
         self.motion.sim_Disable()
 
     def real(self, button):
-        self.motion = Motion(self.glob)
-        if self.role == 'run_test':
-            self.motion.neck_tilt = -2000
-            if self.glob.SIMULATION == 2:
-                self.motion.kondo.setUserParameter(20,self.motion.neck_tilt)
-                #pyb.delay(400)
-            else:
-                returnCode = self.motion.sim.simxSetJointTargetPosition(self.motion.clientID,
-                            self.motion.jointHandle[22] , self.motion.neck_tilt * self.motion.TIK2RAD * self.motion.FACTOR[22],
-                           self.motion.sim.simx_opmode_oneshot)  # Шея Наклон
-                for j in range(20):
-                    self.motion.sim.simxSynchronousTrigger(self.motion.clientID)
+        # self.motion = Motion(self.glob)
+        # if self.role == 'run_test':
+        #     self.motion.neck_tilt = -2000
+        #     if self.glob.SIMULATION == 2:
+        #         self.motion.kondo.setUserParameter(20,self.motion.neck_tilt)
+        #         #pyb.delay(400)
+        #     else:
+        #         returnCode = self.motion.sim.simxSetJointTargetPosition(self.motion.clientID,
+        #                     self.motion.jointHandle[22] , self.motion.neck_tilt * self.motion.TIK2RAD * self.motion.FACTOR[22],
+        #                    self.motion.sim.simx_opmode_oneshot)  # Шея Наклон
+        #         for j in range(20):
+        #             self.motion.sim.simxSynchronousTrigger(self.motion.clientID)
         pressed_button = 1# self.motion.push_Button(button)
-        self.common_init()
+        # self.common_init()
         
         # if self.role == 'run_test': self.run_test_main_cycle(pressed_button)
         # if self.role == 'kondo_walk': self.kondo_walk_main_cycle(pressed_button)
@@ -111,27 +111,35 @@ class Player():
         # if self.role == 'basketball': self.basketball_main_cycle()
 
         if self.role == 'run_test':
-            self.competition = RunTest(pressed_button)
+            run_tester = RunTest(pressed_button)
+            run_tester.run()
         if self.role == 'kondo_walk':
-            self.competition = KondoWalk(pressed_button)
+            kondo_walker = KondoWalk(pressed_button)
+            kondo_walker.run()
         if self.role == 'weight_lifting':
-            self.competition = WeightLifting(pressed_button)
+            weight_lifter = WeightLifting(pressed_button)
+            weight_lifter.run()
         if self.role == 'run_turf_test':
-            self.competition = RunTurfTest(pressed_button)
+            turf_tester = RunTurfTest(pressed_button)
+            turf_tester.run()
         if self.role == 'sidestep_test':
-            self.competition = SidestepTest()
+            side_stepper = Competition()
+            side_stepper.sidestep_test_main_cycle()
         if self.role == 'balancing_test':
-            self.competition = BalancingTest()
+            balance_tester = BalancingTest(pressed_button)
+            balance_tester.run()
         if self.role == 'triple_jump':
-            self.competition = TripleJump()
+            triple_jumper = TripleJump(pressed_button)
+            triple_jumper.run()
         if self.role == 'basketball':
-            self.competition = Basketball()
+            basketballer = Basketball(pressed_button)
+            basketballer.run()
         if self.role == 'sprint':
-            self.competition = Sprint()
+            sprinter = Sprint(pressed_button, "/home/pi/kondo_fira22/Camera_calibration/mtx.yaml")
+            sprinter.run_forward_1()
         if self.role == 'archery':
-            self.competition = Archery()
-        if self.role == 'basketball':
-            self.competition = Basketball()
+            print("ARCHERY")
+            # NEED TO MAKE THIS
 
     def common_init(self):
         self.motion.activation()
