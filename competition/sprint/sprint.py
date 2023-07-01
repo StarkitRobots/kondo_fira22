@@ -25,9 +25,8 @@ if SIMULATION == 2:
     from class_Motion import Motion1 as Motion
 
 class Sprint(Competition):
-    def __init__(self, path_to_camera_config):   
-        self.glob = Glob(SIMULATION, current_work_directory)
-        self.motion = Motion(self.glob)
+    def __init__(self, button, path_to_camera_config):   
+        super().__init__(self, button)
         self.motion.activation()
         self.motion.falling_Flag = 0
         self.number_of_cycles = 3000000 #30
