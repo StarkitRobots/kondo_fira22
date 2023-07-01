@@ -13,7 +13,7 @@ class Competition():
     def __init__(self, button):
         # SIMULATION = 2
         self.glob = Glob(SIMULATION, current_work_directory)
-        self.motion = None
+        # self.motion = None
         self.dl_params ={}
         self.motion = Motion(self.glob)
         self.button = button

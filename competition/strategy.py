@@ -114,7 +114,8 @@ class Player():
             run_tester = RunTest(pressed_button)
             run_tester.run()
         if self.role == 'kondo_walk':
-            kondo_walker = KondoWalk(pressed_button)
+            step_number = 5
+            kondo_walker = KondoWalk(pressed_button, step_number)
             kondo_walker.run()
         if self.role == 'weight_lifting':
             weight_lifter = WeightLifting(pressed_button)
