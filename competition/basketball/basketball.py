@@ -155,7 +155,7 @@ class Basketball(Competition):
             ## NEED TO GO TO THE BALL!!!
 
     def thinking_take(self, ball_coordinates, basketcase_coordinates):
-        print("Start thinking and taking ball")
+        print("Start thinking and taking ball") 
         basketcase_linia = ((basketcase_coordinates[0]) / (basketcase_coordinates[1]))
         angle_thinking = np.pi/2 - np.arctanh(basketcase_linia)
         if ball_coordinates != (None, None):
