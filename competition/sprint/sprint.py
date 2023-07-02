@@ -26,7 +26,7 @@ if SIMULATION == 2:
 
 class Sprint(Competition):
     def __init__(self, button, path_to_camera_config):   
-        super().__init__(self, button)
+        super().__init__(button)
         self.motion.activation()
         self.motion.falling_Flag = 0
         self.number_of_cycles = 3000000 #30
@@ -66,6 +66,7 @@ class Sprint(Competition):
             self.motion.walk_Cycle(stepLength1,0,max(rvec[0][0][1],0.1),cycle, self.number_of_cycles)
 
 if __name__ == "__main__":
-    sprint = Sprint("/home/pi/kondo_fira22/Camera_calibration/mtx.yaml")
+    default_button = 1
+    sprint = Sprint(default_button, "/home/pi/kondo_fira22/Camera_calibration/mtx.yaml")
     sprint.run_forward_1()    
 

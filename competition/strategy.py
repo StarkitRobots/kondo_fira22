@@ -4,26 +4,17 @@ import math
 import json
 import time
 import numpy as np
-from basketball.basketball import Basketball
-from sprint.sprint import Sprint
-from triple_jump.triple_jump import TripleJump
-from archery.archery import Archery 
-from weight_lifting.weight_lifting import WeightLifting 
-from tests.run_test import RunTest
-from tests.kondo_walk import KondoWalk
-from tests.run_turf_test import RunTurfTest
-from tests.balancing_test import BalancingTest
 from competition import Competition
 
 #from basketball.basketball_node import Basketball
 
-current_work_directory = os.getcwd()
-current_work_directory = current_work_directory.replace('\\', '/')
+current_work_directory = os.getcwd() + '/'
+
+print(current_work_directory)
 if 1:
     # will be running on openMV
     import pyb
     SIMULATION = 2
-    current_work_directory += '/'
 # 0 - Simulation without physics, 1 - Simulation synchronous with physics, 2 - live on openMV
 else:
     # will be running on desktop computer
@@ -34,10 +25,26 @@ else:
 sys.path.append( current_work_directory + 'Soccer/')
 sys.path.append( current_work_directory + 'Soccer/Motion/')
 sys.path.append(current_work_directory + 'Soccer/Motion/Jump/')
+sys.path.append( current_work_directory + 'basketball/')
+sys.path.append( current_work_directory + 'sprint/')
+sys.path.append( current_work_directory + 'triple_jump/')
+sys.path.append( current_work_directory + 'archery/')
+sys.path.append( current_work_directory + 'weight_lifting/')
+sys.path.append( current_work_directory + 'tests/')
+from basketball import Basketball
+from sprint import Sprint
+from triple_jump import TripleJump
+from archery import Archery 
+from weight_lifting import WeightLifting 
+from run_test import RunTest
+from kondo_walk import KondoWalk
+from run_turf_test import RunTurfTest
+from balancing_test import BalancingTest
 from class_Motion import Glob
-from approach import approach
-from center_point import center_point
-from localisation import localisation
+# need to add these files
+# from approach import approach
+# from center_point import center_point
+# from localisation import localisation
 
 if SIMULATION == 2:
     from class_Motion import Motion1 as Motion
@@ -646,14 +653,14 @@ class Player():
 
 
 if __name__=="__main__":
-    player = Player('basketball')  # 'run_test', 'balancing_test', 'basketball', 'weight_lifting', 'kondo_walk'
+    player = Player('run_test')  # 'run_test', 'balancing_test', 'basketball', 'weight_lifting', 'kondo_walk'
     #player.deep_learning()
     #for i in range(1):
     #    player.test_walk()
     #if SIMULATION != 0:
     #    player.motion.print_Diagnostics()
     #player.test_walk_2()
-    player.real( 1)
+    player.real(1)
 
 
 

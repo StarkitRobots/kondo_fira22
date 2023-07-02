@@ -1,9 +1,10 @@
 # write from player.py
+
 from competition import Competition
 
 class RunTest(Competition):
     def __init__(self, button):
-        super().__init__(self, button)
+        super().__init__(button)
         # st else
 
     def run(self):

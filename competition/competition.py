@@ -3,12 +3,15 @@ import pyb
 import os
 import sys
 current_work_directory = os.getcwd()
+current_work_directory += '/'
+sys.path.append( current_work_directory )
 sys.path.append( current_work_directory + 'Soccer/')
 sys.path.append( current_work_directory + 'Soccer/Motion/')
 SIMULATION=2
-from class_Motion import Glob
+# from class_Motion import Glob
 if SIMULATION == 2:
     from class_Motion import Motion1 as Motion
+    from class_Motion import Glob
 class Competition():
     def __init__(self, button):
         # SIMULATION = 2
@@ -28,4 +31,5 @@ class Competition():
         print("in sidestep_test_main_cycle")
 
 if __name__ == '__main__':
-    competitor = Competition()
+    default_button = 1
+    competitor = Competition(default_button)
