@@ -3,7 +3,7 @@ from competition import Competition
 
 class KondoWalk(Competition):
     def __init__(self, button, step_number):
-        super().__init__(self, button)
+        super().__init__(button)
         self.step_number = step_number
         # st else
 

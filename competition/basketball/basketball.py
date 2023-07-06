@@ -3,15 +3,15 @@ import time
 import math
 
 # THIS IS NEED TO BE FOUND OR WRITTEN
-from approach import approach
-from center_point import center_point
-from localisation import localisation
+# from approach import approach
+# from center_point import center_point
+# from localisation import localisation
 
 from competition import Competition
 
 class Basketball(Competition):
     def __init__(self, button):
-        super().__init__(self, button)
+        super().__init__(button)
         # st else
 
     def get_pixels(self, name):

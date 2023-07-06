@@ -3,7 +3,7 @@ from competition import Competition
 
 class BalancingTest(Competition):
     def __init__(self, button):
-        super().__init__(self, button)
+        super().__init__(button)
         # st else
 
     def run(self):
