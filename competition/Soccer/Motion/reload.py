@@ -355,8 +355,8 @@ class WebCameraSensor(Sensor):
             print("Camera Closed")
         return Image(self.img.copy())
 
-class KondoCameraSensor(Sensor):
-# class KondoCameraSensor():
+# class KondoCameraSensor(Sensor):
+class KondoCameraSensor():
     # def __init__(self):
     camera = None
     camera_matrix = None
