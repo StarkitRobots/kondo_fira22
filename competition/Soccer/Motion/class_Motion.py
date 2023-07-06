@@ -194,7 +194,7 @@ class Motion1:
             self.clock = time.clock()
             # self.kondo.motionPlay(25)
             self.pyb = pyb
-            self.sensor = KondoCameraSensor("/home/pi/kondo_fira22/Camera_calibration/mtx.yaml") # dirty hack
+            self.sensor = KondoCameraSensor() # dirty hack "/home/pi/kondo_fira22/Camera_calibration/mtx.yaml"
             self.image = None
             self.cv2 = cv2
                #-------------------------------------------------------------------------------------------------------------------------------

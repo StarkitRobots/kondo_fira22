@@ -355,11 +355,13 @@ class WebCameraSensor(Sensor):
             print("Camera Closed")
         return Image(self.img.copy())
 
-class KondoCameraSensor(Sensor):
-    camera = None
-    camera_matrix = None
-    dist_matrix = None
-    resolution = {"height": 1300, "width": 1600}
+# class KondoCameraSensor(Sensor):
+class KondoCameraSensor():
+    def __init__(self):
+        camera = None
+        camera_matrix = None
+        dist_matrix = None
+        resolution = {"height": 1300, "width": 1600}
     def loadCoefficients(path):
         """ Loads camera matrix and distortion coefficients. """
         # FILE_STORAGE_READ
