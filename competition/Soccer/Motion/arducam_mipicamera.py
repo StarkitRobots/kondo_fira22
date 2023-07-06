@@ -156,7 +156,7 @@ class CAMERA_INTERFACE(Structure):
 OUTPUT_CALLBACK = CFUNCTYPE(c_int, POINTER(BUFFER))
 
 arducam_init_camera = camera_lib.arducam_init_camera
-print(f"arducam_init_camera = {arducam_init_camera}")
+print(f"arducam_init_camera = {arducam_init_camera}") 
 arducam_init_camera.argtypes = [POINTER(c_void_p)]
 arducam_init_camera.restype = c_int
 
