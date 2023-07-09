@@ -197,7 +197,6 @@ class Motion1:
             self.clock = time.clock()
             # self.kondo.motionPlay(25)
             self.pyb = pyb
-            self.sensor = KondoCameraSensor("/home/pi/kondo_fira22/Camera_calibration/mtx.yaml") # dirty hack 
             self.image = None
             self.cv2 = cv2
             print("__init__ of Motion1 is done")
@@ -250,7 +249,7 @@ class Motion1:
             elif name == 'stripe':
                 center_of_bottom = []
                 for coord in coords:
-                    c_bottom_x = coord.x() + int(coord.w() / 2)
+                    c_bottom_x = coord.cx()
                     c_bottom_y = coord.y() + coord.h()
                     center_of_bottom0 = (c_bottom_x, c_bottom_y)   #(coord.cx(), coord.cy())  #pixel's (x, y) coordinates of object's center
                     center_of_bottom.append(center_of_bottom0)
@@ -279,6 +278,9 @@ class Motion1:
             height = 0.285 # MB???
         elif name == 'stripe':
             height = 0
+        elif name == 'barbell':
+            print("WRITE THE HEIGHT OF BARBELL")
+            height = 0.15   # default height, NEED to calculate
         return robot_model.image2self(pixel_x, pixel_y, height)
 
     def imu_body_yaw(self):

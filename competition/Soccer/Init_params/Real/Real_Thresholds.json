@@ -53,6 +53,7 @@
 
     "weight lifting":
     {
-        "thbarbell": []        
+        "thbarbell": [],
+        "pixel": 10, "area": 10        
     }
 }
