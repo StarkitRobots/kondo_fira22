@@ -15,7 +15,8 @@
     "red basket":
     {
         "th": [ 10, 15, 110, 175, 50, 105 ], 
-        "pixel": 600, "area": 600
+        "pixel": 600,
+        "area": 600
     },
     "yellow stripe": 
     {
