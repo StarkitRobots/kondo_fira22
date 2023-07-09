@@ -7,6 +7,7 @@ import json
 import time
 import cv2
 from competition import Competition
+from threading import Thread
 
 current_work_directory = os.getcwd()
 current_work_directory = current_work_directory.replace('\\', '/')
