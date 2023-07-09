@@ -146,6 +146,8 @@ class Player():
             sprinter = Sprint(pressed_button, "/home/pi/kondo_fira22/Camera_calibration/mtx.yaml")
             sprinter.run_forward_1()
         if self.role == 'archery':
+            archer = Archery(pressed_button)
+            archer.run()
             print("ARCHERY")
             # NEED TO MAKE THIS
 
