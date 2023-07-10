@@ -6,6 +6,7 @@ import math, time, json
 from compute_Alpha_v4 import Alpha
 import starkit
 import cv2
+import time
 #os.chdir('../..')
 path_to_model = os.getcwd() + "/Soccer/Model/"
 from reload import *
@@ -194,7 +195,8 @@ class Motion1:
             ##k.init(uart)
             self.kondo = Rcb4BaseLib()
             self.kondo.open('/dev/ttyAMA2', 1250000, 1.3)
-            self.clock = time.clock()
+            # self.clock = time.clock()
+            self.clock = time.time()
             # self.kondo.motionPlay(25)
             self.pyb = pyb
             self.image = None
@@ -750,7 +752,7 @@ class Motion1:
             angles = self.computeAlphaForWalk(self.SIZES, self.limAlpha1 )
             #self.xtr += 10
             #self.xtl += 10
-            self.check_camera()
+            #self.check_camera()
             self.refresh_Orientation()
             print('self.body_euler_angle["pitch"]', self.body_euler_angle['pitch'])
 
@@ -985,7 +987,7 @@ class Motion1:
             angles = self.computeAlphaForWalk(self.SIZES, self.limAlpha1 )
             #self.xtr += 10
             #self.xtl += 10
-            self.check_camera()
+            #self.check_camera()
             self.refresh_Orientation()
             print('self.body_euler_angle["pitch"]', self.body_euler_angle['pitch'])
 

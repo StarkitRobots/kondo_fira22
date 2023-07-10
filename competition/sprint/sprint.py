@@ -6,22 +6,24 @@ import math
 import json
 import time
 import cv2
-from competition import Competition
 from threading import Thread
 
 current_work_directory = os.getcwd()
 current_work_directory = current_work_directory.replace('\\', '/')
 if 1:
     # will be running on openMV
-    import pyb
+    # import pyb
     current_work_directory += '/'
     SIMULATION = 2                                         # 0 - Simulation without physics, 1 - Simulation synchronous with physics, 2 - live on open
 sys.path.append( current_work_directory + 'Soccer/')
-sys.path.append( current_work_directory + 'Motion/')
+sys.path.append( current_work_directory + 'Soccer/Motion/')
+sys.path.append( current_work_directory)
+print(sys.path)
 SIMULATION=2
 from class_Motion import Glob
 from reload import KondoCameraSensor
-
+from competition import Competition
+import pyb
 if SIMULATION == 2:
     from class_Motion import Motion1 as Motion
 

@@ -22,11 +22,11 @@ class Competition():
         # self.motion = None
         self.dl_params ={}
         self.motion = Motion(self.glob)
-        self.sensor = KondoCameraSensor("/home/pi/kondo_fira22/Camera_calibration/mtx.yaml") # dirty hack 
+        # self.sensor = KondoCameraSensor("/home/pi/kondo_fira22/Camera_calibration/mtx.yaml") # dirty hack 
         self.button = button
         self.common_init()
 
-        with open(current_work_directory + "Soccer/Init_params/Real/Real_walk_params.json", "r", "r") as f:
+        with open(current_work_directory + "Soccer/Init_params/Real/Real_walk_params.json", "r") as f:
                 self.params = json.loads(f.read())
         self.number_of_cycles = self.params["number_of_cycles"]
         self.motion.simThreadCycleInMs = self.params["simThreadCycleInMs"]
