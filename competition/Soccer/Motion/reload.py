@@ -3,6 +3,7 @@ import cv2
 import math
 import time
 import numpy as np
+from picamera2 import Picamera2
 try:
     import arducam_mipicamera as arducam
     import v4l2
@@ -374,12 +375,16 @@ class KondoCameraSensor(Sensor):
         return [camera_matrix, dist_matrix]
     @staticmethod
     def _cameraInit(path):
-        KondoCameraSensor.camera = arducam.mipi_camera()
-        KondoCameraSensor.camera.init_camera()
-        KondoCameraSensor.camera.set_mode(6)
-        KondoCameraSensor.camera.set_resolution(KondoCameraSensor.resolution["width"],
-                KondoCameraSensor.resolution["height"])
-        KondoCameraSensor.camera_matrix, KondoCameraSensor.dist_matrix = KondoCameraSensor.loadCoefficients(path)
+        # KondoCameraSensor.camera = arducam.mipi_camera()
+        KondoCameraSensor.camera = Picamera2(camera_num=0)
+
+        # KondoCameraSensor.camera.init_camera()
+        # KondoCameraSensor.camera.set_mode(6)
+        # KondoCameraSensor.camera.set_resolution(KondoCameraSensor.resolution["width"],
+        #         KondoCameraSensor.resolution["height"])
+        # KondoCameraSensor.camera_matrix, KondoCameraSensor.dist_matrix = KondoCameraSensor.loadCoefficients(path)
+        KondoCameraSensor.camera.configure(KondoCameraSensor.camera.create_preview_configuration(main={"format": 'XRGB8888', "size": (1280, 720)})) # govniche - TODO rewrite loadcoeffs
+        KondoCameraSensor.camera.start()
 
     def align_down(self, size, align):
             return (size & ~((align)-1))
@@ -393,11 +398,14 @@ class KondoCameraSensor(Sensor):
             self._cameraInit(path_to_config)
 
     def snapshot(self):
-        frame = KondoCameraSensor.camera.capture(encoding='raw')
-        height = int(self.align_up(KondoCameraSensor.resolution["height"], 16))                                                         
-        width = int(self.align_up(KondoCameraSensor.resolution["width"], 32))                                                          
-        image = frame.as_array.reshape(int(height), width) # * 1.5                               
-        image = cv2.cvtColor(image, cv2.COLOR_BayerRG2BGR) # BG
+        # frame = KondoCameraSensor.camera.capture(encoding='raw')
+        image = KondoCameraSensor.camera.capture_array()
+
+        # height = int(self.align_up(KondoCameraSensor.resolution["height"], 16))                                                         
+        # width = int(self.align_up(KondoCameraSensor.resolution["width"], 32))                                                          
+        # image = frame.as_array.reshape(int(height), width) # * 1.5                               
+        # image = cv2.cvtColor(image, cv2.COLOR_BayerRG2BGR) # BG
+        
         (h, w, d) = image.shape
         center = (w // 2, h // 2)
         M = cv2.getRotationMatrix2D(center, 180, 1.0)
