@@ -4,6 +4,7 @@ import math
 import time
 import numpy as np
 from picamera2 import Picamera2
+# import json
 try:
     import arducam_mipicamera as arducam
     import v4l2
@@ -372,6 +373,12 @@ class KondoCameraSensor(Sensor):
         dist_matrix = cv_file.getNode("dist_coeff").mat()
         cv_file.release()
         print(camera_matrix, dist_matrix)
+
+        # with open(path, "r") as f:
+        #     calibration_file = json.load(f)
+        # camera_matrix = np.array(calibration_file["mtx"], dtype=np.float64)
+        # dist_matrix = np.array(calibration_file["dist"], dtype=np.float64)
+
         return [camera_matrix, dist_matrix]
     @staticmethod
     def _cameraInit(path):
@@ -382,7 +389,9 @@ class KondoCameraSensor(Sensor):
         # KondoCameraSensor.camera.set_mode(6)
         # KondoCameraSensor.camera.set_resolution(KondoCameraSensor.resolution["width"],
         #         KondoCameraSensor.resolution["height"])
-        # KondoCameraSensor.camera_matrix, KondoCameraSensor.dist_matrix = KondoCameraSensor.loadCoefficients(path)
+
+        KondoCameraSensor.camera_matrix, KondoCameraSensor.dist_matrix = KondoCameraSensor.loadCoefficients(path)
+        
         KondoCameraSensor.camera.configure(KondoCameraSensor.camera.create_preview_configuration(main={"format": 'XRGB8888', "size": (1280, 720)})) # govniche - TODO rewrite loadcoeffs
         KondoCameraSensor.camera.start()
 
@@ -399,18 +408,21 @@ class KondoCameraSensor(Sensor):
 
     def snapshot(self):
         # frame = KondoCameraSensor.camera.capture(encoding='raw')
-        image = KondoCameraSensor.camera.capture_array()
+        frame = KondoCameraSensor.camera.capture_array()
 
         # height = int(self.align_up(KondoCameraSensor.resolution["height"], 16))                                                         
         # width = int(self.align_up(KondoCameraSensor.resolution["width"], 32))                                                          
         # image = frame.as_array.reshape(int(height), width) # * 1.5                               
         # image = cv2.cvtColor(image, cv2.COLOR_BayerRG2BGR) # BG
-        
-        (h, w, d) = image.shape
+        # (h, w, d) = image.shape
+        (h, w, d) = frame.shape
+        optimal_camera_matrix, roi = cv2.getOptimalNewCameraMatrix(KondoCameraSensor.camera_matrix, KondoCameraSensor.dist_matrix, (w, h), 0, (w, h))
+        image = cv2.undistort(frame, KondoCameraSensor.camera_matrix, KondoCameraSensor.dist_matrix, None, optimal_camera_matrix)
         center = (w // 2, h // 2)
         M = cv2.getRotationMatrix2D(center, 180, 1.0)
         image = cv2.warpAffine(image, M, (w, h))
         return Image(image)
+    
     def undistored_snapshot(self):
         frame = KondoCameraSensor.camera.capture(encoding='raw')
         height = int(self.align_up(KondoCameraSensor.resolution["height"], 16))                                                         
