@@ -93,7 +93,7 @@ class Sprint(Competition):
         return rvec, tvec
 
     def process_vision(self):
-        self.sensor = KondoCameraSensor(self.path_to_camera_config)
+        # self.sensor = KondoCameraSensor(self.path_to_camera_config)
         self.aruco_init()
         while not self.stopFlag:
             img = self.sensor.snapshot().img
