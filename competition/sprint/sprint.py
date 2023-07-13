@@ -85,7 +85,8 @@ class Sprint(Competition):
         self.arucoParams = cv2.aruco.DetectorParameters_create()
     
     def aruco_position(self, img):
-        (corners, ids, rejected) = cv2.aruco.detectMarkers(img, self.arucoDict,
+        grayscale = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        (corners, ids, rejected) = cv2.aruco.detectMarkers(grayscale, self.arucoDict,
                         parameters=self.arucoParams)
         # print(corners)
         # print(self.sensor.camera_matrix, self.sensor.dist_matrix)
