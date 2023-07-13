@@ -22,7 +22,7 @@ class Competition():
         # self.motion = None
         self.dl_params ={}
         self.motion = Motion(self.glob)
-        # self.sensor = KondoCameraSensor("/home/pi/kondo_fira22/Camera_calibration/mtx.yaml") # dirty hack 
+        self.sensor = KondoCameraSensor("/home/pi/Desktop/kondo_fira22/Camera_calibration/mtx.yaml") # dirty hack 
         self.button = button
         self.common_init()
 

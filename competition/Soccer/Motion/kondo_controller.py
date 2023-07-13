@@ -5,62 +5,7 @@ import struct
 from enum import Enum
 import serial
 from struct import *
-import RPi.GPIO as GPIO
 from math import sin
-# try:
-#     from pyb import UART
-# except ImportError:
-#     raise Exception("Trying to import MicroPython library using Python3")
-
-
-# from micropython import const
-
-# class Serial:
-#     def __init__(self, uart):
-#         self.uart = uart
-
-#     def flushInput(self):
-#         if openmv:
-#             buf = self.uart.any()
-#             self.uart.read(buf)
-#         else:
-#             self.uart.flushInput()
-
-#     def read(self, rxLen):
-#         if openmv:
-#             msg = []
-#             for _ in range(rxLen):
-#                 msg.append(self.uart.readchar())
-#             #print("read ",msg)
-#             return bytes(bytearray(msg))
-#         else:
-#             #print("read ",msg)
-#             return self.uart.read(rxLen)
-
-#     def write(self, buf):
-#         if openmv:
-#             tmp = bytes(bytearray(buf))
-#             #print("written ",buf)
-#             for b in tmp:
-#                 self.uart.writechar(b)
-#                 # time.sleep(1)
-#         else:
-#             #print("written ",buf)
-#             self.uart.write(buf)
-
-def initSTM():
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setwarnings(False)
-    STM32_RST_PIN = 6
-    GPIO.setup(STM32_RST_PIN,GPIO.OUT) # пин RST для STM32
-    GPIO.output(STM32_RST_PIN, 0)    # устанавливаем пин RST для STM32 в лог 0
-
-def deinitSTM():
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setwarnings(False)
-    STM32_RST_PIN = 6
-    GPIO.setup(STM32_RST_PIN,GPIO.OUT) # пин RST для STM32
-    GPIO.output(STM32_RST_PIN, 1)    # устанавливаем пин RST для STM32 в лог 0
 
 
 class Rcb4BaseLib:
@@ -75,7 +20,7 @@ class Rcb4BaseLib:
         self.CounterCount = 10
         self.AdcCount = 11
         self.AdcDataCount = 22
-        self.__isSynchronize = False
+        self.isSynchronize = False
         self.__configData = 0
         self.comOpen = False
         self.com = None
@@ -83,17 +28,14 @@ class Rcb4BaseLib:
 
 
     def open(self,comName,bundrate,timOut):
-        print ("Im in open ")
-        deinitSTM()
-        time.sleep(1)
-        initSTM()
-        time.sleep(1)
         if self.com == None:
             try:
-                self.com = serial.Serial(comName,bundrate,timeout=timOut)
-                self.com.flushInput()#
-                
-                if self.checkAcknowledge() == True:
+                self.com = serial.Serial(comName,bundrate,timeout=timOut, parity='E', stopbits=2)
+                self.com.flushInput()
+                print("Opening...")
+                ack = self.checkAcknowledge() 
+                print(f"ack: {ack}")
+                if ack == True:
                     #ACKが成功した場合Configデータを取得
                     confData = self.getConfig()
                     #confDataは0xFFFFの場合はエラー
@@ -127,7 +69,7 @@ class Rcb4BaseLib:
             sum = sum + dataBytes[i]
         return sum & 0xff
 
-    def __checkCheckSum(self, dataBytes):
+    def checkCheckSum(self, dataBytes):
         if dataBytes[0] == 0:
             return False
         else:
@@ -210,20 +152,13 @@ class Rcb4BaseLib:
         Mixing2AddressOffset       = 0x11
         Mixing2RatioAddressOffset  = 0x13
 
-
-    def STMKondoWrite(self, txBuf, txLen, rxLen):
-        buff = bytearray(b'\xF0\xAA')
-        buff.append(txLen)
-        buff.append(rxLen)
-        buff.append(0x03)
-        buff.extend(bytearray(txBuf))
-        self.com.write(buff)
-#         self.com.write(b'\xF0\xAA\x04\x04\x03\x04\xfe\x06\x08')
+    def _tx_pack(self, txBuf, rxLen):
+        return txBuf
 
     def synchronize(self, txBuf, rxLen, writeOnly=False):
         sendbuf = [256]
-        if self.__isSynchronize == False:
-            #sendbuf = []
+        rxbuf = []
+        if self.isSynchronize == False:
             sendbuf.clear()
             if (len(txBuf) == 0 or rxLen <= 3):
                 rxbuf = []
@@ -235,32 +170,42 @@ class Rcb4BaseLib:
                     return rxbuf
                 sendbuf.append(txBuf[i])
 
-            self.__isSynchronize = True
-
-            # print('sendData-->',sendbuf)
-
+            self.isSynchronize = True
             
             self.com.flushInput()
-            self.STMKondoWrite(sendbuf, len(sendbuf), rxLen)
-            #self.com.write(sendbuf)
-            #if not writeOnly:
+            self.com.write(self.tx_pack(sendbuf, rxLen))
+            
+            print(f"Sent      {', '.join(hex(b) for b in bytearray(sendbuf))}")
+            
+            if writeOnly:
+                self.isSynchronize = False
+                self.com.flushInput()
+                return rxbuf
+            
             rxbuf = self.com.read(rxLen)
-            print(bytearray(rxbuf))
+            
+
+            #print(f"Sent      {', '.join(hex(b) for b in bytearray(sendbuf))}")
+            print(f"Recieved: {', '.join(hex(b) for b in bytearray(rxbuf))}")
+            
+            imu3 = self.com.read(5)
+            print(f"IMU3:     {', '.join(hex(b) for b in bytearray(imu3))}")
+            
+            imu4 = self.com.read(5)
+            print(f"IMU4:     {', '.join(hex(b) for b in bytearray(imu4))}")
+            
+            imu_head = self.com.read(16)
+            print(f"IMU HEAD: {', '.join(hex(b) for b in bytearray(imu_head))}")
+            print("")
+            
             self.com.flushInput()
+            
             if rxbuf is not None and len(rxbuf) != 0:
                 if self.__checkCheckSum(rxbuf) == False:
                     rxbuf = []
-                #else:
-                #rxbuf = []
             else:
-                print(f"Error: no answer from kondo")
-                print(f" Sent: {bytearray(sendbuf)}")
                 rxbuf = []
-            #else:
-             #   self.com.flushInput()
-              #  rxbuf = []
-            self.__isSynchronize = False
-            # print('readData-->',rxbuf)
+            self.isSynchronize = False
             return rxbuf
         else:
             rxbuf = []
@@ -531,44 +476,6 @@ class Rcb4BaseLib:
         buf.append(Rcb4BaseLib.CheckSum(buf))
         return 4,buf
 
-    @staticmethod
-    def runKondoMVFrameServoCmd (kondoMVServoDatas,frame):
-        """Specific function for fast working sending
-
-        Args:
-            kondoServoDatas (list of servoData): ordered list. [servoData[id=1, sio=1], 
-                                                                servoData[id=1, sio=2], 
-                                                                servoData[id=2, sio=1],
-                                                                servoData[id=2, sio=2],
-                                                                ...
-                                                                ]
-            frame ([type]): same as runConstFrameServoCmd()
-
-        Returns:
-            [type]: same as runConstFrameServoCmd()
-        """
-        buf = [
-            0x37,              # message size
-            Rcb4BaseLib.CommandTypes.ConstFrameServo,  # set servo pos command
-            0xff,                                      # 1 to 4 servos in both sio (8 servos)
-            0xff,                                      # 5 to 8 servos in both sio (8 servos)
-            0x7f,                                      # 9 to 12 servos in both sio (8 servos)
-            0x0,               # 13 to 16 servos in both sio
-            0x0,                 # 13 to 16 servos in both sio
-            frame
-            ]
-
-        sDatas = kondoMVServoDatas
-
-        if Rcb4BaseLib().checkServoDatas(sDatas) == False:
-            return -1,buf
-
-        for idat in sDatas:
-          buf.append(idat.data & 0xff)
-          buf.append((idat.data >> 8)& 0xff)
-        buf.append(Rcb4BaseLib.CheckSum(buf))
-        return 4,buf
-
     def checkServoDatas(self, servoDatas):
         checkData = []
 
@@ -786,6 +693,7 @@ class Rcb4BaseLib:
     #gets position of single servo
     def getSinglePos(self,id,sio):
         if not Rcb4BaseLib.checkSio(sio):
+            print("checksio Failed")
             return False, -1
         retf,retbuf = self.moveDeviceToComCmdSynchronize(self.icsNum2id(id, sio), Rcb4BaseLib.DeviceAddrOffset.MotorPositionAddressOffset, 2)
 
@@ -863,12 +771,6 @@ class Rcb4BaseLib:
         _,txbuf = self.runConstFrameServoCmd(servoDatas,frame)
         return  self.synchronizeAck(txbuf)
 
-
-    # sets potitions of several servos using ServoData class
-    def setKondoMVServoPos (self,servoDatas,frame):
-        rxLen ,txbuf = self.runKondoMVFrameServoCmd(servoDatas,frame)
-        return self.synchronize(txbuf, rxLen, writeOnly=True)
-
     def setServoSpeed(self, servoDatas):
         _, txbuf = self.setSpeedCmd(servoDatas)
         return self.synchronizeAck(txbuf)
@@ -876,26 +778,3 @@ class Rcb4BaseLib:
     def setServoStretch(self, servoDatas):
         _, txbuf = self.setStretchCmd(servoDatas)
         return self.synchronizeAck(txbuf)
-
-    
-
-
-
-
-if __name__ == "__main__":
-    
-    kondo = Rcb4BaseLib()
-    kondo.open('/dev/ttyAMA2',1250000, 1.3) #1250000
-    
-    sd1 = [kondo.ServoData(i,1,7000) for i in range (6,11)]
-    sd2 =  [kondo.ServoData(i,2,7500) for i in range (6,11)]
-
-    while True:
-        sd1 = []
-        kondo.setServoPos(sd1, 5)
-        kondo.setServoPos(sd2, 5)
-        time.sleep(0.5)
-    
-
-
-

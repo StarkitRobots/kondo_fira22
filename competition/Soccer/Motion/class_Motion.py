@@ -39,9 +39,9 @@ class Motion1:
         self.i_see_ball = False
         self.glob = glob
         self.params = self.glob.params
-        self.ACTIVESERVOS = [(10,2),(9,2),(8,2),(7,2),(6,2),(5,2),(4,2),
-                (3,2),(2,2),(1,1),(0,2),(10,1),(9,1),(8,1),
-                (7,1),(6,1),(5,1),(4,1),(3,1),(2,1),(1,2)]
+        self.ACTIVESERVOS = [(10,2),(9,2),(8,2),(7,2),(6,2),(5,2),(4,1),
+                (3,2),(2,2),(1,2),(0,2),(10,1),(9,1),(8,1),
+                (7,1),(6,1),(5,1),(4,2),(3,1),(2,1),(1,1)]
         # self.ACTIVESERVOS = [(10,2),(9,2),(8,2),(7,2),(6,2),(5,2),(4,2),
         #         (3,2),(2,2),(1,2),(0,2),(10,1),(9,1),(8,1),
         #         (7,1),(6,1),(5,1),(4,1),(3,1),(2,1),(1,1)]
@@ -176,7 +176,7 @@ class Motion1:
             #from button_test import wait_for_button_pressing
             import starkit
             import pyb
-            from kondo_controller import Rcb4BaseLib
+            from kondo3_controller import Kondo3Rcb4BaseLib as Rcb4BaseLib
             from pyb import UART
             # from machine import I2C
             from bno055 import BNO055, AXIS_P7
