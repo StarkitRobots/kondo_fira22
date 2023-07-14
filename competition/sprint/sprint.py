@@ -85,13 +85,13 @@ class Sprint(Competition):
         self.arucoParams = cv2.aruco.DetectorParameters_create()
     
     def aruco_position(self, img):
-        bgr = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
-        (corners, ids, rejected) = cv2.aruco.detectMarkers(bgr, self.arucoDict,
+        # bgr = cv2.cvtColor(img, cv2.COLOR_BGR2BGR)
+        corners, ids, rejected = cv2.aruco.detectMarkers(img, self.arucoDict,
                         parameters=self.arucoParams)
         # print(corners)
         # print(self.sensor.camera_matrix, self.sensor.dist_matrix)
-        if corners != []:
-            rvec, tvec = cv2.aruco.estimatePoseSingleMarkers(corners[0], 0.17, self.sensor.camera_matrix, self.sensor.dist_matrix)
+        if ids is not None:
+            rvec, tvec, _objPoints = cv2.aruco.estimatePoseSingleMarkers(corners, 0.17, self.sensor.camera_matrix, self.sensor.dist_matrix)
         else : return [[[0,0,0]]],[[[0,0,0]]]    
         return rvec, tvec
 

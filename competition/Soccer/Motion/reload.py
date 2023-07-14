@@ -392,7 +392,7 @@ class KondoCameraSensor(Sensor):
 
         KondoCameraSensor.camera_matrix, KondoCameraSensor.dist_matrix = KondoCameraSensor.loadCoefficients(path)
         
-        KondoCameraSensor.camera.configure(KondoCameraSensor.camera.create_preview_configuration(main={"format": 'XRGB8888', "size": (1280, 720)})) # govniche - TODO rewrite loadcoeffs
+        KondoCameraSensor.camera.configure(KondoCameraSensor.camera.create_preview_configuration(main={"format": 'BGR888', "size": (1280, 720)})) # govniche - TODO rewrite loadcoeffs
         KondoCameraSensor.camera.start()
 
     def align_down(self, size, align):
@@ -416,11 +416,11 @@ class KondoCameraSensor(Sensor):
         # image = cv2.cvtColor(image, cv2.COLOR_BayerRG2BGR) # BG
         # (h, w, d) = image.shape
         (h, w, d) = frame.shape
-        optimal_camera_matrix, roi = cv2.getOptimalNewCameraMatrix(KondoCameraSensor.camera_matrix, KondoCameraSensor.dist_matrix, (w, h), 0, (w, h))
-        image = cv2.undistort(frame, KondoCameraSensor.camera_matrix, KondoCameraSensor.dist_matrix, None, optimal_camera_matrix)
+        # optimal_camera_matrix, roi = cv2.getOptimalNewCameraMatrix(KondoCameraSensor.camera_matrix, KondoCameraSensor.dist_matrix, (w, h), 0, (w, h))
+        # image = cv2.undistort(frame, KondoCameraSensor.camera_matrix, KondoCameraSensor.dist_matrix, None, optimal_camera_matrix)
         center = (w // 2, h // 2)
         M = cv2.getRotationMatrix2D(center, 180, 1.0)
-        image = cv2.warpAffine(image, M, (w, h))
+        image = cv2.warpAffine(frame, M, (w, h))
         return Image(image)
     
     def undistored_snapshot(self):
