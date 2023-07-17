@@ -59,8 +59,8 @@ class Motion1:
         b5 = 0  # мм расстояние от оси сервы 5 до оси сервы 6 по горизонтали
         c5 = 0     # мм расстояние от оси сервы 6 до нуля Z по вертикали
         a6 = 0    # мм расстояние от оси сервы 6 до оси сервы 7
-        a7 = 99  # мм расстояние от оси сервы 7 до оси сервы 8
-        a8 = 99  # мм расстояние от оси сервы 8 до оси сервы 9
+        a7 = 80  # мм расстояние от оси сервы 7 до оси сервы 8
+        a8 = 80  # мм расстояние от оси сервы 8 до оси сервы 9
         a9 = 0  # мм расстояние от оси сервы 9 до оси сервы 10
         a10= 13  # мм расстояние от оси сервы 10 до центра стопы по горизонтали
         b10= 38  # мм расстояние от оси сервы 10 до низа стопы   26.4
@@ -68,6 +68,7 @@ class Motion1:
         self.e10 = 55 # мм половина длины стопы
         self.SIZES = [ a5, b5, c5, a6, a7, a8, a9, a10, b10, c10 ]
         self.d10 = 53 #53.4 # расстояние по Y от центра стопы до оси робота
+        self.zt0 = c5 + a6 + a7 + a8 + a9 + b10 
         limAlpha5 = [-2667, 2667]
         limAlpha6 = [-2700, 1000]
         limAlpha7 = [-3000, 3000]
@@ -99,7 +100,7 @@ class Motion1:
         self.amplitude = 32          # mm side amplitude (maximum distance between most right and most left position of Center of Mass) 53.4*2
         self.fr1 =8                  # frame number for 1-st phase of gait ( two legs on floor)
         self.fr2 = 12                # frame number for 2-nd phase of gait ( one leg in air)
-        self.gaitHeight= 180         # Distance between Center of mass and floor in walk pose
+        self.gaitHeight = 160         # Distance between Center of mass and floor in walk pose
         self.stepHeight = 32.0       # elevation of sole over floor
         self.initPoses = 400//self.simThreadCycleInMs
         self.limAlpha1 =LIMALPHA
@@ -145,8 +146,8 @@ class Motion1:
         self.yl = 0
         self.zl = -1
         self.wl = 0
-        self.ztr0 = -223.1
-        self.ztl0 = -223.1
+        self.ztr0 = -self.zt0 # -223.1
+        self.ztl0 = -self.zt0 # -223.1
         self.dx0_last = 0
         self.euler_angle = {}
         self.modified_roll = 0
