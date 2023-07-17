@@ -849,7 +849,7 @@ class Motion1:
                         servoDatas.append( self.kondo.ServoData(self.ACTIVESERVOS[i][0],self.ACTIVESERVOS[i][1],pos))
                     servoDatas = self.reOrderServoData(servoDatas)
                     start2 = self.pyb.millis()
-                    a=self.kondo.setServoPos (servoDatas, self.frames_per_cycle)
+                    a=self.kondo.setServoPosAsync (servoDatas, self.frames_per_cycle)
                     #print('disp[4] = ', disp[4], 'disp[15]=', disp[15])
                     time1 = self.pyb.elapsed_millis(start1)
                     time2 = self.pyb.elapsed_millis(start2)

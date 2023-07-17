@@ -17,6 +17,8 @@ if 1:
     SIMULATION = 2                                         # 0 - Simulation without physics, 1 - Simulation synchronous with physics, 2 - live on open
 sys.path.append( current_work_directory + 'Soccer/')
 sys.path.append( current_work_directory + 'Soccer/Motion/')
+sys.path.append( current_work_directory + 'Soccer/Init_params/Real/')
+sys.path.append( current_work_directory + 'Soccer/Model/')
 sys.path.append( current_work_directory)
 print(sys.path)
 SIMULATION=2
@@ -146,14 +148,14 @@ class Sprint(Competition):
             
             self.motion.walk_Cycle(stepLength1,
                                     0,
-                                    0.25 + step_rot,
+                                    0, #0.25 + step_rot,
                                     cycle, 
                                     self.number_of_cycles)
         #self.motion.walk_Final_Pose()
 
     def __del__(self):
         self.stopFlag = True  
-        self.cam_proc.join()
+        #self.cam_proc.join()
         
         
         

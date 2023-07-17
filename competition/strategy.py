@@ -444,7 +444,7 @@ class Player():
             self.motion.fr1 = 4 # 4
             self.motion.fr2 = 9 # 10
             ##self.motion.initPoses = self.motion.fr2 
-            self.motion.gaitHeight = 170 # 190
+            self.motion.gaitHeight = 160 # 190
             self.motion.stepHeight = 30  # 20
             stepLength = 50 #88
         if pressed_button == 2  :   
@@ -454,7 +454,7 @@ class Player():
             self.motion.fr1 = 8 # 4
             self.motion.fr2 = 12
             ##self.motion.initPoses = self.motion.fr2 
-            self.motion.gaitHeight = 160
+            self.motion.gaitHeight = 220
             self.motion.stepHeight = 40  # 20
             stepLength = 40
         sideLength = 0
@@ -655,7 +655,7 @@ class Player():
 
 
 if __name__=="__main__":
-    player = Player('run_test')  # 'run_test', 'balancing_test', 'basketball', 'weight_lifting', 'kondo_walk'
+    player = Player('sprint')  # 'run_test', 'balancing_test', 'basketball', 'weight_lifting', 'kondo_walk'
     #player.deep_learning()
     #for i in range(1):
     #    player.test_walk()

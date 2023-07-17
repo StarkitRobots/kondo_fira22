@@ -3,13 +3,13 @@
     "simThreadCycleInMs": 20,
     "amplitude": 32,
     "fr1": 4,
-    "fr2": 10,
-    "initPoses": 46,
-    "gaitHeight": 220,
-    "stepHeight": 40,
+    "fr2": 8,
+    "initPoses": 86,
+    "gaitHeight": 180,
+    "stepHeight": 30,
     "stepLength": 70,
     "stopDistance": 0.33,
-    "stepIncrement": 10,
-    "stepDecrement": 10,
-    "maxStepLengthBack": -70
+    "stepIncrement": 0,
+    "stepDecrement": 0,
+    "maxStepLengthBack": 70
 }
